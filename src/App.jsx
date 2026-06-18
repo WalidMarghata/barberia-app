@@ -7,6 +7,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import interiorImg from "./assets/img2.webp";
+import heroVideo from "./assets/hero.mp4";
 import hassanAboutImg from "./assets/img1.jpg";
 import teamHassanImg from "./assets/team1.jpg";
 import teamHusamImg from "./assets/team2.jpg";
@@ -1158,7 +1159,8 @@ export default function App() {
 
       {/* HERO */}
       <section id="hero" className="relative px-4 py-20 sm:py-32 text-center overflow-hidden" style={{ minHeight: "85vh", display: "flex", alignItems: "center" }}>
-        <img ref={heroBgRef} src={interiorImg} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", objectPosition: "center", opacity: 0.22, willChange: "transform" }} />
+        <video ref={heroBgRef} src={heroVideo} autoPlay muted loop playsInline aria-hidden="true"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", objectPosition: "center", opacity: 0.38, willChange: "transform" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(21,17,13,0.75) 0%, rgba(115,39,52,0.15) 50%, rgba(21,17,13,0.9) 100%)" }} />
         <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(199,154,69,0.12), transparent 65%)" }} />
         <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-6 w-full hero-seq">
