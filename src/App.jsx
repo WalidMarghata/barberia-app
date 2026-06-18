@@ -349,6 +349,10 @@ const TEAM = [
    ============================================================ */
 const REVIEWS = [
   {
+    name: "Tony Lon", city: "Verona", stars: 5,
+    text: "Professionista e simpatico. Molto bravo con i tagli per i giovani. Ottimo rapporto qualità-prezzo. Altamente raccomandato.",
+  },
+  {
     name: "Adam", city: "Verona", stars: 5,
     text: "Sono rimasto davvero soddisfatto del servizio! Il personale è gentilissimo e professionale. Tornerò sicuramente.",
   },
@@ -359,18 +363,6 @@ const REVIEWS = [
   {
     name: "Marc", city: "USA", stars: 5,
     text: "I came to Verona for the Opera and needed a quick haircut. Even as a tourist I was welcomed like a regular. Great service!",
-  },
-  {
-    name: "Luca", city: "Verona", stars: 5,
-    text: "Barberia di qualità nel cuore di Verona. Hassan e il suo team sono davvero bravi, sempre attenti a capire cosa vuoi. Prezzi onesti.",
-  },
-  {
-    name: "Sofia", city: "Verona", stars: 5,
-    text: "Ho portato mio fratello qui e siamo rimasti stupiti dalla professionalità. Ambiente bellissimo e atmosfera molto accogliente.",
-  },
-  {
-    name: "Youssef", city: "Verona", stars: 5,
-    text: "Il meglio della città! Husam ha fatto un lavoro fantastico con la mia barba. Non andrò mai da nessun altro.",
   },
 ];
 
@@ -1424,7 +1416,7 @@ export default function App() {
             <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-4">{t.reviews.title}</h2>
             <div className="flex justify-center">
               <div className="reviews-header-rating">
-                <span className="f-display text-2xl text-[var(--brass-light)]">4.9</span>
+                <span className="f-display text-2xl text-[var(--brass-light)]">4.5</span>
                 <div className="review-stars">
                   {[1,2,3,4,5].map(s => (
                     <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--brass-light)">
@@ -1432,7 +1424,7 @@ export default function App() {
                     </svg>
                   ))}
                 </div>
-                <span className="text-xs text-[var(--cream-dim)] tracking-wider">Google Reviews</span>
+                <span className="text-xs text-[var(--cream-dim)] tracking-wider">119 Google Reviews</span>
               </div>
             </div>
           </div>
