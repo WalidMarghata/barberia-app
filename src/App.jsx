@@ -446,10 +446,16 @@ const STYLE = `
 @keyframes stripe-move { from { background-position:0 0; } to { background-position:-120px 0; } }
 
 .ticket-card {
-  background:var(--panel);
-  border:1px solid var(--line);
-  position:relative;
-  border-radius:4px;
+  background:rgba(34,26,20,0.55);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(199,154,69,0.2);
+  position:relative; border-radius:8px;
+  transition:transform 0.35s cubic-bezier(.4,0,.2,1), box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.ticket-card:hover {
+  transform:translateY(-6px);
+  box-shadow:0 20px 60px rgba(199,154,69,0.18);
+  border-color:rgba(199,154,69,0.5);
 }
 .ticket-card::before, .ticket-card::after {
   content:""; position:absolute; width:14px; height:14px; background:var(--ink);
@@ -461,15 +467,53 @@ const STYLE = `
 .lbh-root[dir="rtl"] .ticket-card::after { right:auto; left:-8px; }
 
 .btn-brass {
-  background:linear-gradient(180deg,var(--brass-light),var(--brass));
+  background:linear-gradient(135deg,var(--brass-light),var(--brass) 60%,#9c7530);
   color:#241a0e; font-weight:600;
+  box-shadow:0 4px 20px rgba(199,154,69,0.3);
+  transition:filter 0.25s, box-shadow 0.25s, transform 0.2s;
 }
-.btn-brass:hover { filter:brightness(1.08); }
+.btn-brass:hover { filter:brightness(1.12); box-shadow:0 8px 32px rgba(199,154,69,0.55); transform:translateY(-2px); }
+.btn-brass:active { transform:translateY(0); }
 .btn-outline {
   border:1px solid var(--brass); color:var(--brass-light);
   background:transparent;
+  transition:background 0.25s, box-shadow 0.25s, transform 0.2s, border-color 0.25s;
 }
-.btn-outline:hover { background:rgba(199,154,69,0.08); }
+.btn-outline:hover { background:rgba(199,154,69,0.1); box-shadow:0 0 20px rgba(199,154,69,0.2); transform:translateY(-2px); border-color:var(--brass-light); }
+
+/* ── Scroll reveal ── */
+.reveal { opacity:0; transform:translateY(36px); transition:opacity 0.75s cubic-bezier(.4,0,.2,1), transform 0.75s cubic-bezier(.4,0,.2,1); }
+.reveal-left { opacity:0; transform:translateX(-48px); transition:opacity 0.75s cubic-bezier(.4,0,.2,1), transform 0.75s cubic-bezier(.4,0,.2,1); }
+.reveal-right { opacity:0; transform:translateX(48px); transition:opacity 0.75s cubic-bezier(.4,0,.2,1), transform 0.75s cubic-bezier(.4,0,.2,1); }
+.reveal.is-visible, .reveal-left.is-visible, .reveal-right.is-visible { opacity:1; transform:none; }
+@media (prefers-reduced-motion:reduce) { .reveal,.reveal-left,.reveal-right { opacity:1; transform:none; transition:none; } }
+
+/* ── Hero sequence ── */
+@keyframes lbh-fadeup { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:translateY(0); } }
+.hero-seq > * { opacity:0; animation:lbh-fadeup 1s cubic-bezier(.4,0,.2,1) forwards; }
+.hero-seq > *:nth-child(1){animation-delay:.05s}
+.hero-seq > *:nth-child(2){animation-delay:.22s}
+.hero-seq > *:nth-child(3){animation-delay:.38s}
+.hero-seq > *:nth-child(4){animation-delay:.54s}
+.hero-seq > *:nth-child(5){animation-delay:.70s}
+.hero-seq > *:nth-child(6){animation-delay:.86s}
+.hero-seq > *:nth-child(7){animation-delay:1.02s}
+@media(prefers-reduced-motion:reduce){ .hero-seq > * { opacity:1; animation:none; } }
+
+/* ── Team cards ── */
+.team-card { transition:transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s ease; }
+.team-card:hover { transform:translateY(-10px) scale(1.02); box-shadow:0 24px 64px rgba(199,154,69,0.25); }
+.team-card .tc-img { overflow:hidden; }
+.team-card .tc-img img { transition:transform 0.6s cubic-bezier(.4,0,.2,1); }
+.team-card:hover .tc-img img { transform:scale(1.08); }
+
+/* ── Glass panel ── */
+.glass-panel {
+  background:rgba(34,26,20,0.6);
+  backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(199,154,69,0.22);
+  border-radius:8px;
+}
 
 input, select, textarea {
   background:var(--panel-2); border:1px solid var(--line); color:var(--cream);
@@ -539,6 +583,29 @@ function ShopMap({ address, shopName, mapsQuery }) {
 /* ============================================================
    HELPERS
    ============================================================ */
+function useScrollReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal,.reveal-left,.reveal-right");
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add("is-visible"); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
+
+function useParallax(ref, factor = 0.25) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const handle = () => { el.style.transform = `translateY(${window.scrollY * factor}px)`; };
+    window.addEventListener("scroll", handle, { passive: true });
+    return () => window.removeEventListener("scroll", handle);
+  }, [ref, factor]);
+}
+
 function todayStr() {
   const d = new Date();
   const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
@@ -675,6 +742,9 @@ export default function App() {
   const [reservedDone, setReservedDone] = useState(false);
   const bookingRef = useRef(null);
   const reserveGuard = useRef(false);
+  const heroBgRef = useRef(null);
+  useScrollReveal();
+  useParallax(heroBgRef, 0.2);
 
   const service = SERVICES.find((s) => s.id === booking.serviceId) || null;
 
@@ -775,46 +845,49 @@ export default function App() {
       <div className="stripe-band" />
 
       {/* HERO */}
-      <section id="hero" className="relative px-4 py-16 sm:py-24 text-center overflow-hidden">
-        <img src={interiorImg} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.18 }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(21,17,13,0.6) 0%, rgba(21,17,13,0.85) 100%)" }} />
-        <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-6">
-          <BadgeEmblem size={150} />
-          <p className="f-display text-xs sm:text-sm tracking-[0.25em] text-[var(--cream-dim)]">{t.hero.kicker}</p>
-          <h1 className="f-display brass-text text-4xl sm:text-6xl leading-tight">LA BARBERIA</h1>
-          <h2 className="f-display text-2xl sm:text-4xl text-[var(--cream)]">HASSAN</h2>
-          <p className="text-xs sm:text-sm tracking-[0.3em] text-[var(--cream-dim)]">{t.hero.location}</p>
-          <p className="f-tagline text-lg sm:text-2xl text-[var(--cream)] max-w-md">{t.hero.tagline}</p>
-          <div className="flex flex-wrap justify-center gap-3 pt-2">
-            <a href="#booking" className="btn-brass px-6 py-3 rounded text-sm font-semibold">{t.hero.ctaBook}</a>
-            <a href="#services" className="btn-outline px-6 py-3 rounded text-sm font-semibold">{t.hero.ctaServices}</a>
+      <section id="hero" className="relative px-4 py-20 sm:py-32 text-center overflow-hidden" style={{ minHeight: "85vh", display: "flex", alignItems: "center" }}>
+        <img ref={heroBgRef} src={interiorImg} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", objectPosition: "center", opacity: 0.22, willChange: "transform" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(21,17,13,0.75) 0%, rgba(115,39,52,0.15) 50%, rgba(21,17,13,0.9) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(199,154,69,0.12), transparent 65%)" }} />
+        <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-6 w-full hero-seq">
+          <BadgeEmblem size={160} />
+          <p className="f-display text-xs sm:text-sm tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
+          <h1 className="f-display brass-text text-5xl sm:text-7xl leading-tight">LA BARBERIA</h1>
+          <h2 className="f-display text-3xl sm:text-5xl text-[var(--cream)]">HASSAN</h2>
+          <p className="text-xs sm:text-sm tracking-[0.35em] text-[var(--cream-dim)] uppercase">{t.hero.location}</p>
+          <p className="f-tagline text-xl sm:text-2xl text-[var(--cream-dim)] max-w-md">{t.hero.tagline}</p>
+          <div className="flex flex-wrap justify-center gap-4 pt-2">
+            <a href="#booking" className="btn-brass px-8 py-3.5 rounded-full text-sm font-semibold">{t.hero.ctaBook}</a>
+            <a href="#services" className="btn-outline px-8 py-3.5 rounded-full text-sm font-semibold">{t.hero.ctaServices}</a>
           </div>
         </div>
       </section>
       <div className="stripe-band" />
 
       {/* ABOUT */}
-      <section id="about" className="px-4 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-10 items-center">
-        <div>
-          <p className="f-display text-xs tracking-[0.25em] text-[var(--brass)] mb-3">{t.about.badge}</p>
-          <h2 className="f-display text-3xl text-[var(--cream)] mb-4">{t.about.title}</h2>
-          <p className="text-[var(--cream-dim)] leading-relaxed">{t.about.body}</p>
+      <section id="about" className="px-4 py-20 max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div className="reveal-left">
+          <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-3">{t.about.badge}</p>
+          <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-5">{t.about.title}</h2>
+          <p className="text-[var(--cream-dim)] leading-relaxed text-base">{t.about.body}</p>
         </div>
-        <div className="flex justify-center">
-          <img src={hassanAboutImg} alt="Hassan" style={{ width: "100%", maxWidth: 380, borderRadius: 4, border: "1px solid var(--line)", objectFit: "cover" }} />
+        <div className="flex justify-center reveal-right">
+          <img src={hassanAboutImg} alt="Hassan" style={{ width: "100%", maxWidth: 400, borderRadius: 12, border: "1px solid rgba(199,154,69,0.3)", objectFit: "cover", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }} />
         </div>
       </section>
 
       {/* TEAM */}
-      <section id="team" className="px-4 py-16 panel-bg">
+      <section id="team" className="px-4 py-20 panel-bg">
         <div className="max-w-5xl mx-auto">
-          <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.team.title}</h2>
-          <p className="text-center text-[var(--cream-dim)] mb-10 text-sm">{t.team.subtitle}</p>
+          <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.team.title}</h2>
+          <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.team.subtitle}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM.map((member) => (
-              <div key={member.name} className="flex flex-col rounded overflow-hidden">
-                <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top" }} />
-                <div className="panel2-bg p-4 flex flex-col gap-2 flex-1 text-center border hairline border-t-0">
+            {TEAM.map((member, i) => (
+              <div key={member.name} className="team-card flex flex-col rounded-xl overflow-hidden border border-[rgba(199,154,69,0.2)] reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
+                <div className="tc-img">
+                  <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top", display: "block" }} />
+                </div>
+                <div className="glass-panel p-4 flex flex-col gap-2 flex-1 text-center border-t-0 rounded-none">
                   <h3 className="f-display text-base text-[var(--cream)]">{member.name}<span className="text-[var(--brass)] font-normal">, {member.role[lang]}</span></h3>
                   <p className="text-sm text-[var(--cream-dim)] leading-relaxed">{member.desc[lang]}</p>
                 </div>
@@ -825,21 +898,21 @@ export default function App() {
       </section>
 
       {/* SERVICES */}
-      <section id="services" className="px-4 py-16 panel-bg">
+      <section id="services" className="px-4 py-20 panel-bg">
         <div className="max-w-5xl mx-auto">
-          <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.services.title}</h2>
-          <p className="text-center text-[var(--cream-dim)] mb-10 text-sm">{t.services.subtitle}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.services.title}</h2>
+          <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.services.subtitle}</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {SERVICES.map((s, i) => (
-              <div key={s.id} className="ticket-card p-5 flex flex-col gap-2">
-                <span className="f-display text-xs text-[var(--brass)]">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="f-display text-lg text-[var(--cream)]">{s.name[lang]}</h3>
-                <p className="text-sm text-[var(--cream-dim)] flex-1">{s.desc[lang]}</p>
-                <div className="flex items-center justify-between pt-2 border-t hairline">
+              <div key={s.id} className="ticket-card p-6 flex flex-col gap-3 reveal" style={{ transitionDelay: `${i * 0.09}s` }}>
+                <span className="f-display text-xs text-[var(--brass)] tracking-widest">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="f-display text-xl text-[var(--cream)]">{s.name[lang]}</h3>
+                <p className="text-sm text-[var(--cream-dim)] flex-1 leading-relaxed">{s.desc[lang]}</p>
+                <div className="flex items-center justify-between pt-3 border-t hairline">
                   <span className="text-xs text-[var(--cream-dim)]">{s.duration} {t.services.minutes}</span>
-                  <span className="f-display text-[var(--brass-light)]">€{s.price}</span>
+                  <span className="f-display text-lg text-[var(--brass-light)]">€{s.price}</span>
                 </div>
-                <button onClick={() => selectService(s.id)} className="btn-outline mt-2 py-2 rounded text-sm font-semibold">
+                <button onClick={() => selectService(s.id)} className="btn-outline mt-1 py-2.5 rounded-full text-sm font-semibold">
                   {t.services.bookThis}
                 </button>
               </div>
@@ -868,12 +941,13 @@ export default function App() {
       ))}
 
       {/* REVIEWS */}
-      <section id="reviews" className="px-4 py-16 max-w-5xl mx-auto">
-        <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-10">{t.reviews.title}</h2>
+      <section id="reviews" className="px-4 py-20 max-w-5xl mx-auto">
+        <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-12 reveal">{t.reviews.title}</h2>
         <div className="grid sm:grid-cols-3 gap-6">
-          {REVIEWS.map((r) => (
-            <div key={r.name} className="ticket-card p-5 flex flex-col gap-3">
-              <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1">"{r.text}"</p>
+          {REVIEWS.map((r, i) => (
+            <div key={r.name} className="ticket-card p-6 flex flex-col gap-4 reveal" style={{ transitionDelay: `${i * 0.12}s` }}>
+              <p className="text-[var(--brass)] text-xl">★★★★★</p>
+              <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">"{r.text}"</p>
               <div className="border-t hairline pt-3">
                 <p className="f-display text-sm text-[var(--cream)]">{r.name}</p>
                 <p className="text-xs text-[var(--brass)]">{r.city}</p>
