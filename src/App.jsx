@@ -75,7 +75,7 @@ const T = {
     chat: { tagline: "Risponderemo il prima possibile", placeholder: "Scrivi il tuo messaggio…", send: "Invia su WhatsApp", defaultMsg: "Ciao! Vorrei avere informazioni sulla barberia." },
     tw: ["Stile", "Precisione", "Tradizione", "Passione"],
     stats: { clients: "Clienti soddisfatti", years: "Anni di esperienza", pros: "Professionisti", rating: "Valutazione media" },
-    gallery: { title: "La Nostra Arte", subtitle: "Ogni taglio racconta una storia" },
+    gallery: { title: "La Nostra Arte", subtitle: "Ogni taglio racconta una storia", tiktokCta: "Altro contenuto disponibile sul nostro TikTok" },
     services: {
       title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
@@ -132,7 +132,7 @@ const T = {
     chat: { tagline: "We'll respond as soon as possible", placeholder: "Write your message…", send: "Send on WhatsApp", defaultMsg: "Hi! I'd like some information about the barbershop." },
     tw: ["Style", "Precision", "Tradition", "Passion"],
     stats: { clients: "Happy clients", years: "Years of experience", pros: "Professionals", rating: "Average rating" },
-    gallery: { title: "Our Craft", subtitle: "Every cut tells a story" },
+    gallery: { title: "Our Craft", subtitle: "Every cut tells a story", tiktokCta: "More content available on our TikTok" },
     services: {
       title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
@@ -189,7 +189,7 @@ const T = {
     chat: { tagline: "Nous répondrons dès que possible", placeholder: "Écrivez votre message…", send: "Envoyer sur WhatsApp", defaultMsg: "Bonjour ! Je voudrais des informations sur la barberie." },
     tw: ["Style", "Précision", "Tradition", "Passion"],
     stats: { clients: "Clients satisfaits", years: "Ans d'expérience", pros: "Professionnels", rating: "Note moyenne" },
-    gallery: { title: "Notre Art", subtitle: "Chaque coupe raconte une histoire" },
+    gallery: { title: "Notre Art", subtitle: "Chaque coupe raconte une histoire", tiktokCta: "Plus de contenu disponible sur notre TikTok" },
     services: {
       title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
@@ -246,7 +246,7 @@ const T = {
     chat: { tagline: "سنرد في أقرب وقت ممكن", placeholder: "اكتب رسالتك…", send: "إرسال عبر واتساب", defaultMsg: "مرحباً! أريد الاستفسار عن الصالون." },
     tw: ["أناقة", "دقة", "تراث", "شغف"],
     stats: { clients: "عميل سعيد", years: "سنوات خبرة", pros: "محترفون", rating: "تقييم متوسط" },
-    gallery: { title: "فنّنا", subtitle: "كل قصّة تحكي حكاية" },
+    gallery: { title: "فنّنا", subtitle: "كل قصّة تحكي حكاية", tiktokCta: "محتوى أكثر متاح على تيك توك" },
     services: {
       title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
@@ -884,6 +884,15 @@ function Gallery({ t }) {
         <button className="gallery-arrow gallery-arrow-right" onClick={() => scrollTrack(1)} aria-label="Successivo">
           <ChevronRight size={22} />
         </button>
+      </div>
+
+      {/* TikTok CTA */}
+      <div className="flex justify-center mt-10 px-4">
+        <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer"
+          className="btn-outline inline-flex items-center gap-3 px-7 py-3.5 rounded-full text-sm font-semibold reveal">
+          <TikTokIcon size={16} />
+          {t.gallery.tiktokCta}
+        </a>
       </div>
 
       {/* Lightbox */}
