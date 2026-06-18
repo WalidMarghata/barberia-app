@@ -8,6 +8,9 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import interiorImg from "./assets/img2.webp";
 import heroVideo from "./assets/hero.mp4";
+import gallery1 from "./assets/gallery1.mp4";
+import gallery2 from "./assets/gallery2.mp4";
+import gallery3 from "./assets/gallery3.mp4";
 import hassanAboutImg from "./assets/img1.jpg";
 import teamHassanImg from "./assets/team1.jpg";
 import teamHusamImg from "./assets/team2.jpg";
@@ -577,9 +580,13 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .stat-label { font-size:0.62rem;text-transform:uppercase;letter-spacing:0.16em;color:var(--cream-dim);margin-top:6px;display:block; }
 
 /* ── Gallery ── */
-.gallery-item { overflow:hidden;cursor:pointer;aspect-ratio:1/1;border-radius:6px;border:1px solid rgba(199,154,69,0.12); }
-.gallery-item img { width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform 0.5s cubic-bezier(.4,0,.2,1);display:block; }
-@media(hover:hover){ .gallery-item:hover img { transform:scale(1.09); } }
+.gallery-item { overflow:hidden;cursor:pointer;aspect-ratio:9/16;border-radius:10px;border:1px solid rgba(199,154,69,0.18);position:relative;background:#0a0a0a; }
+.gallery-item video { width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s cubic-bezier(.4,0,.2,1); }
+@media(hover:hover){ .gallery-item:hover video { transform:scale(1.04); } }
+.gallery-play { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.28);transition:background 0.25s; }
+.gallery-item:hover .gallery-play { background:rgba(0,0,0,0.12); }
+.gallery-play-circle { width:52px;height:52px;border-radius:50%;background:rgba(199,154,69,0.85);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+.lb-video { max-height:90vh;max-width:90vw;border-radius:8px;outline:none; }
 .lb-overlay { position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0.97);display:flex;align-items:center;justify-content:center; }
 .lb-img { max-height:90vh;max-width:90vw;object-fit:contain;border-radius:6px;user-select:none; }
 .lb-btn { position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(199,154,69,0.15);border:1px solid rgba(199,154,69,0.3);color:var(--brass-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;-webkit-tap-highlight-color:transparent; }
@@ -753,18 +760,17 @@ function StatsBand({ t }) {
 }
 
 /* ── Gallery ── */
-const GALLERY_IMGS = [
-  teamHassanImg, interiorImg, teamHusamImg,
-  hassanAboutImg, teamNabilImg, teamXhoiImg, teamStevenImg,
-];
+const GALLERY_VIDEOS = [gallery1, gallery2, gallery3];
 
 function Gallery({ t }) {
   const [active, setActive] = useState(null);
   const touchStartX = useRef(null);
+  const lightboxVideoRef = useRef(null);
 
+  const total = GALLERY_VIDEOS.length;
   const close = useCallback(() => setActive(null), []);
-  const prev = useCallback(() => setActive((i) => (i - 1 + GALLERY_IMGS.length) % GALLERY_IMGS.length), []);
-  const next = useCallback(() => setActive((i) => (i + 1) % GALLERY_IMGS.length), []);
+  const prev = useCallback(() => setActive((i) => (i - 1 + total) % total), [total]);
+  const next = useCallback(() => setActive((i) => (i + 1) % total), [total]);
 
   useEffect(() => {
     if (active === null) return;
@@ -777,6 +783,14 @@ function Gallery({ t }) {
     return () => window.removeEventListener("keydown", h);
   }, [active, close, prev, next]);
 
+  /* restart video when switching clips */
+  useEffect(() => {
+    if (active !== null && lightboxVideoRef.current) {
+      lightboxVideoRef.current.load();
+      lightboxVideoRef.current.play().catch(() => {});
+    }
+  }, [active]);
+
   const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
   const onTouchEnd = (e) => {
     if (touchStartX.current === null) return;
@@ -786,26 +800,41 @@ function Gallery({ t }) {
   };
 
   return (
-    <section id="gallery" className="px-4 py-20">
-      <div className="max-w-5xl mx-auto">
+    <section id="gallery" className="px-4 py-20 panel-bg">
+      <div className="max-w-4xl mx-auto">
         <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.gallery.title}</h2>
         <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.gallery.subtitle}</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-          {GALLERY_IMGS.map((img, i) => (
-            <div key={i} className="gallery-item reveal" style={{ transitionDelay: `${i * 0.07}s` }}
-              onClick={() => setActive(i)} role="button" aria-label={`Foto ${i + 1}`} tabIndex={0}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
+          {GALLERY_VIDEOS.map((src, i) => (
+            <div key={i} className="gallery-item reveal" style={{ transitionDelay: `${i * 0.12}s` }}
+              onClick={() => setActive(i)} role="button" aria-label={`Video ${i + 1}`} tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && setActive(i)}>
-              <img src={img} alt={`Barberia ${i + 1}`} loading="lazy" />
+              <video src={src} muted preload="metadata" playsInline />
+              <div className="gallery-play">
+                <div className="gallery-play-circle">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#241a0e">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
       {active !== null && (
         <div className="lb-overlay" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onClick={close}>
           <button className="lb-btn lb-prev" onClick={(e) => { e.stopPropagation(); prev(); }} aria-label="Precedente">
             <ChevronLeft size={26} />
           </button>
-          <img className="lb-img" src={GALLERY_IMGS[active]} alt="" onClick={(e) => e.stopPropagation()} />
+          <video
+            ref={lightboxVideoRef}
+            className="lb-video"
+            src={GALLERY_VIDEOS[active]}
+            controls
+            playsInline
+            onClick={(e) => e.stopPropagation()}
+          />
           <button className="lb-btn lb-next" onClick={(e) => { e.stopPropagation(); next(); }} aria-label="Successivo">
             <ChevronRight size={26} />
           </button>
