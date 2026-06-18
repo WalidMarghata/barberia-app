@@ -349,20 +349,28 @@ const TEAM = [
    ============================================================ */
 const REVIEWS = [
   {
-    name: "Tony Lon", city: "Verona", stars: 5,
+    name: "Alberto C.", city: "Verona", stars: 5,
+    text: "Ottima barberia nel centro di Verona! Il salone è moderno, pulito e ben organizzato, con un'atmosfera accogliente che ti mette subito a tuo agio. Il team è simpatico e professionale, lavora con grande attenzione ai dettagli.",
+  },
+  {
+    name: "Adam Z.", city: "Verona", stars: 5,
+    text: "Sono rimasto molto soddisfatto del servizio! Il team è estremamente gentile e ti mette subito a tuo agio. Il taglio è stato fatto con molta attenzione ai dettagli e il risultato finale era esattamente quello che volevo. Ottimo rapporto qualità-prezzo. Consiglio vivamente! 😊",
+  },
+  {
+    name: "Riky M.", city: "Verona", stars: 5,
+    text: "Cinque stelle non bastano... Posto bellissimo e team esperto. I barbieri sono eccellenti, ti mettono subito a tuo agio. Non andrò mai da nessun altro.",
+  },
+  {
+    name: "Fabio C.", city: "Verona", stars: 5,
+    text: "A pochi passi dalla Piazza Bra, ho trovato una barberia dove sono stato accolto calorosamente. La simpatia e la gentilezza dimostrate, unite alla professionalità, mi hanno fatto scegliere questo posto ora e in futuro. A presto!",
+  },
+  {
+    name: "Bernadette B.", city: "Francia", stars: 5,
+    text: "Molto attento, molto professionale e molto cortese... non esitate a cercare Hassan! Ho ritrovato mio marito, ringiovanito di almeno 10 anni 😉",
+  },
+  {
+    name: "Tony L.", city: "Verona", stars: 5,
     text: "Professionista e simpatico. Molto bravo con i tagli per i giovani. Ottimo rapporto qualità-prezzo. Altamente raccomandato.",
-  },
-  {
-    name: "Adam", city: "Verona", stars: 5,
-    text: "Sono rimasto davvero soddisfatto del servizio! Il personale è gentilissimo e professionale. Tornerò sicuramente.",
-  },
-  {
-    name: "Marco", city: "Verona", stars: 5,
-    text: "L'ambiente è curato e accogliente. Il taglio è stato fatto con grande attenzione ai dettagli. Consiglio vivamente.",
-  },
-  {
-    name: "Marc", city: "USA", stars: 5,
-    text: "I came to Verona for the Opera and needed a quick haircut. Even as a tourist I was welcomed like a regular. Great service!",
   },
 ];
 
