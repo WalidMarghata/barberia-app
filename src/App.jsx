@@ -11,6 +11,8 @@ import heroVideo from "./assets/hero.mp4";
 import gallery1 from "./assets/gallery1.mp4";
 import gallery2 from "./assets/gallery2.mp4";
 import gallery3 from "./assets/gallery3.mp4";
+import gallery4 from "./assets/gallery4.mp4";
+import gallery5 from "./assets/gallery5.mp4";
 import hassanAboutImg from "./assets/img1.jpg";
 import teamHassanImg from "./assets/team1.jpg";
 import teamHusamImg from "./assets/team2.jpg";
@@ -760,7 +762,7 @@ function StatsBand({ t }) {
 }
 
 /* ── Gallery ── */
-const GALLERY_VIDEOS = [gallery1, gallery2, gallery3];
+const GALLERY_VIDEOS = [gallery1, gallery2, gallery3, gallery4, gallery5];
 
 function Gallery({ t }) {
   const [active, setActive] = useState(null);
