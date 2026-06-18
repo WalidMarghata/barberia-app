@@ -39,17 +39,17 @@ const T = {
     hero: {
       kicker: "Rasatura · Taglio · Tradizione",
       location: "VERONA · ITALIA",
-      tagline: "Dove il taglio classico incontra il rasoio a mano libera.",
+      tagline: "Il tuo parrucchiere di fiducia nel cuore di Verona.",
       ctaBook: "Prenota il tuo turno",
       ctaServices: "Scopri i servizi",
     },
     about: {
       title: "Chi siamo",
-      body: "Hassan porta a Verona l'arte della barberia di tradizione: rasoio a mano libera, asciugamani caldi e la cura del dettaglio di un mestiere antico. Ogni taglio è un rito, ogni cliente un ospite.",
+      body: "Hassan e il suo team — Husam, Nabil, Xhoi e Steven — ti accolgono nel cuore di Verona con un'unica priorità: il tuo stile, senza attese. Oltre 30 anni di esperienza, rasoio a mano libera e la cura di un mestiere antico.",
       badge: "Mano esperta, ferri affilati",
     },
     services: {
-      title: "Servizi", subtitle: "Prezzi e durate indicativi — chiedi in negozio per trattamenti su misura.",
+      title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
     },
     booking: {
@@ -75,7 +75,7 @@ const T = {
       title: "Orari", closed: "Chiuso", note: "Dom 10:00–19:00 · Tutti gli altri giorni 09:00–20:00",
       days: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
     },
-    location: { title: "Dove siamo", openInMaps: "Apri in Maps" },
+    location: { title: "Dove siamo", openInMaps: "Apri in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min" },
     contact: { title: "Contatti", call: "Chiama", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
       `Ciao! Vorrei prenotare:\nServizio: ${d.serviceName}\nData: ${d.date}\nOrario: ${d.time}\nNome: ${d.name}\nTelefono: ${d.phone}${d.notes ? `\nNote: ${d.notes}` : ""}`,
@@ -86,17 +86,17 @@ const T = {
     hero: {
       kicker: "Shave · Cut · Tradition",
       location: "VERONA · ITALY",
-      tagline: "Where the classic cut meets the freehand razor.",
+      tagline: "Your trusted barber in the heart of Verona.",
       ctaBook: "Book your turn",
       ctaServices: "See services",
     },
     about: {
       title: "About us",
-      body: "Hassan brings traditional barbering craft to Verona — freehand razor work, hot towels, and the care of an old trade. Every cut is a ritual, every customer a guest.",
+      body: "Hassan and his team — Husam, Nabil, Xhoi and Steven — welcome you in the heart of Verona with one priority: your style, without the wait. Over 30 years of experience, freehand razor and the care of an old trade.",
       badge: "Steady hand, sharp tools",
     },
     services: {
-      title: "Services", subtitle: "Prices and durations are indicative — ask in shop for tailored treatments.",
+      title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
     },
     booking: {
@@ -122,7 +122,7 @@ const T = {
       title: "Opening hours", closed: "Closed", note: "Sun 10:00–19:00 · All other days 09:00–20:00",
       days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
     },
-    location: { title: "Find us", openInMaps: "Open in Maps" },
+    location: { title: "Find us", openInMaps: "Open in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min" },
     contact: { title: "Contact", call: "Call", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
       `Hi! I'd like to book:\nService: ${d.serviceName}\nDate: ${d.date}\nTime: ${d.time}\nName: ${d.name}\nPhone: ${d.phone}${d.notes ? `\nNotes: ${d.notes}` : ""}`,
@@ -133,17 +133,17 @@ const T = {
     hero: {
       kicker: "Rasage · Coupe · Tradition",
       location: "VÉRONE · ITALIE",
-      tagline: "Là où la coupe classique rencontre le rasoir à main levée.",
+      tagline: "Votre barbier de confiance au cœur de Vérone.",
       ctaBook: "Réserver votre tour",
       ctaServices: "Voir les services",
     },
     about: {
       title: "À propos",
-      body: "Hassan apporte à Vérone l'art traditionnel du barbier — rasoir à main levée, serviettes chaudes et le soin d'un métier ancien. Chaque coupe est un rituel, chaque client un invité.",
+      body: "Hassan et son équipe — Husam, Nabil, Xhoi et Steven — vous accueillent au cœur de Vérone avec une seule priorité : votre style, sans attente. Plus de 30 ans d'expérience, rasoir à main levée et le soin d'un métier ancien.",
       badge: "Main sûre, outils aiguisés",
     },
     services: {
-      title: "Services", subtitle: "Prix et durées indicatifs — demandez en boutique pour des soins sur mesure.",
+      title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
     },
     booking: {
@@ -169,7 +169,7 @@ const T = {
       title: "Horaires", closed: "Fermé", note: "Dim 10h–19h · Tous les autres jours 09h–20h",
       days: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
     },
-    location: { title: "Où nous trouver", openInMaps: "Ouvrir sur Maps" },
+    location: { title: "Où nous trouver", openInMaps: "Ouvrir sur Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min" },
     contact: { title: "Contact", call: "Appeler", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
       `Bonjour ! Je souhaite réserver :\nService : ${d.serviceName}\nDate : ${d.date}\nHeure : ${d.time}\nNom : ${d.name}\nTéléphone : ${d.phone}${d.notes ? `\nNotes : ${d.notes}` : ""}`,
@@ -180,17 +180,17 @@ const T = {
     hero: {
       kicker: "حلاقة · قص · تقاليد",
       location: "فيرونا · إيطاليا",
-      tagline: "حيث تلتقي القصة الكلاسيكية بشفرة الحلاقة اليدوية.",
+      tagline: "حلّاقك الموثوق في قلب فيرونا.",
       ctaBook: "احجز دورك",
       ctaServices: "اطّلع على الخدمات",
     },
     about: {
       title: "من نحن",
-      body: "يقدّم حسن في فيرونا حِرفة الحلاقة التقليدية: شفرة حلاقة يدوية، مناشف ساخنة، والعناية بتفاصيل مهنة عريقة. كل قصة طقسٌ، وكل زبون ضيف.",
+      body: "حسن وفريقه — حسام ونبيل وشوي وستيفن — يرحبون بكم في قلب فيرونا بأولوية واحدة: أسلوبك، بلا انتظار. أكثر من 30 سنة من الخبرة، شفرة يدوية وعناية بحرفة عريقة.",
       badge: "يد ثابتة، أدوات حادة",
     },
     services: {
-      title: "الخدمات", subtitle: "الأسعار والمدد تقريبية — اسأل في المحل عن العلاجات المخصصة.",
+      title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
     },
     booking: {
@@ -216,7 +216,7 @@ const T = {
       title: "ساعات العمل", closed: "مغلق", note: "الأحد ١٠:٠٠–١٩:٠٠ · سائر الأيام ٠٩:٠٠–٢٠:٠٠",
       days: ["الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد"],
     },
-    location: { title: "موقعنا", openInMaps: "فتح في الخرائط" },
+    location: { title: "موقعنا", openInMaps: "فتح في الخرائط", nearby: "Arena / Piazza Bra 3 دقائق · Castelvecchio 5 دقائق · Piazza Erbe 8 دقائق" },
     contact: { title: "تواصل معنا", call: "اتصال", whatsapp: "واتساب", instagram: "إنستغرام", tiktok: "تيك توك" },
     waMessage: (d) =>
       `مرحباً! أرغب في حجز موعد:\nالخدمة: ${d.serviceName}\nالتاريخ: ${d.date}\nالوقت: ${d.time}\nالاسم: ${d.name}\nالهاتف: ${d.phone}${d.notes ? `\nملاحظات: ${d.notes}` : ""}`,
@@ -230,8 +230,8 @@ const LANGS = ["it", "ar", "fr", "en"];
    ============================================================ */
 const SERVICES = [
   {
-    id: "classic", duration: 30, price: 18,
-    name: { it: "Taglio Classico", en: "Classic Cut", fr: "Coupe Classique", ar: "قصة كلاسيكية" },
+    id: "classic", duration: 30, price: 20,
+    name: { it: "Taglio", en: "Haircut", fr: "Coupe", ar: "قصة شعر" },
     desc: {
       it: "Taglio su misura con forbici e rifinitura a rasoio.",
       en: "Tailored cut with scissors and razor finish.",
@@ -240,7 +240,17 @@ const SERVICES = [
     },
   },
   {
-    id: "beardCombo", duration: 45, price: 28,
+    id: "beard", duration: 20, price: 10,
+    name: { it: "Barba", en: "Beard Trim", fr: "Barbe", ar: "لحية" },
+    desc: {
+      it: "Definizione e modellatura della barba con rasoio.",
+      en: "Beard shaping and definition with razor.",
+      fr: "Mise en forme et définition de la barbe au rasoir.",
+      ar: "تشكيل اللحية وتحديدها بالشفرة.",
+    },
+  },
+  {
+    id: "beardCombo", duration: 45, price: 25,
     name: { it: "Taglio + Barba", en: "Cut + Beard", fr: "Coupe + Barbe", ar: "قص + لحية" },
     desc: {
       it: "Il rituale completo: capelli e barba in un unico turno.",
@@ -260,17 +270,7 @@ const SERVICES = [
     },
   },
   {
-    id: "facial", duration: 20, price: 12,
-    name: { it: "Trattamento Viso", en: "Facial Treatment", fr: "Soin du Visage", ar: "عناية بالوجه" },
-    desc: {
-      it: "Pulizia e tonificazione con asciugamano caldo.",
-      en: "Cleansing and toning with a hot towel.",
-      fr: "Nettoyage et tonification à la serviette chaude.",
-      ar: "تنظيف وتنشيط بمنشفة ساخنة.",
-    },
-  },
-  {
-    id: "kids", duration: 20, price: 12,
+    id: "kids", duration: 20, price: 10,
     name: { it: "Taglio Bambino", en: "Kids Cut", fr: "Coupe Enfant", ar: "قصة أطفال" },
     desc: {
       it: "Per i più piccoli, fino a 12 anni.",
@@ -280,13 +280,13 @@ const SERVICES = [
     },
   },
   {
-    id: "color", duration: 60, price: 35,
-    name: { it: "Colore e Tinta", en: "Color & Dye", fr: "Couleur et Teinture", ar: "صبغة وتلوين" },
+    id: "color", duration: 60, price: 40,
+    name: { it: "Taglio + Colorazione", en: "Cut + Color", fr: "Coupe + Couleur", ar: "قص + صبغة" },
     desc: {
-      it: "Coloritura professionale, su consulenza.",
-      en: "Professional coloring, by consultation.",
-      fr: "Coloration professionnelle, sur consultation.",
-      ar: "تلوين بإشراف مهني، بعد استشارة.",
+      it: "Taglio e coloritura professionale, su consulenza.",
+      en: "Haircut and professional coloring, by consultation.",
+      fr: "Coupe et coloration professionnelle, sur consultation.",
+      ar: "قصة وتلوين بإشراف مهني، بعد استشارة.",
     },
   },
 ];
@@ -790,7 +790,8 @@ export default function App() {
         </div>
         <div>
           <h2 className="f-display text-2xl text-[var(--cream)] mb-4 flex items-center gap-2"><MapPin size={18} className="text-[var(--brass)]" /> {t.location.title}</h2>
-          <p className="text-sm text-[var(--cream-dim)] mb-4">{SHOP.address}</p>
+          <p className="text-sm text-[var(--cream-dim)] mb-2">{SHOP.address}</p>
+          <p className="text-xs text-[var(--brass)] mb-4">{t.location.nearby}</p>
           <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`} target="_blank" rel="noopener noreferrer" className="btn-outline inline-flex items-center gap-2 px-4 py-2 rounded text-sm">
             <MapPin size={14} /> {t.location.openInMaps}
           </a>
