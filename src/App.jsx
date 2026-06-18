@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
   ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X
@@ -67,6 +67,9 @@ const T = {
       military: { badge: "OFFERTA MILITARI", title: "Taglio e lavaggio a soli", price: "€10!", note: "Presenta il documento militare per usufruire della promozione." },
     },
     chat: { tagline: "Risponderemo il prima possibile", placeholder: "Scrivi il tuo messaggio…", send: "Invia su WhatsApp", defaultMsg: "Ciao! Vorrei avere informazioni sulla barberia." },
+    tw: ["Stile", "Precisione", "Tradizione", "Passione"],
+    stats: { clients: "Clienti soddisfatti", years: "Anni di esperienza", pros: "Professionisti", rating: "Valutazione media" },
+    gallery: { title: "La Nostra Arte", subtitle: "Ogni taglio racconta una storia" },
     services: {
       title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
@@ -121,6 +124,9 @@ const T = {
       military: { badge: "MILITARY OFFER", title: "Cut + wash for only", price: "€10!", note: "Show your military ID to take advantage of this offer." },
     },
     chat: { tagline: "We'll respond as soon as possible", placeholder: "Write your message…", send: "Send on WhatsApp", defaultMsg: "Hi! I'd like some information about the barbershop." },
+    tw: ["Style", "Precision", "Tradition", "Passion"],
+    stats: { clients: "Happy clients", years: "Years of experience", pros: "Professionals", rating: "Average rating" },
+    gallery: { title: "Our Craft", subtitle: "Every cut tells a story" },
     services: {
       title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
@@ -175,6 +181,9 @@ const T = {
       military: { badge: "OFFRE MILITAIRES", title: "Coupe + lavage à seulement", price: "€10 !", note: "Présentez votre document militaire pour bénéficier de l'offre." },
     },
     chat: { tagline: "Nous répondrons dès que possible", placeholder: "Écrivez votre message…", send: "Envoyer sur WhatsApp", defaultMsg: "Bonjour ! Je voudrais des informations sur la barberie." },
+    tw: ["Style", "Précision", "Tradition", "Passion"],
+    stats: { clients: "Clients satisfaits", years: "Ans d'expérience", pros: "Professionnels", rating: "Note moyenne" },
+    gallery: { title: "Notre Art", subtitle: "Chaque coupe raconte une histoire" },
     services: {
       title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
@@ -229,6 +238,9 @@ const T = {
       military: { badge: "عرض العسكريين", title: "قصة + غسيل بـ", price: "€10 فقط!", note: "أبرز الوثيقة العسكرية للاستفادة من العرض." },
     },
     chat: { tagline: "سنرد في أقرب وقت ممكن", placeholder: "اكتب رسالتك…", send: "إرسال عبر واتساب", defaultMsg: "مرحباً! أريد الاستفسار عن الصالون." },
+    tw: ["أناقة", "دقة", "تراث", "شغف"],
+    stats: { clients: "عميل سعيد", years: "سنوات خبرة", pros: "محترفون", rating: "تقييم متوسط" },
+    gallery: { title: "فنّنا", subtitle: "كل قصّة تحكي حكاية" },
     services: {
       title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
@@ -541,6 +553,39 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .step-dot[data-active="true"] { background:var(--brass); }
 .step-dot[data-done="true"] { background:var(--brass-light); }
 
+/* ── Loading screen ── */
+@keyframes lbh-scissors { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(18deg)} }
+@keyframes lbh-logoin { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+@keyframes lbh-loadout { to{opacity:0;pointer-events:none} }
+@keyframes lbh-linegrow { from{width:0} to{width:52px} }
+.ls-wrap { position:fixed;inset:0;z-index:9999;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px; }
+.ls-exit { animation:lbh-loadout 0.5s ease forwards; }
+.ls-scissor { color:var(--brass-light);animation:lbh-scissors 0.75s ease-in-out infinite; }
+.ls-logo { animation:lbh-logoin 0.9s 0.2s cubic-bezier(.4,0,.2,1) both;text-align:center; }
+.ls-line { height:1px;background:linear-gradient(90deg,transparent,var(--brass),transparent);animation:lbh-linegrow 0.9s 0.5s ease both;width:0; }
+.ls-sub { font-size:0.62rem;letter-spacing:0.3em;color:var(--cream-dim);animation:lbh-logoin 0.8s 0.7s both; }
+
+/* ── Typewriter cursor ── */
+@keyframes lbh-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.tw-cursor { display:inline-block;width:2px;height:0.85em;background:var(--brass);margin-left:3px;vertical-align:middle;animation:lbh-blink 1s step-end infinite;border-radius:1px; }
+
+/* ── Stats band ── */
+.stats-band { background:linear-gradient(135deg,rgba(34,22,10,0.85),rgba(21,17,13,0.9));border-top:1px solid rgba(199,154,69,0.12);border-bottom:1px solid rgba(199,154,69,0.12); }
+.stat-num { font-family:var(--ff-display);font-size:2.75rem;line-height:1;color:var(--brass-light);display:block; }
+@media(max-width:480px){ .stat-num{font-size:2.1rem} }
+.stat-label { font-size:0.62rem;text-transform:uppercase;letter-spacing:0.16em;color:var(--cream-dim);margin-top:6px;display:block; }
+
+/* ── Gallery ── */
+.gallery-item { overflow:hidden;cursor:pointer;aspect-ratio:1/1;border-radius:6px;border:1px solid rgba(199,154,69,0.12); }
+.gallery-item img { width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform 0.5s cubic-bezier(.4,0,.2,1);display:block; }
+@media(hover:hover){ .gallery-item:hover img { transform:scale(1.09); } }
+.lb-overlay { position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0.97);display:flex;align-items:center;justify-content:center; }
+.lb-img { max-height:90vh;max-width:90vw;object-fit:contain;border-radius:6px;user-select:none; }
+.lb-btn { position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;background:rgba(199,154,69,0.15);border:1px solid rgba(199,154,69,0.3);color:var(--brass-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;-webkit-tap-highlight-color:transparent; }
+@media(hover:hover){ .lb-btn:hover{background:rgba(199,154,69,0.3)} }
+.lb-prev{left:10px} .lb-next{right:10px}
+.lb-close { position:absolute;top:12px;right:12px;width:42px;height:42px;border-radius:50%;background:rgba(199,154,69,0.15);border:1px solid rgba(199,154,69,0.3);color:var(--cream);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent; }
+
 /* ── Leaflet dark overrides ── */
 .lbh-map { border:1px solid var(--line); border-radius:4px; overflow:hidden; }
 .leaflet-container { background:#15110d; }
@@ -593,8 +638,9 @@ function ShopMap({ address, shopName, mapsQuery }) {
 /* ============================================================
    HELPERS
    ============================================================ */
-function useScrollReveal() {
+function useScrollReveal(ready) {
   useEffect(() => {
+    if (!ready) return;
     const els = document.querySelectorAll(".reveal,.reveal-left,.reveal-right");
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
@@ -603,7 +649,7 @@ function useScrollReveal() {
     }, { threshold: 0.12 });
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [ready]);
 }
 
 function useParallax(ref, factor = 0.25) {
@@ -614,6 +660,184 @@ function useParallax(ref, factor = 0.25) {
     window.addEventListener("scroll", handle, { passive: true });
     return () => window.removeEventListener("scroll", handle);
   }, [ref, factor]);
+}
+
+/* ── Typewriter ── */
+function useTypewriter(words, speed = 82, pause = 1900) {
+  const [idx, setIdx] = useState(0);
+  const [chars, setChars] = useState(0);
+  const [erasing, setErasing] = useState(false);
+  useEffect(() => {
+    if (!words || words.length === 0) return;
+    const word = words[idx];
+    let timer;
+    if (!erasing) {
+      if (chars < word.length) {
+        timer = setTimeout(() => setChars((c) => c + 1), speed);
+      } else {
+        timer = setTimeout(() => setErasing(true), pause);
+      }
+    } else {
+      if (chars > 0) {
+        timer = setTimeout(() => setChars((c) => c - 1), Math.max(28, speed / 2));
+      } else {
+        setErasing(false);
+        setIdx((i) => (i + 1) % words.length);
+      }
+    }
+    return () => clearTimeout(timer);
+  }, [idx, chars, erasing, words, speed, pause]);
+  return words && words[idx] ? words[idx].slice(0, chars) : "";
+}
+
+/* ── Stats counters ── */
+const STATS_DATA = [
+  { value: 500, suffix: "+", key: "clients" },
+  { value: 30,  suffix: "+", key: "years" },
+  { value: 5,   suffix: "",  key: "pros" },
+  { value: 4.9, suffix: "★", key: "rating", decimal: true },
+];
+
+function useCountUp(target, started, decimal, duration = 1500) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    if (!started) return;
+    const steps = 50;
+    const inc = target / steps;
+    const interval = duration / steps;
+    let cur = 0;
+    const iv = setInterval(() => {
+      cur = Math.min(cur + inc, target);
+      setVal(decimal ? Math.round(cur * 10) / 10 : Math.floor(cur));
+      if (cur >= target) clearInterval(iv);
+    }, interval);
+    return () => clearInterval(iv);
+  }, [target, started, decimal, duration]);
+  return val;
+}
+
+function StatItem({ value, suffix, label, decimal }) {
+  const ref = useRef(null);
+  const [started, setStarted] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setStarted(true); obs.disconnect(); }
+    }, { threshold: 0.3 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  const count = useCountUp(value, started, decimal);
+  return (
+    <div ref={ref} style={{ textAlign: "center", padding: "24px 12px" }}>
+      <span className="stat-num">{count}{suffix}</span>
+      <span className="stat-label">{label}</span>
+    </div>
+  );
+}
+
+function StatsBand({ t }) {
+  return (
+    <section className="stats-band px-4 py-2">
+      <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4" style={{ borderLeft: "1px solid rgba(199,154,69,0.12)" }}>
+        {STATS_DATA.map((s) => (
+          <div key={s.key} style={{ borderRight: "1px solid rgba(199,154,69,0.12)" }}>
+            <StatItem value={s.value} suffix={s.suffix} label={t.stats[s.key]} decimal={s.decimal} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ── Gallery ── */
+const GALLERY_IMGS = [
+  teamHassanImg, interiorImg, teamHusamImg,
+  hassanAboutImg, teamNabilImg, teamXhoiImg, teamStevenImg,
+];
+
+function Gallery({ t }) {
+  const [active, setActive] = useState(null);
+  const touchStartX = useRef(null);
+
+  const close = useCallback(() => setActive(null), []);
+  const prev = useCallback(() => setActive((i) => (i - 1 + GALLERY_IMGS.length) % GALLERY_IMGS.length), []);
+  const next = useCallback(() => setActive((i) => (i + 1) % GALLERY_IMGS.length), []);
+
+  useEffect(() => {
+    if (active === null) return;
+    const h = (e) => {
+      if (e.key === "Escape") close();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [active, close, prev, next]);
+
+  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+  const onTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const diff = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(diff) > 50) { diff < 0 ? next() : prev(); }
+    touchStartX.current = null;
+  };
+
+  return (
+    <section id="gallery" className="px-4 py-20">
+      <div className="max-w-5xl mx-auto">
+        <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.gallery.title}</h2>
+        <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.gallery.subtitle}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+          {GALLERY_IMGS.map((img, i) => (
+            <div key={i} className="gallery-item reveal" style={{ transitionDelay: `${i * 0.07}s` }}
+              onClick={() => setActive(i)} role="button" aria-label={`Foto ${i + 1}`} tabIndex={0}
+              onKeyDown={(e) => e.key === "Enter" && setActive(i)}>
+              <img src={img} alt={`Barberia ${i + 1}`} loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </div>
+      {active !== null && (
+        <div className="lb-overlay" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onClick={close}>
+          <button className="lb-btn lb-prev" onClick={(e) => { e.stopPropagation(); prev(); }} aria-label="Precedente">
+            <ChevronLeft size={26} />
+          </button>
+          <img className="lb-img" src={GALLERY_IMGS[active]} alt="" onClick={(e) => e.stopPropagation()} />
+          <button className="lb-btn lb-next" onClick={(e) => { e.stopPropagation(); next(); }} aria-label="Successivo">
+            <ChevronRight size={26} />
+          </button>
+          <button className="lb-close" onClick={close} aria-label="Chiudi">
+            <X size={20} />
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ── Loading screen ── */
+function LoadingScreen({ onDone }) {
+  const [leaving, setLeaving] = useState(false);
+  useEffect(() => {
+    /* dependency array is intentionally [] so onDone reference changes
+       (caused by parent re-renders) never reset these timers */
+    const t1 = setTimeout(() => setLeaving(true), 1500);
+    const t2 = setTimeout(onDone, 2000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className={`ls-wrap${leaving ? " ls-exit" : ""}`} aria-hidden="true">
+      <div className="ls-scissor"><Scissors size={52} /></div>
+      <div className="ls-logo">
+        <p className="f-display tracking-[0.28em] text-[var(--brass-light)]" style={{ fontSize: "1.6rem" }}>LA BARBERIA</p>
+        <p className="f-display tracking-[0.48em] text-[var(--cream-dim)] text-center" style={{ fontSize: "1.1rem" }}>HASSAN</p>
+      </div>
+      <div className="ls-line" />
+      <p className="ls-sub">VERONA · ITALIA</p>
+    </div>
+  );
 }
 
 function todayStr() {
@@ -810,6 +1034,11 @@ function BadgeEmblem({ size = 200 }) {
    APP
    ============================================================ */
 export default function App() {
+  const [loading, setLoading] = useState(true);
+  /* useCallback keeps the reference stable across re-renders,
+     preventing LoadingScreen's effect from resetting its timers */
+  const handleLoadDone = useCallback(() => setLoading(false), []);
+
   const [lang, setLang] = useState("it");
   const t = T[lang];
   const [menuOpen, setMenuOpen] = useState(false);
@@ -823,8 +1052,10 @@ export default function App() {
   const bookingRef = useRef(null);
   const reserveGuard = useRef(false);
   const heroBgRef = useRef(null);
-  useScrollReveal();
+  /* only activate observers after loading screen is gone */
+  useScrollReveal(!loading);
   useParallax(heroBgRef, 0.2);
+  const twWord = useTypewriter(t.tw);
 
   const service = SERVICES.find((s) => s.id === booking.serviceId) || null;
 
@@ -889,6 +1120,7 @@ export default function App() {
   return (
     <div className="lbh-root min-h-screen" dir={t.dir}>
       <style>{STYLE}</style>
+      {loading && <LoadingScreen onDone={handleLoadDone} />}
       <GrainOverlay />
 
       {/* NAV */}
@@ -934,6 +1166,9 @@ export default function App() {
           <p className="f-display text-xs sm:text-sm tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
           <h1 className="f-display brass-text text-5xl sm:text-7xl leading-tight">LA BARBERIA</h1>
           <h2 className="f-display text-3xl sm:text-5xl text-[var(--cream)]">HASSAN</h2>
+          <p className="f-display text-xl sm:text-2xl" style={{ color: "var(--brass-light)", minHeight: "2rem", letterSpacing: "0.06em" }}>
+            {twWord}<span className="tw-cursor" aria-hidden="true" />
+          </p>
           <p className="text-xs sm:text-sm tracking-[0.35em] text-[var(--cream-dim)] uppercase">{t.hero.location}</p>
           <p className="f-tagline text-xl sm:text-2xl text-[var(--cream-dim)] max-w-md">{t.hero.tagline}</p>
           <div className="flex flex-wrap justify-center gap-4 pt-2">
@@ -942,7 +1177,8 @@ export default function App() {
           </div>
         </div>
       </section>
-      <div className="stripe-band" />
+      {/* STATS */}
+      <StatsBand t={t} />
 
       {/* ABOUT */}
       <section id="about" className="px-4 py-20 max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
@@ -1019,6 +1255,9 @@ export default function App() {
           </div>
         </section>
       ))}
+
+      {/* GALLERY */}
+      <Gallery t={t} />
 
       {/* REVIEWS */}
       <section id="reviews" className="px-4 py-20 max-w-5xl mx-auto">
