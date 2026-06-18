@@ -3,6 +3,9 @@ import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
   ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X
 } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import interiorImg from "./assets/img2.webp";
 import hassanAboutImg from "./assets/img1.jpg";
 import teamHassanImg from "./assets/team1.jpg";
@@ -465,7 +468,54 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .step-dot { width:8px; height:8px; border-radius:50%; background:var(--line); }
 .step-dot[data-active="true"] { background:var(--brass); }
 .step-dot[data-done="true"] { background:var(--brass-light); }
+
+/* ── Leaflet dark overrides ── */
+.lbh-map { border:1px solid var(--line); border-radius:4px; overflow:hidden; }
+.leaflet-container { background:#15110d; }
+.leaflet-control-attribution { background:rgba(21,17,13,0.85) !important; color:var(--cream-dim) !important; font-size:10px; }
+.leaflet-control-attribution a { color:var(--brass) !important; }
+.leaflet-control-zoom a { background:var(--panel) !important; color:var(--brass-light) !important; border-color:var(--line) !important; }
+.leaflet-control-zoom a:hover { background:var(--panel-2) !important; color:var(--brass) !important; }
+.leaflet-popup-content-wrapper { background:var(--panel) !important; border:1px solid var(--line) !important; border-radius:4px !important; box-shadow:0 4px 20px rgba(0,0,0,0.6) !important; }
+.leaflet-popup-tip { background:var(--panel) !important; }
+.leaflet-popup-content { color:var(--cream) !important; margin:12px 16px !important; }
 `;
+
+/* ============================================================
+   MAP
+   ============================================================ */
+const SHOP_COORDS = [45.43735, 10.99066];
+
+const shopIcon = L.divIcon({
+  html: `<div style="width:22px;height:22px;background:linear-gradient(180deg,#e6c787,#c79a45);border-radius:50%;border:3px solid #15110d;box-shadow:0 0 0 2px #c79a45,0 4px 12px rgba(0,0,0,0.6)"></div>`,
+  className: "",
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+  popupAnchor: [0, -14],
+});
+
+function ShopMap({ address, shopName, mapsQuery }) {
+  return (
+    <MapContainer center={SHOP_COORDS} zoom={16} scrollWheelZoom={false} className="lbh-map" style={{ height: 380 }}>
+      <TileLayer
+        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        subdomains="abcd"
+        maxZoom={20}
+      />
+      <Marker position={SHOP_COORDS} icon={shopIcon}>
+        <Popup>
+          <p className="f-display" style={{ fontSize: 13, color: "var(--brass-light)", marginBottom: 4 }}>{shopName}</p>
+          <p style={{ fontSize: 12, color: "var(--cream-dim)", margin: 0 }}>{address}</p>
+          <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapsQuery)}`} target="_blank" rel="noopener noreferrer"
+            style={{ fontSize: 12, color: "var(--brass)", display: "block", marginTop: 6 }}>
+            Apri in Google Maps →
+          </a>
+        </Popup>
+      </Marker>
+    </MapContainer>
+  );
+}
 
 /* ============================================================
    HELPERS
@@ -922,12 +972,17 @@ export default function App() {
         </div>
         <div>
           <h2 className="f-display text-2xl text-[var(--cream)] mb-4 flex items-center gap-2"><MapPin size={18} className="text-[var(--brass)]" /> {t.location.title}</h2>
-          <p className="text-sm text-[var(--cream-dim)] mb-2">{SHOP.address}</p>
+          <p className="text-sm text-[var(--cream-dim)] mb-1">{SHOP.address}</p>
           <p className="text-xs text-[var(--brass)] mb-4">{t.location.nearby}</p>
           <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`} target="_blank" rel="noopener noreferrer" className="btn-outline inline-flex items-center gap-2 px-4 py-2 rounded text-sm">
             <MapPin size={14} /> {t.location.openInMaps}
           </a>
         </div>
+      </section>
+
+      {/* MAP */}
+      <section id="map" className="px-4 pb-16 max-w-5xl mx-auto">
+        <ShopMap address={SHOP.address} shopName={SHOP.name} mapsQuery={SHOP.mapsQuery} />
       </section>
 
       {/* CONTACT */}
