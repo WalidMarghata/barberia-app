@@ -66,6 +66,7 @@ const T = {
       student: { badge: "OFFERTA STUDENTI", title: "Taglio e lavaggio a soli", price: "€10!", note: "Presenta il tesserino scolastico per usufruire della promozione." },
       military: { badge: "OFFERTA MILITARI", title: "Taglio e lavaggio a soli", price: "€10!", note: "Presenta il documento militare per usufruire della promozione." },
     },
+    chat: { tagline: "Risponderemo il prima possibile", placeholder: "Scrivi il tuo messaggio…", send: "Invia su WhatsApp", defaultMsg: "Ciao! Vorrei avere informazioni sulla barberia." },
     services: {
       title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
@@ -119,6 +120,7 @@ const T = {
       student: { badge: "STUDENT OFFER", title: "Cut + wash for only", price: "€10!", note: "Show your student ID to take advantage of this offer." },
       military: { badge: "MILITARY OFFER", title: "Cut + wash for only", price: "€10!", note: "Show your military ID to take advantage of this offer." },
     },
+    chat: { tagline: "We'll respond as soon as possible", placeholder: "Write your message…", send: "Send on WhatsApp", defaultMsg: "Hi! I'd like some information about the barbershop." },
     services: {
       title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
@@ -172,6 +174,7 @@ const T = {
       student: { badge: "OFFRE ÉTUDIANTS", title: "Coupe + lavage à seulement", price: "€10 !", note: "Présentez votre carte étudiante pour bénéficier de l'offre." },
       military: { badge: "OFFRE MILITAIRES", title: "Coupe + lavage à seulement", price: "€10 !", note: "Présentez votre document militaire pour bénéficier de l'offre." },
     },
+    chat: { tagline: "Nous répondrons dès que possible", placeholder: "Écrivez votre message…", send: "Envoyer sur WhatsApp", defaultMsg: "Bonjour ! Je voudrais des informations sur la barberie." },
     services: {
       title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
@@ -225,6 +228,7 @@ const T = {
       student: { badge: "عرض الطلاب", title: "قصة + غسيل بـ", price: "€10 فقط!", note: "أبرز بطاقة الطالب للاستفادة من العرض." },
       military: { badge: "عرض العسكريين", title: "قصة + غسيل بـ", price: "€10 فقط!", note: "أبرز الوثيقة العسكرية للاستفادة من العرض." },
     },
+    chat: { tagline: "سنرد في أقرب وقت ممكن", placeholder: "اكتب رسالتك…", send: "إرسال عبر واتساب", defaultMsg: "مرحباً! أريد الاستفسار عن الصالون." },
     services: {
       title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
@@ -481,6 +485,12 @@ const STYLE = `
 }
 .btn-outline:hover { background:rgba(199,154,69,0.1); box-shadow:0 0 20px rgba(199,154,69,0.2); transform:translateY(-2px); border-color:var(--brass-light); }
 
+/* ── WhatsApp chat widget ── */
+@keyframes lbh-pulse { 0%,100%{box-shadow:0 4px 20px rgba(37,211,102,0.5)} 50%{box-shadow:0 4px 32px rgba(37,211,102,0.9),0 0 0 10px rgba(37,211,102,0.1)} }
+.wa-btn { animation:lbh-pulse 2.5s ease infinite; }
+@keyframes lbh-slideup { from{opacity:0;transform:translateY(16px) scale(0.97)} to{opacity:1;transform:none} }
+.wa-popup { animation:lbh-slideup 0.28s cubic-bezier(.4,0,.2,1); transform-origin:bottom right; }
+
 /* ── Scroll reveal ── */
 .reveal { opacity:0; transform:translateY(36px); transition:opacity 0.75s cubic-bezier(.4,0,.2,1), transform 0.75s cubic-bezier(.4,0,.2,1); }
 .reveal-left { opacity:0; transform:translateX(-48px); transition:opacity 0.75s cubic-bezier(.4,0,.2,1), transform 0.75s cubic-bezier(.4,0,.2,1); }
@@ -673,6 +683,76 @@ async function reserveSlot(dateStr, startMin, durationMin) {
 /* ============================================================
    SMALL VISUAL PIECES
    ============================================================ */
+function WAIcon({ size = 26 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.846L.054 23.5l5.818-1.525A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.782 9.782 0 01-4.99-1.366l-.358-.213-3.712.972.992-3.624-.234-.373A9.787 9.787 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/>
+    </svg>
+  );
+}
+
+function WhatsAppChat({ shopName, waNumber, t }) {
+  const [open, setOpen] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const send = () => {
+    const text = msg.trim() || t.chat.defaultMsg;
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`, "_blank");
+    setMsg("");
+    setOpen(false);
+  };
+
+  return (
+    <div style={{ position: "fixed", bottom: 80, right: 20, zIndex: 50, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+      {open && (
+        <div className="wa-popup" style={{ width: 300, borderRadius: 12, overflow: "hidden", boxShadow: "0 12px 48px rgba(0,0,0,0.6)" }}>
+          {/* Header */}
+          <div style={{ background: "#075e54", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 38, height: 38, borderRadius: "50%", background: "rgba(255,255,255,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <WAIcon size={22} />
+              </div>
+              <div>
+                <p style={{ color: "#fff", fontWeight: 700, fontSize: 14, margin: 0, lineHeight: 1.2 }}>{shopName}</p>
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 11, margin: 0 }}>
+                  <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: "50%", background: "#25d366", marginRight: 5, verticalAlign: "middle" }} />
+                  {t.chat.tagline}
+                </p>
+              </div>
+            </div>
+            <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.7)", cursor: "pointer", fontSize: 18, lineHeight: 1, padding: 4 }} aria-label="Chiudi">✕</button>
+          </div>
+          {/* Body */}
+          <div style={{ background: "var(--panel)", padding: "14px 14px 10px" }}>
+            <div style={{ background: "rgba(37,211,102,0.08)", border: "1px solid rgba(37,211,102,0.2)", borderRadius: 8, padding: "10px 12px", marginBottom: 10 }}>
+              <p style={{ fontSize: 12, color: "var(--cream-dim)", margin: 0 }}>👋 {t.chat.tagline}</p>
+            </div>
+            <textarea rows={3} value={msg} onChange={(e) => setMsg(e.target.value)}
+              placeholder={t.chat.placeholder}
+              className="px-3 py-2 text-sm w-full"
+              style={{ resize: "none", borderRadius: 8, width: "100%", boxSizing: "border-box" }}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+            />
+          </div>
+          {/* Footer */}
+          <div style={{ background: "var(--panel)", padding: "0 14px 14px" }}>
+            <button onClick={send} style={{ width: "100%", padding: "10px", borderRadius: 24, background: "#25d366", border: "none", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <WAIcon size={16} /> {t.chat.send}
+            </button>
+          </div>
+        </div>
+      )}
+      {/* FAB */}
+      <button onClick={() => setOpen((o) => !o)} className="wa-btn"
+        style={{ width: 56, height: 56, borderRadius: "50%", background: "#25d366", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}
+        aria-label="WhatsApp Chat">
+        {open ? <X size={24} color="#fff" /> : <WAIcon size={28} />}
+      </button>
+    </div>
+  );
+}
+
 function TikTokIcon({ size = 16 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -1114,6 +1194,9 @@ export default function App() {
       <footer className="px-4 py-8 text-center text-xs text-[var(--cream-dim)] border-t hairline pb-24 md:pb-8">
         © {new Date().getFullYear()} {SHOP.name} — Verona
       </footer>
+
+      {/* WHATSAPP CHAT WIDGET */}
+      <WhatsAppChat shopName={SHOP.name} waNumber={SHOP.whatsapp} t={t} />
 
       {/* MOBILE QUICK BAR */}
       <div className="md:hidden fixed bottom-0 inset-x-0 z-40 panel-bg border-t hairline flex">
