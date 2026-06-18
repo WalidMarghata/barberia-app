@@ -472,6 +472,7 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 /* ── Leaflet dark overrides ── */
 .lbh-map { border:1px solid var(--line); border-radius:4px; overflow:hidden; }
 .leaflet-container { background:#15110d; }
+.leaflet-tile-pane { filter: brightness(1.9) contrast(1.05); }
 .leaflet-control-attribution { background:rgba(21,17,13,0.85) !important; color:var(--cream-dim) !important; font-size:10px; }
 .leaflet-control-attribution a { color:var(--brass) !important; }
 .leaflet-control-zoom a { background:var(--panel) !important; color:var(--brass-light) !important; border-color:var(--line) !important; }
