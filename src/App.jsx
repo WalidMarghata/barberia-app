@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
   ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X
@@ -67,9 +67,6 @@ const T = {
       military: { badge: "OFFERTA MILITARI", title: "Taglio e lavaggio a soli", price: "€10!", note: "Presenta il documento militare per usufruire della promozione." },
     },
     chat: { tagline: "Risponderemo il prima possibile", placeholder: "Scrivi il tuo messaggio…", send: "Invia su WhatsApp", defaultMsg: "Ciao! Vorrei avere informazioni sulla barberia." },
-    tw: ["Stile", "Precisione", "Tradizione", "Passione"],
-    stats: { clients: "Clienti soddisfatti", years: "Anni di esperienza", pros: "Professionisti", rating: "Valutazione media" },
-    gallery: { title: "La Nostra Arte", subtitle: "Ogni taglio racconta una storia" },
     services: {
       title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
@@ -124,9 +121,6 @@ const T = {
       military: { badge: "MILITARY OFFER", title: "Cut + wash for only", price: "€10!", note: "Show your military ID to take advantage of this offer." },
     },
     chat: { tagline: "We'll respond as soon as possible", placeholder: "Write your message…", send: "Send on WhatsApp", defaultMsg: "Hi! I'd like some information about the barbershop." },
-    tw: ["Style", "Precision", "Tradition", "Passion"],
-    stats: { clients: "Happy clients", years: "Years of experience", pros: "Professionals", rating: "Average rating" },
-    gallery: { title: "Our Craft", subtitle: "Every cut tells a story" },
     services: {
       title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
@@ -181,9 +175,6 @@ const T = {
       military: { badge: "OFFRE MILITAIRES", title: "Coupe + lavage à seulement", price: "€10 !", note: "Présentez votre document militaire pour bénéficier de l'offre." },
     },
     chat: { tagline: "Nous répondrons dès que possible", placeholder: "Écrivez votre message…", send: "Envoyer sur WhatsApp", defaultMsg: "Bonjour ! Je voudrais des informations sur la barberie." },
-    tw: ["Style", "Précision", "Tradition", "Passion"],
-    stats: { clients: "Clients satisfaits", years: "Ans d'expérience", pros: "Professionnels", rating: "Note moyenne" },
-    gallery: { title: "Notre Art", subtitle: "Chaque coupe raconte une histoire" },
     services: {
       title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
@@ -238,9 +229,6 @@ const T = {
       military: { badge: "عرض العسكريين", title: "قصة + غسيل بـ", price: "€10 فقط!", note: "أبرز الوثيقة العسكرية للاستفادة من العرض." },
     },
     chat: { tagline: "سنرد في أقرب وقت ممكن", placeholder: "اكتب رسالتك…", send: "إرسال عبر واتساب", defaultMsg: "مرحباً! أريد الاستفسار عن الصالون." },
-    tw: ["أناقة", "دقة", "تراث", "شغف"],
-    stats: { clients: "عميل سعيد", years: "سنوات خبرة", pros: "محترفون", rating: "تقييم متوسط" },
-    gallery: { title: "فنّنا", subtitle: "كل قصّة تحكي حكاية" },
     services: {
       title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
@@ -553,36 +541,6 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .step-dot[data-active="true"] { background:var(--brass); }
 .step-dot[data-done="true"] { background:var(--brass-light); }
 
-/* ── Loading screen ── */
-@keyframes lbh-scissors { 0%,100%{transform:rotate(-18deg) scale(1)} 50%{transform:rotate(18deg) scale(1.08)} }
-@keyframes lbh-logoin { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
-@keyframes lbh-loadout { 0%{opacity:1} 100%{opacity:0;pointer-events:none} }
-@keyframes lbh-expand { from{width:0} to{width:48px} }
-.ls-wrap { position:fixed;inset:0;z-index:9999;background:#080808;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px; }
-.ls-wrap.ls-exit { animation:lbh-loadout 0.55s 0s ease forwards; }
-.ls-scissor { color:var(--brass-light); animation:lbh-scissors 0.75s ease-in-out infinite; }
-.ls-logo { animation:lbh-logoin 0.9s 0.25s cubic-bezier(.4,0,.2,1) both; text-align:center; }
-.ls-line { height:1px; background:linear-gradient(90deg,transparent,var(--brass),transparent); animation:lbh-expand 0.9s 0.55s ease both; width:0; }
-
-/* ── Typewriter cursor ── */
-@keyframes lbh-blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.tw-cursor { display:inline-block;width:2px;height:0.85em;background:var(--brass);margin-left:3px;vertical-align:middle;animation:lbh-blink 1s step-end infinite;border-radius:1px; }
-
-/* ── Stats band ── */
-.stats-band { background:linear-gradient(135deg,rgba(34,22,10,0.9),rgba(21,17,13,0.95)); border-top:1px solid rgba(199,154,69,0.15); border-bottom:1px solid rgba(199,154,69,0.15); }
-.stat-num { font-family:var(--ff-display);font-size:3rem;line-height:1;color:var(--brass-light);display:block; }
-.stat-label { font-size:0.7rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--cream-dim);margin-top:6px;display:block; }
-
-/* ── Gallery ── */
-.gallery-item { overflow:hidden;cursor:pointer;aspect-ratio:4/5;border-radius:6px; }
-.gallery-item img { width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 0.55s cubic-bezier(.4,0,.2,1); }
-.gallery-item:hover img { transform:scale(1.1); }
-.lb-overlay { position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0.96);display:flex;align-items:center;justify-content:center; animation:lbh-slideup 0.25s ease; }
-.lb-nav { position:absolute;top:50%;transform:translateY(-50%);background:rgba(199,154,69,0.15);border:1px solid rgba(199,154,69,0.3);color:var(--brass-light);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s; }
-.lb-nav:hover { background:rgba(199,154,69,0.3); }
-.lb-prev { left:16px; } .lb-next { right:16px; }
-.lb-close { position:absolute;top:16px;right:16px;background:rgba(199,154,69,0.15);border:1px solid rgba(199,154,69,0.3);color:var(--cream);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer; }
-
 /* ── Leaflet dark overrides ── */
 .lbh-map { border:1px solid var(--line); border-radius:4px; overflow:hidden; }
 .leaflet-container { background:#15110d; }
@@ -635,9 +593,8 @@ function ShopMap({ address, shopName, mapsQuery }) {
 /* ============================================================
    HELPERS
    ============================================================ */
-function useScrollReveal(ready) {
+function useScrollReveal() {
   useEffect(() => {
-    if (!ready) return;
     const els = document.querySelectorAll(".reveal,.reveal-left,.reveal-right");
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
@@ -646,7 +603,7 @@ function useScrollReveal(ready) {
     }, { threshold: 0.12 });
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, [ready]);
+  }, []);
 }
 
 function useParallax(ref, factor = 0.25) {
@@ -657,156 +614,6 @@ function useParallax(ref, factor = 0.25) {
     window.addEventListener("scroll", handle, { passive: true });
     return () => window.removeEventListener("scroll", handle);
   }, [ref, factor]);
-}
-
-function useTypewriter(words, speed = 80, pause = 1900) {
-  const [displayed, setDisplayed] = useState("");
-  const [wi, setWi] = useState(0);
-  const [typing, setTyping] = useState(true);
-  useEffect(() => {
-    const word = words[wi] || "";
-    let timeout;
-    if (typing) {
-      if (displayed.length < word.length) {
-        timeout = setTimeout(() => setDisplayed(word.slice(0, displayed.length + 1)), speed);
-      } else {
-        timeout = setTimeout(() => setTyping(false), pause);
-      }
-    } else {
-      if (displayed.length > 0) {
-        timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), Math.max(28, speed / 2));
-      } else {
-        setWi((w) => (w + 1) % words.length);
-        setTyping(true);
-      }
-    }
-    return () => clearTimeout(timeout);
-  }, [displayed, typing, wi, words, speed, pause]);
-  return displayed;
-}
-
-function useCountUp(target, started, decimal = false, duration = 1600) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    if (!started) return;
-    const steps = 55;
-    const stepTime = duration / steps;
-    const increment = target / steps;
-    let current = 0;
-    const iv = setInterval(() => {
-      current = Math.min(current + increment, target);
-      setCount(decimal ? Math.round(current * 10) / 10 : Math.floor(current));
-      if (current >= target) clearInterval(iv);
-    }, stepTime);
-    return () => clearInterval(iv);
-  }, [target, started, decimal, duration]);
-  return count;
-}
-
-const STATS_DATA = [
-  { value: 500, suffix: "+", key: "clients" },
-  { value: 30, suffix: "+", key: "years" },
-  { value: 5, suffix: "", key: "pros" },
-  { value: 4.9, suffix: "★", key: "rating", decimal: true },
-];
-
-function StatItem({ value, suffix, label, decimal }) {
-  const ref = useRef(null);
-  const [started, setStarted] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setStarted(true); obs.disconnect(); }
-    }, { threshold: 0.4 });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  const count = useCountUp(value, started, decimal);
-  return (
-    <div ref={ref} className="reveal" style={{ textAlign: "center", padding: "20px 12px" }}>
-      <span className="stat-num">{count}{suffix}</span>
-      <span className="stat-label">{label}</span>
-    </div>
-  );
-}
-
-function StatsBand({ t }) {
-  return (
-    <section className="stats-band px-4 py-10">
-      <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-2 divide-x divide-[rgba(199,154,69,0.15)]">
-        {STATS_DATA.map((s) => (
-          <StatItem key={s.key} value={s.value} suffix={s.suffix} label={t.stats[s.key]} decimal={s.decimal} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-const GALLERY_IMGS = [
-  teamHassanImg, interiorImg, teamHusamImg, hassanAboutImg,
-  teamNabilImg, teamXhoiImg, teamStevenImg,
-];
-
-function Gallery({ t }) {
-  const [active, setActive] = useState(null);
-  const close = () => setActive(null);
-  const prev = (e) => { e.stopPropagation(); setActive((i) => (i - 1 + GALLERY_IMGS.length) % GALLERY_IMGS.length); };
-  const next = (e) => { e.stopPropagation(); setActive((i) => (i + 1) % GALLERY_IMGS.length); };
-  useEffect(() => {
-    if (active === null) return;
-    const h = (e) => {
-      if (e.key === "Escape") close();
-      if (e.key === "ArrowLeft") setActive((i) => (i - 1 + GALLERY_IMGS.length) % GALLERY_IMGS.length);
-      if (e.key === "ArrowRight") setActive((i) => (i + 1) % GALLERY_IMGS.length);
-    };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [active]);
-  return (
-    <section id="gallery" className="px-4 py-20">
-      <div className="max-w-5xl mx-auto">
-        <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.gallery.title}</h2>
-        <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.gallery.subtitle}</p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-          {GALLERY_IMGS.map((img, i) => (
-            <div key={i} className="gallery-item reveal" style={{ transitionDelay: `${i * 0.07}s` }} onClick={() => setActive(i)}>
-              <img src={img} alt={`Barberia ${i + 1}`} loading="lazy" />
-            </div>
-          ))}
-        </div>
-      </div>
-      {active !== null && (
-        <div className="lb-overlay" onClick={close}>
-          <button className="lb-nav lb-prev" onClick={prev} aria-label="Precedente"><ChevronLeft size={28} /></button>
-          <img src={GALLERY_IMGS[active]} alt="" onClick={(e) => e.stopPropagation()}
-            style={{ maxHeight: "88vh", maxWidth: "88vw", objectFit: "contain", borderRadius: 8, boxShadow: "0 0 80px rgba(0,0,0,0.9)" }} />
-          <button className="lb-nav lb-next" onClick={next} aria-label="Successivo"><ChevronRight size={28} /></button>
-          <button className="lb-close" onClick={close} aria-label="Chiudi"><X size={20} /></button>
-        </div>
-      )}
-    </section>
-  );
-}
-
-function LoadingScreen({ onDone }) {
-  const [leaving, setLeaving] = useState(false);
-  useEffect(() => {
-    const t1 = setTimeout(() => setLeaving(true), 1500);
-    const t2 = setTimeout(onDone, 2050);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [onDone]);
-  return (
-    <div className={`ls-wrap${leaving ? " ls-exit" : ""}`}>
-      <div className="ls-scissor"><Scissors size={52} /></div>
-      <div className="ls-logo">
-        <p className="f-display tracking-[0.3em] text-[var(--brass-light)]" style={{ fontSize: "1.6rem" }}>LA BARBERIA</p>
-        <p className="f-display tracking-[0.5em] text-[var(--cream-dim)] text-center" style={{ fontSize: "1.1rem" }}>HASSAN</p>
-      </div>
-      <div className="ls-line" />
-      <p style={{ fontSize: "0.65rem", letterSpacing: "0.3em", color: "var(--cream-dim)", animation: "lbh-logoin 0.8s 0.7s both" }}>VERONA · ITALIA</p>
-    </div>
-  );
 }
 
 function todayStr() {
@@ -1003,8 +810,6 @@ function BadgeEmblem({ size = 200 }) {
    APP
    ============================================================ */
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const handleLoadDone = useCallback(() => setLoading(false), []);
   const [lang, setLang] = useState("it");
   const t = T[lang];
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1018,9 +823,8 @@ export default function App() {
   const bookingRef = useRef(null);
   const reserveGuard = useRef(false);
   const heroBgRef = useRef(null);
-  useScrollReveal(!loading);
+  useScrollReveal();
   useParallax(heroBgRef, 0.2);
-  const twWord = useTypewriter(t.tw || []);
 
   const service = SERVICES.find((s) => s.id === booking.serviceId) || null;
 
@@ -1085,7 +889,6 @@ export default function App() {
   return (
     <div className="lbh-root min-h-screen" dir={t.dir}>
       <style>{STYLE}</style>
-      {loading && <LoadingScreen onDone={handleLoadDone} />}
       <GrainOverlay />
 
       {/* NAV */}
@@ -1131,9 +934,6 @@ export default function App() {
           <p className="f-display text-xs sm:text-sm tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
           <h1 className="f-display brass-text text-5xl sm:text-7xl leading-tight">LA BARBERIA</h1>
           <h2 className="f-display text-3xl sm:text-5xl text-[var(--cream)]">HASSAN</h2>
-          <p className="f-display text-xl sm:text-2xl" style={{ color: "var(--brass-light)", minHeight: "2rem", letterSpacing: "0.06em" }}>
-            {twWord}<span className="tw-cursor" />
-          </p>
           <p className="text-xs sm:text-sm tracking-[0.35em] text-[var(--cream-dim)] uppercase">{t.hero.location}</p>
           <p className="f-tagline text-xl sm:text-2xl text-[var(--cream-dim)] max-w-md">{t.hero.tagline}</p>
           <div className="flex flex-wrap justify-center gap-4 pt-2">
@@ -1143,9 +943,6 @@ export default function App() {
         </div>
       </section>
       <div className="stripe-band" />
-
-      {/* STATS */}
-      <StatsBand t={t} />
 
       {/* ABOUT */}
       <section id="about" className="px-4 py-20 max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
@@ -1222,9 +1019,6 @@ export default function App() {
           </div>
         </section>
       ))}
-
-      {/* GALLERY */}
-      <Gallery t={t} />
 
       {/* REVIEWS */}
       <section id="reviews" className="px-4 py-20 max-w-5xl mx-auto">
