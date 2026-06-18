@@ -13,6 +13,8 @@ import teamHusamImg from "./assets/team2.jpg";
 import teamNabilImg from "./assets/team3.jpg";
 import teamXhoiImg from "./assets/team4.jpg";
 import teamStevenImg from "./assets/team5.jpg";
+import studentImg from "./assets/img3.jpeg";
+import militaryImg from "./assets/img4.jpg";
 
 /* ============================================================
    CONFIG — edit these with the real shop details
@@ -60,6 +62,10 @@ const T = {
     },
     team: { title: "Il Team", subtitle: "Esperienza, precisione, personalità" },
     reviews: { title: "Cosa dicono di noi" },
+    promos: {
+      student: { badge: "OFFERTA STUDENTI", title: "Taglio e lavaggio a soli", price: "€10!", note: "Presenta il tesserino scolastico per usufruire della promozione." },
+      military: { badge: "OFFERTA MILITARI", title: "Taglio e lavaggio a soli", price: "€10!", note: "Presenta il documento militare per usufruire della promozione." },
+    },
     services: {
       title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
@@ -109,6 +115,10 @@ const T = {
     },
     team: { title: "The Team", subtitle: "Experience, precision, personality" },
     reviews: { title: "What our clients say" },
+    promos: {
+      student: { badge: "STUDENT OFFER", title: "Cut + wash for only", price: "€10!", note: "Show your student ID to take advantage of this offer." },
+      military: { badge: "MILITARY OFFER", title: "Cut + wash for only", price: "€10!", note: "Show your military ID to take advantage of this offer." },
+    },
     services: {
       title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
@@ -158,6 +168,10 @@ const T = {
     },
     team: { title: "L'Équipe", subtitle: "Expérience, précision, personnalité" },
     reviews: { title: "Ce que disent nos clients" },
+    promos: {
+      student: { badge: "OFFRE ÉTUDIANTS", title: "Coupe + lavage à seulement", price: "€10 !", note: "Présentez votre carte étudiante pour bénéficier de l'offre." },
+      military: { badge: "OFFRE MILITAIRES", title: "Coupe + lavage à seulement", price: "€10 !", note: "Présentez votre document militaire pour bénéficier de l'offre." },
+    },
     services: {
       title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
@@ -207,6 +221,10 @@ const T = {
     },
     team: { title: "الفريق", subtitle: "خبرة، دقة، شخصية" },
     reviews: { title: "ماذا يقول عملاؤنا" },
+    promos: {
+      student: { badge: "عرض الطلاب", title: "قصة + غسيل بـ", price: "€10 فقط!", note: "أبرز بطاقة الطالب للاستفادة من العرض." },
+      military: { badge: "عرض العسكريين", title: "قصة + غسيل بـ", price: "€10 فقط!", note: "أبرز الوثيقة العسكرية للاستفادة من العرض." },
+    },
     services: {
       title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
@@ -829,6 +847,25 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* PROMOS */}
+      {[
+        { img: studentImg, promo: t.promos.student },
+        { img: militaryImg, promo: t.promos.military },
+      ].map(({ img, promo }) => (
+        <section key={promo.badge} className="relative overflow-hidden" style={{ minHeight: 220 }}>
+          <img src={img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+          <div style={{ position: "absolute", inset: 0, background: "rgba(21,17,13,0.72)" }} />
+          <div className="relative flex items-center justify-center min-h-[220px] px-4 py-12">
+            <div className="text-center border hairline rounded p-8 max-w-sm" style={{ background: "rgba(21,17,13,0.75)", backdropFilter: "blur(6px)" }}>
+              <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-2">{promo.badge}</p>
+              <p className="text-sm text-[var(--cream-dim)] mb-1">{promo.title}</p>
+              <p className="f-display text-3xl brass-text mb-3">{promo.price}</p>
+              <p className="text-xs text-[var(--cream-dim)]">{promo.note}</p>
+            </div>
+          </div>
+        </section>
+      ))}
 
       {/* REVIEWS */}
       <section id="reviews" className="px-4 py-16 max-w-5xl mx-auto">
