@@ -3,6 +3,13 @@ import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
   ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X
 } from "lucide-react";
+import interiorImg from "./assets/img2.webp";
+import hassanAboutImg from "./assets/img1.jpg";
+import teamHassanImg from "./assets/team1.jpg";
+import teamHusamImg from "./assets/team2.jpg";
+import teamNabilImg from "./assets/team3.jpg";
+import teamXhoiImg from "./assets/team4.jpg";
+import teamStevenImg from "./assets/team5.jpg";
 
 /* ============================================================
    CONFIG — edit these with the real shop details
@@ -239,6 +246,7 @@ const LANGS = ["it", "ar", "fr", "en"];
 const TEAM = [
   {
     name: "Hassan",
+    photo: teamHassanImg,
     role: { it: "Titolare", en: "Owner", fr: "Propriétaire", ar: "المالك" },
     desc: {
       it: "30+ anni di esperienza. Tradizione, precisione, tagli impeccabili.",
@@ -249,6 +257,7 @@ const TEAM = [
   },
   {
     name: "Husam",
+    photo: teamHusamImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
       it: "Tecnica e simmetria. Skin fade puliti, linee definite.",
@@ -259,6 +268,7 @@ const TEAM = [
   },
   {
     name: "Nabil",
+    photo: teamNabilImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
       it: "Energia e tendenze. Tagli freschi e dinamici.",
@@ -269,6 +279,7 @@ const TEAM = [
   },
   {
     name: "Xhoi",
+    photo: teamXhoiImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
       it: "Fade morbidi, contorni nitidi, risultato impeccabile.",
@@ -279,6 +290,7 @@ const TEAM = [
   },
   {
     name: "Steven",
+    photo: teamStevenImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
       it: "Creatività e attenzione. Tagli personalizzati, barba curata.",
@@ -695,7 +707,8 @@ export default function App() {
 
       {/* HERO */}
       <section id="hero" className="relative px-4 py-16 sm:py-24 text-center overflow-hidden">
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 30%, rgba(199,154,69,0.14), transparent 60%)" }} />
+        <img src={interiorImg} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.18 }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(21,17,13,0.6) 0%, rgba(21,17,13,0.85) 100%)" }} />
         <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-6">
           <BadgeEmblem size={150} />
           <p className="f-display text-xs sm:text-sm tracking-[0.25em] text-[var(--cream-dim)]">{t.hero.kicker}</p>
@@ -719,7 +732,7 @@ export default function App() {
           <p className="text-[var(--cream-dim)] leading-relaxed">{t.about.body}</p>
         </div>
         <div className="flex justify-center">
-          <BadgeEmblem size={200} />
+          <img src={hassanAboutImg} alt="Hassan" style={{ width: "100%", maxWidth: 380, borderRadius: 4, border: "1px solid var(--line)", objectFit: "cover" }} />
         </div>
       </section>
 
@@ -730,10 +743,13 @@ export default function App() {
           <p className="text-center text-[var(--cream-dim)] mb-10 text-sm">{t.team.subtitle}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {TEAM.map((member) => (
-              <div key={member.name} className="p-5 border hairline rounded flex flex-col gap-1">
-                <h3 className="f-display text-lg text-[var(--brass-light)]">{member.name}</h3>
-                <p className="text-xs text-[var(--brass)] uppercase tracking-wider">{member.role[lang]}</p>
-                <p className="text-sm text-[var(--cream-dim)] mt-1">{member.desc[lang]}</p>
+              <div key={member.name} className="border hairline rounded overflow-hidden flex flex-col">
+                <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top" }} />
+                <div className="p-4 flex flex-col gap-1">
+                  <h3 className="f-display text-lg text-[var(--brass-light)]">{member.name}</h3>
+                  <p className="text-xs text-[var(--brass)] uppercase tracking-wider">{member.role[lang]}</p>
+                  <p className="text-sm text-[var(--cream-dim)] mt-1">{member.desc[lang]}</p>
+                </div>
               </div>
             ))}
           </div>
