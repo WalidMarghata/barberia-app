@@ -1302,11 +1302,11 @@ export default function App() {
       </section>
 
       {/* SERVICES */}
-      <section id="services" className="px-4 py-20 relative overflow-hidden">
+      <section id="services" className="px-4 py-20 relative overflow-hidden panel-bg">
         <video autoPlay muted loop playsInline aria-hidden="true"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.18 }}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.28 }}
           src={gallery5} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,8,5,0.85) 0%, rgba(21,17,13,0.92) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.55)" }} />
         <div className="max-w-5xl mx-auto relative">
           <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.services.title}</h2>
           <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.services.subtitle}</p>
