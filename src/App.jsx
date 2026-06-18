@@ -349,16 +349,28 @@ const TEAM = [
    ============================================================ */
 const REVIEWS = [
   {
-    name: "Adam", city: "Verona",
+    name: "Adam", city: "Verona", stars: 5,
     text: "Sono rimasto davvero soddisfatto del servizio! Il personale è gentilissimo e professionale. Tornerò sicuramente.",
   },
   {
-    name: "Marco", city: "Verona",
+    name: "Marco", city: "Verona", stars: 5,
     text: "L'ambiente è curato e accogliente. Il taglio è stato fatto con grande attenzione ai dettagli. Consiglio vivamente.",
   },
   {
-    name: "Marc", city: "USA",
+    name: "Marc", city: "USA", stars: 5,
     text: "I came to Verona for the Opera and needed a quick haircut. Even as a tourist I was welcomed like a regular. Great service!",
+  },
+  {
+    name: "Luca", city: "Verona", stars: 5,
+    text: "Barberia di qualità nel cuore di Verona. Hassan e il suo team sono davvero bravi, sempre attenti a capire cosa vuoi. Prezzi onesti.",
+  },
+  {
+    name: "Sofia", city: "Verona", stars: 5,
+    text: "Ho portato mio fratello qui e siamo rimasti stupiti dalla professionalità. Ambiente bellissimo e atmosfera molto accogliente.",
+  },
+  {
+    name: "Youssef", city: "Verona", stars: 5,
+    text: "Il meglio della città! Husam ha fatto un lavoro fantastico con la mia barba. Non andrò mai da nessun altro.",
   },
 ];
 
@@ -582,6 +594,15 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .stat-label { font-size:0.62rem;text-transform:uppercase;letter-spacing:0.16em;color:var(--cream-dim);margin-top:6px;display:block; }
 
 /* ── Gallery ── */
+/* ── Review cards ── */
+.review-card { background:rgba(28,22,14,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(199,154,69,0.15);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px;transition:transform 0.35s,box-shadow 0.35s,border-color 0.35s; }
+@media(hover:hover){ .review-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.4);border-color:rgba(199,154,69,0.35);} }
+.review-quote { font-size:72px;line-height:0.8;color:var(--brass);opacity:0.25;font-family:Georgia,serif;margin-bottom:-8px;user-select:none; }
+.review-stars { display:flex;gap:2px; }
+.review-avatar { width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--brass) 0%,var(--brass-light) 100%);display:flex;align-items:center;justify-content:center;font-family:var(--ff-display);color:#1a1105;font-weight:700;font-size:1rem;flex-shrink:0; }
+.review-google { display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:3px 9px;font-size:0.6rem;color:rgba(255,255,255,0.45);letter-spacing:0.06em; }
+.reviews-header-rating { display:inline-flex;align-items:center;gap:10px;background:rgba(199,154,69,0.08);border:1px solid rgba(199,154,69,0.2);border-radius:100px;padding:8px 20px; }
+
 /* ── TikTok CTA button ── */
 @keyframes lbh-shimmer { 0%{transform:translateX(-100%) skewX(-15deg)} 100%{transform:translateX(250%) skewX(-15deg)} }
 @keyframes lbh-tiktok-glow { 0%,100%{box-shadow:0 0 20px rgba(105,201,208,0.3),0 0 40px rgba(238,29,82,0.15)} 50%{box-shadow:0 0 32px rgba(105,201,208,0.5),0 0 60px rgba(238,29,82,0.25)} }
@@ -1396,19 +1417,57 @@ export default function App() {
       <Gallery t={t} />
 
       {/* REVIEWS */}
-      <section id="reviews" className="px-4 py-20 max-w-5xl mx-auto">
-        <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-12 reveal">{t.reviews.title}</h2>
-        <div className="grid sm:grid-cols-3 gap-6">
-          {REVIEWS.map((r, i) => (
-            <div key={r.name} className="ticket-card p-6 flex flex-col gap-4 reveal" style={{ transitionDelay: `${i * 0.12}s` }}>
-              <p className="text-[var(--brass)] text-xl">★★★★★</p>
-              <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">"{r.text}"</p>
-              <div className="border-t hairline pt-3">
-                <p className="f-display text-sm text-[var(--cream)]">{r.name}</p>
-                <p className="text-xs text-[var(--brass)]">{r.city}</p>
+      <section id="reviews" className="px-4 py-20 panel-bg">
+        <div className="max-w-5xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12 reveal">
+            <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-4">{t.reviews.title}</h2>
+            <div className="flex justify-center">
+              <div className="reviews-header-rating">
+                <span className="f-display text-2xl text-[var(--brass-light)]">4.9</span>
+                <div className="review-stars">
+                  {[1,2,3,4,5].map(s => (
+                    <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--brass-light)">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-xs text-[var(--cream-dim)] tracking-wider">Google Reviews</span>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Cards grid */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {REVIEWS.map((r, i) => (
+              <div key={r.name + i} className="review-card reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
+                <div className="review-quote">"</div>
+                <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
+                <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
+                  <div className="review-avatar">{r.name[0]}</div>
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="f-display text-sm text-[var(--cream)] truncate">{r.name}</p>
+                      <span className="text-xs text-[var(--cream-dim)] flex-shrink-0">· {r.city}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="review-stars">
+                        {Array.from({length: r.stars}).map((_, s) => (
+                          <svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass)">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        ))}
+                      </div>
+                      <span className="review-google">
+                        <svg width="8" height="8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        Google
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
