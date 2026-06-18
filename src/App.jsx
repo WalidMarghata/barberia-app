@@ -582,6 +582,32 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .stat-label { font-size:0.62rem;text-transform:uppercase;letter-spacing:0.16em;color:var(--cream-dim);margin-top:6px;display:block; }
 
 /* ── Gallery ── */
+/* ── TikTok CTA button ── */
+@keyframes lbh-shimmer { 0%{transform:translateX(-100%) skewX(-15deg)} 100%{transform:translateX(250%) skewX(-15deg)} }
+@keyframes lbh-tiktok-glow { 0%,100%{box-shadow:0 0 20px rgba(105,201,208,0.3),0 0 40px rgba(238,29,82,0.15)} 50%{box-shadow:0 0 32px rgba(105,201,208,0.5),0 0 60px rgba(238,29,82,0.25)} }
+.tiktok-btn {
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0d0d0d 0%,#1a1a2e 50%,#0d0d0d 100%);
+  border:1px solid rgba(105,201,208,0.4);
+  color:#fff;font-weight:600;letter-spacing:0.04em;
+  padding:14px 32px;border-radius:100px;
+  display:inline-flex;align-items:center;gap:12px;
+  animation:lbh-tiktok-glow 3s ease infinite;
+  transition:transform 0.3s,border-color 0.3s;
+  text-decoration:none;font-size:0.875rem;
+}
+.tiktok-btn::before {
+  content:"";position:absolute;top:0;left:0;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+  animation:lbh-shimmer 2.5s ease infinite;
+}
+.tiktok-btn:hover { transform:translateY(-3px) scale(1.03);border-color:rgba(105,201,208,0.8); }
+.tiktok-btn .tiktok-icon-wrap { display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#69C9D0,#EE1D52);flex-shrink:0;transition:transform 0.3s; }
+.tiktok-btn:hover .tiktok-icon-wrap { transform:rotate(15deg) scale(1.1); }
+.tiktok-btn-text { display:flex;flex-direction:column;align-items:flex-start;gap:1px; }
+.tiktok-btn-sub { font-size:0.65rem;color:rgba(255,255,255,0.5);font-weight:400;letter-spacing:0.08em;text-transform:uppercase; }
+.tiktok-btn-main { font-size:0.9rem;color:#fff;font-weight:700;white-space:nowrap; }
+
 /* ── Gallery carousel ── */
 .gallery-track { display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 4px 20px;cursor:grab;user-select:none; }
 .gallery-track::-webkit-scrollbar { display:none; }
@@ -887,11 +913,18 @@ function Gallery({ t }) {
       </div>
 
       {/* TikTok CTA */}
-      <div className="flex justify-center mt-10 px-4">
-        <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer"
-          className="btn-outline inline-flex items-center gap-3 px-7 py-3.5 rounded-full text-sm font-semibold reveal">
-          <TikTokIcon size={16} />
-          {t.gallery.tiktokCta}
+      <div className="flex justify-center mt-12 px-4 reveal">
+        <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer" className="tiktok-btn">
+          <div className="tiktok-icon-wrap">
+            <TikTokIcon size={17} />
+          </div>
+          <div className="tiktok-btn-text">
+            <span className="tiktok-btn-sub">@{SHOP.tiktok}</span>
+            <span className="tiktok-btn-main">{t.gallery.tiktokCta}</span>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(105,201,208,0.8)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft:4}}>
+            <path d="M7 17L17 7M17 7H7M17 7v10"/>
+          </svg>
         </a>
       </div>
 
