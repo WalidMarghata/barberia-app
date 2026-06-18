@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
   ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X
@@ -1004,6 +1004,7 @@ function BadgeEmblem({ size = 200 }) {
    ============================================================ */
 export default function App() {
   const [loading, setLoading] = useState(true);
+  const handleLoadDone = useCallback(() => setLoading(false), []);
   const [lang, setLang] = useState("it");
   const t = T[lang];
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1084,7 +1085,7 @@ export default function App() {
   return (
     <div className="lbh-root min-h-screen" dir={t.dir}>
       <style>{STYLE}</style>
-      {loading && <LoadingScreen onDone={() => setLoading(false)} />}
+      {loading && <LoadingScreen onDone={handleLoadDone} />}
       <GrainOverlay />
 
       {/* NAV */}
