@@ -635,8 +635,9 @@ function ShopMap({ address, shopName, mapsQuery }) {
 /* ============================================================
    HELPERS
    ============================================================ */
-function useScrollReveal() {
+function useScrollReveal(ready) {
   useEffect(() => {
+    if (!ready) return;
     const els = document.querySelectorAll(".reveal,.reveal-left,.reveal-right");
     const obs = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
@@ -645,7 +646,7 @@ function useScrollReveal() {
     }, { threshold: 0.12 });
     els.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
-  }, []);
+  }, [ready]);
 }
 
 function useParallax(ref, factor = 0.25) {
@@ -1016,9 +1017,9 @@ export default function App() {
   const bookingRef = useRef(null);
   const reserveGuard = useRef(false);
   const heroBgRef = useRef(null);
-  useScrollReveal();
+  useScrollReveal(!loading);
   useParallax(heroBgRef, 0.2);
-  const twWord = useTypewriter(t.tw);
+  const twWord = useTypewriter(t.tw || []);
 
   const service = SERVICES.find((s) => s.id === booking.serviceId) || null;
 
@@ -1080,16 +1081,10 @@ export default function App() {
     { id: "contact", label: t.nav.contact },
   ];
 
-  if (loading) return (
-    <>
-      <style>{STYLE}</style>
-      <LoadingScreen onDone={() => setLoading(false)} />
-    </>
-  );
-
   return (
     <div className="lbh-root min-h-screen" dir={t.dir}>
       <style>{STYLE}</style>
+      {loading && <LoadingScreen onDone={() => setLoading(false)} />}
       <GrainOverlay />
 
       {/* NAV */}
