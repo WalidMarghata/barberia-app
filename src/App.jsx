@@ -44,10 +44,12 @@ const T = {
       ctaServices: "Scopri i servizi",
     },
     about: {
-      title: "Chi siamo",
-      body: "Hassan e il suo team — Husam, Nabil, Xhoi e Steven — ti accolgono nel cuore di Verona con un'unica priorità: il tuo stile, senza attese. Oltre 30 anni di esperienza, rasoio a mano libera e la cura di un mestiere antico.",
+      title: "L'esperienza che hai sempre desiderato",
+      body: "Niente code infinite, niente tagli frettolosi. Il nostro team si prende il tempo necessario per capire il tuo stile e realizzarlo con precisione. Oltre 30 anni di esperienza al tuo servizio, nel cuore di Verona.",
       badge: "Mano esperta, ferri affilati",
     },
+    team: { title: "Il Team", subtitle: "Esperienza, precisione, personalità" },
+    reviews: { title: "Cosa dicono di noi" },
     services: {
       title: "Servizi", subtitle: "Prezzi e durate indicativi. Studenti e militari: taglio + lavaggio €10 (documento richiesto).",
       bookThis: "Prenota", minutes: "min",
@@ -75,7 +77,7 @@ const T = {
       title: "Orari", closed: "Chiuso", note: "Dom 10:00–19:00 · Tutti gli altri giorni 09:00–20:00",
       days: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
     },
-    location: { title: "Dove siamo", openInMaps: "Apri in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min" },
+    location: { title: "Dove siamo", openInMaps: "Apri in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min · Stazione 20 min" },
     contact: { title: "Contatti", call: "Chiama", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
       `Ciao! Vorrei prenotare:\nServizio: ${d.serviceName}\nData: ${d.date}\nOrario: ${d.time}\nNome: ${d.name}\nTelefono: ${d.phone}${d.notes ? `\nNote: ${d.notes}` : ""}`,
@@ -91,10 +93,12 @@ const T = {
       ctaServices: "See services",
     },
     about: {
-      title: "About us",
-      body: "Hassan and his team — Husam, Nabil, Xhoi and Steven — welcome you in the heart of Verona with one priority: your style, without the wait. Over 30 years of experience, freehand razor and the care of an old trade.",
+      title: "The experience you always wanted",
+      body: "No endless queues, no rushed cuts. Our team takes the time to understand your style and execute it with precision. Over 30 years of experience at your service, in the heart of Verona.",
       badge: "Steady hand, sharp tools",
     },
+    team: { title: "The Team", subtitle: "Experience, precision, personality" },
+    reviews: { title: "What our clients say" },
     services: {
       title: "Services", subtitle: "Indicative prices and durations. Students & military: cut + wash €10 (ID required).",
       bookThis: "Book", minutes: "min",
@@ -122,7 +126,7 @@ const T = {
       title: "Opening hours", closed: "Closed", note: "Sun 10:00–19:00 · All other days 09:00–20:00",
       days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
     },
-    location: { title: "Find us", openInMaps: "Open in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min" },
+    location: { title: "Find us", openInMaps: "Open in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min · Stazione 20 min" },
     contact: { title: "Contact", call: "Call", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
       `Hi! I'd like to book:\nService: ${d.serviceName}\nDate: ${d.date}\nTime: ${d.time}\nName: ${d.name}\nPhone: ${d.phone}${d.notes ? `\nNotes: ${d.notes}` : ""}`,
@@ -138,10 +142,12 @@ const T = {
       ctaServices: "Voir les services",
     },
     about: {
-      title: "À propos",
-      body: "Hassan et son équipe — Husam, Nabil, Xhoi et Steven — vous accueillent au cœur de Vérone avec une seule priorité : votre style, sans attente. Plus de 30 ans d'expérience, rasoir à main levée et le soin d'un métier ancien.",
+      title: "L'expérience que vous avez toujours voulue",
+      body: "Pas de longues files d'attente, pas de coupes précipitées. Notre équipe prend le temps de comprendre votre style et de le réaliser avec précision. Plus de 30 ans d'expérience à votre service, au cœur de Vérone.",
       badge: "Main sûre, outils aiguisés",
     },
+    team: { title: "L'Équipe", subtitle: "Expérience, précision, personnalité" },
+    reviews: { title: "Ce que disent nos clients" },
     services: {
       title: "Services", subtitle: "Prix et durées indicatifs. Étudiants & militaires : coupe + lavage €10 (justificatif requis).",
       bookThis: "Réserver", minutes: "min",
@@ -169,7 +175,7 @@ const T = {
       title: "Horaires", closed: "Fermé", note: "Dim 10h–19h · Tous les autres jours 09h–20h",
       days: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"],
     },
-    location: { title: "Où nous trouver", openInMaps: "Ouvrir sur Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min" },
+    location: { title: "Où nous trouver", openInMaps: "Ouvrir sur Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min · Stazione 20 min" },
     contact: { title: "Contact", call: "Appeler", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
       `Bonjour ! Je souhaite réserver :\nService : ${d.serviceName}\nDate : ${d.date}\nHeure : ${d.time}\nNom : ${d.name}\nTéléphone : ${d.phone}${d.notes ? `\nNotes : ${d.notes}` : ""}`,
@@ -185,10 +191,12 @@ const T = {
       ctaServices: "اطّلع على الخدمات",
     },
     about: {
-      title: "من نحن",
-      body: "حسن وفريقه — حسام ونبيل وشوي وستيفن — يرحبون بكم في قلب فيرونا بأولوية واحدة: أسلوبك، بلا انتظار. أكثر من 30 سنة من الخبرة، شفرة يدوية وعناية بحرفة عريقة.",
+      title: "التجربة التي طالما أردتها",
+      body: "لا انتظار طويل، لا قصات متسرعة. فريقنا يأخذ الوقت الكافي لفهم أسلوبك وتنفيذه بدقة. أكثر من 30 سنة من الخبرة في خدمتك، في قلب فيرونا.",
       badge: "يد ثابتة، أدوات حادة",
     },
+    team: { title: "الفريق", subtitle: "خبرة، دقة، شخصية" },
+    reviews: { title: "ماذا يقول عملاؤنا" },
     services: {
       title: "الخدمات", subtitle: "الأسعار والمدد تقريبية. الطلاب والعسكريون: قصة + غسيل €10 (بإبراز الوثيقة).",
       bookThis: "حجز", minutes: "دقيقة",
@@ -224,6 +232,80 @@ const T = {
 };
 
 const LANGS = ["it", "ar", "fr", "en"];
+
+/* ============================================================
+   TEAM
+   ============================================================ */
+const TEAM = [
+  {
+    name: "Hassan",
+    role: { it: "Titolare", en: "Owner", fr: "Propriétaire", ar: "المالك" },
+    desc: {
+      it: "30+ anni di esperienza. Tradizione, precisione, tagli impeccabili.",
+      en: "30+ years of experience. Tradition, precision, impeccable cuts.",
+      fr: "30+ ans d'expérience. Tradition, précision, coupes impeccables.",
+      ar: "أكثر من 30 سنة خبرة. تقليد، دقة، قصات لا تشوبها شائبة.",
+    },
+  },
+  {
+    name: "Husam",
+    role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
+    desc: {
+      it: "Tecnica e simmetria. Skin fade puliti, linee definite.",
+      en: "Technique and symmetry. Clean skin fades, defined lines.",
+      fr: "Technique et symétrie. Skin fades propres, lignes définies.",
+      ar: "تقنية وتناسق. تدرج نظيف، خطوط محددة.",
+    },
+  },
+  {
+    name: "Nabil",
+    role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
+    desc: {
+      it: "Energia e tendenze. Tagli freschi e dinamici.",
+      en: "Energy and trends. Fresh and dynamic cuts.",
+      fr: "Énergie et tendances. Coupes fraîches et dynamiques.",
+      ar: "طاقة وأناقة. قصات عصرية وديناميكية.",
+    },
+  },
+  {
+    name: "Xhoi",
+    role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
+    desc: {
+      it: "Fade morbidi, contorni nitidi, risultato impeccabile.",
+      en: "Smooth fades, sharp outlines, impeccable results.",
+      fr: "Fades doux, contours nets, résultat impeccable.",
+      ar: "تدرج ناعم، حواف حادة، نتيجة لا تشوبها شائبة.",
+    },
+  },
+  {
+    name: "Steven",
+    role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
+    desc: {
+      it: "Creatività e attenzione. Tagli personalizzati, barba curata.",
+      en: "Creativity and care. Personalised cuts, groomed beard.",
+      fr: "Créativité et attention. Coupes personnalisées, barbe soignée.",
+      ar: "إبداع وعناية. قصات مخصصة، لحية مرتبة.",
+    },
+  },
+];
+
+/* ============================================================
+   REVIEWS
+   ============================================================ */
+const REVIEWS = [
+  {
+    name: "Adam", city: "Verona",
+    text: "Sono rimasto davvero soddisfatto del servizio! Il personale è gentilissimo e professionale. Tornerò sicuramente.",
+  },
+  {
+    name: "Marco", city: "Verona",
+    text: "L'ambiente è curato e accogliente. Il taglio è stato fatto con grande attenzione ai dettagli. Consiglio vivamente.",
+  },
+  {
+    name: "Marc", city: "USA",
+    text: "I came to Verona for the Opera and needed a quick haircut. Even as a tourist I was welcomed like a regular. Great service!",
+  },
+];
 
 /* ============================================================
    SERVICES
@@ -641,6 +723,23 @@ export default function App() {
         </div>
       </section>
 
+      {/* TEAM */}
+      <section id="team" className="px-4 py-16 panel-bg">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.team.title}</h2>
+          <p className="text-center text-[var(--cream-dim)] mb-10 text-sm">{t.team.subtitle}</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {TEAM.map((member) => (
+              <div key={member.name} className="p-5 border hairline rounded flex flex-col gap-1">
+                <h3 className="f-display text-lg text-[var(--brass-light)]">{member.name}</h3>
+                <p className="text-xs text-[var(--brass)] uppercase tracking-wider">{member.role[lang]}</p>
+                <p className="text-sm text-[var(--cream-dim)] mt-1">{member.desc[lang]}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* SERVICES */}
       <section id="services" className="px-4 py-16 panel-bg">
         <div className="max-w-5xl mx-auto">
@@ -664,6 +763,24 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      {/* REVIEWS */}
+      <section id="reviews" className="px-4 py-16 max-w-5xl mx-auto">
+        <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-10">{t.reviews.title}</h2>
+        <div className="grid sm:grid-cols-3 gap-6">
+          {REVIEWS.map((r) => (
+            <div key={r.name} className="ticket-card p-5 flex flex-col gap-3">
+              <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1">"{r.text}"</p>
+              <div className="border-t hairline pt-3">
+                <p className="f-display text-sm text-[var(--cream)]">{r.name}</p>
+                <p className="text-xs text-[var(--brass)]">{r.city}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <div className="stripe-band" />
 
       {/* BOOKING */}
       <section id="booking" ref={bookingRef} className="px-4 py-16 max-w-2xl mx-auto">
