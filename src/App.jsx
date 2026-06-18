@@ -348,30 +348,37 @@ const TEAM = [
    REVIEWS
    ============================================================ */
 const REVIEWS = [
-  {
-    name: "Alberto C.", city: "Verona", stars: 5,
-    text: "Ottima barberia nel centro di Verona! Il salone è moderno, pulito e ben organizzato, con un'atmosfera accogliente che ti mette subito a tuo agio. Il team è simpatico e professionale, lavora con grande attenzione ai dettagli.",
-  },
-  {
-    name: "Adam Z.", city: "Verona", stars: 5,
-    text: "Sono rimasto molto soddisfatto del servizio! Il team è estremamente gentile e ti mette subito a tuo agio. Il taglio è stato fatto con molta attenzione ai dettagli e il risultato finale era esattamente quello che volevo. Ottimo rapporto qualità-prezzo. Consiglio vivamente! 😊",
-  },
-  {
-    name: "Riky M.", city: "Verona", stars: 5,
-    text: "Cinque stelle non bastano... Posto bellissimo e team esperto. I barbieri sono eccellenti, ti mettono subito a tuo agio. Non andrò mai da nessun altro.",
-  },
-  {
-    name: "Fabio C.", city: "Verona", stars: 5,
-    text: "A pochi passi dalla Piazza Bra, ho trovato una barberia dove sono stato accolto calorosamente. La simpatia e la gentilezza dimostrate, unite alla professionalità, mi hanno fatto scegliere questo posto ora e in futuro. A presto!",
-  },
-  {
-    name: "Bernadette B.", city: "Francia", stars: 5,
-    text: "Molto attento, molto professionale e molto cortese... non esitate a cercare Hassan! Ho ritrovato mio marito, ringiovanito di almeno 10 anni 😉",
-  },
-  {
-    name: "Tony L.", city: "Verona", stars: 5,
-    text: "Professionista e simpatico. Molto bravo con i tagli per i giovani. Ottimo rapporto qualità-prezzo. Altamente raccomandato.",
-  },
+  { name: "Alberto C.", city: "Verona", stars: 5, text: "Ottima barberia nel centro di Verona! Il salone è moderno, pulito e ben organizzato, con un'atmosfera accogliente che ti mette subito a tuo agio. Il team è simpatico e professionale, lavora con grande attenzione ai dettagli." },
+  { name: "Adam Z.", city: "Verona", stars: 5, text: "Sono rimasto molto soddisfatto del servizio! Il team è estremamente gentile e ti mette subito a tuo agio. Il taglio è stato fatto con molta attenzione ai dettagli e il risultato finale era esattamente quello che volevo. Ottimo rapporto qualità-prezzo. Consiglio vivamente! 😊" },
+  { name: "Riky M.", city: "Verona", stars: 5, text: "Cinque stelle non bastano... Posto bellissimo e team esperto. I barbieri sono eccellenti, ti mettono subito a tuo agio. Non andrò mai da nessun altro." },
+  { name: "Fabio C.", city: "Verona", stars: 5, text: "A pochi passi dalla Piazza Bra, ho trovato una barberia dove sono stato accolto calorosamente. La simpatia e la gentilezza dimostrate, unite alla professionalità, mi hanno fatto scegliere questo posto ora e in futuro. A presto!" },
+  { name: "Bernadette B.", city: "Francia", stars: 5, text: "Molto attento, molto professionale e molto cortese... non esitate a cercare Hassan! Ho ritrovato mio marito, ringiovanito di almeno 10 anni 😉" },
+  { name: "Tony L.", city: "Verona", stars: 5, text: "Professionista e simpatico. Molto bravo con i tagli per i giovani. Ottimo rapporto qualità-prezzo. Altamente raccomandato." },
+  { name: "Romeu N.", city: "Verona", stars: 5, text: "Ottimo servizio, personale impeccabile! Un servizio d'eccellenza con prezzi che superano le aspettative. Adorato!" },
+  { name: "Miguel F.", city: "Verona", stars: 5, text: "Eccellente 👏" },
+  { name: "Taha H.", city: "Verona", stars: 5, text: "Sono uno studente di Verona e vengo qui di tanto in tanto. Il posto è facilmente raggiungibile, organizzato, pulito e soprattutto i tagli sono veloci e precisi. In più c'è l'offerta imperdibile per studenti a partire da €10. Consiglio vivamente! 👍" },
+  { name: "Vlad K.", city: "Verona", stars: 5, text: "Even about to close, they let me in when I said I was a tourist! Great people and incredible professionals!" },
+  { name: "Florin V.", city: "Verona", stars: 5, text: "Questa barberia ha personale molto simpatico e accogliente, estremamente disponibile e attento ai clienti. Direi che non troverai questo da nessun'altra parte a Verona." },
+  { name: "Vincent B.", city: "Olanda", stars: 5, text: "Ho scelto questo barbiere durante le mie vacanze e non me ne pento! È stata la prima volta che mi sono tagliato i capelli così bene da un barbiere." },
+  { name: "Cristian B.", city: "Verona", stars: 5, text: "Vado lì a tagliarmi i capelli quando sono a Verona. Sono molto soddisfatto del servizio — veloce, simpatico e a prezzo accessibile. Ed è proprio vicino al centro." },
+  { name: "Luigi T.", city: "Verona", stars: 5, text: "Questi ragazzi sono molto bravi e veloci, sanno fare bene il loro lavoro. L'ambiente è ampio e ben ventilato. Meritano un'ottima valutazione." },
+  { name: "Matteo A.", city: "Verona", stars: 5, text: "Vado lì da alcuni mesi e sono soddisfatto. Sono molto simpatici, hanno prezzi accessibili e soprattutto fanno esattamente quello che chiedi, a differenza di altre barberie." },
+  { name: "Tony D.", city: "UK", stars: 5, text: "Friendly and efficient staff — very affordable place." },
+  { name: "Tangram", city: "Verona", stars: 5, text: "Team attento ed esperto. Tagli maschili veloci, precisi ed eleganti. Prezzi molto competitivi." },
+  { name: "Michael S.", city: "Verona", stars: 5, text: "I ragazzi sono veloci e ben preparati. Non devi aspettare un'eternità come in altri saloni... i prezzi sono assolutamente eccellenti! Bravi ragazzi." },
+  { name: "Lorenzo", city: "Verona", stars: 5, text: "Il migliore per me. Ho sempre difficoltà a trovare qualcuno che mi soddisfi, ma qui sono abili e sanno quello che fanno." },
+  { name: "Oscar M.", city: "Spagna", stars: 5, text: "Servicio muy agradable. Corte de pelo estupendo y precio muy razonable. ¡Gracias!" },
+  { name: "Hafida B.", city: "Verona", stars: 5, text: "Taglio perfetto, niente da dire, semplicemente perfetto." },
+  { name: "Giulietta H.", city: "Verona", stars: 5, text: "Perfetto in tutti i sensi: barba, capelli... servizio impeccabile." },
+  { name: "Pasquale N.", city: "Verona", stars: 5, text: "Servizio cortese e con vasta esperienza, oltre a prezzi accessibili. Consiglio a tutti." },
+  { name: "Giuseppe G.", city: "Verona", stars: 5, text: "Sempre il migliore. Servizio impeccabile, gentilezza, cortesia e precisione ❤️" },
+  { name: "Femke C.", city: "Olanda", stars: 5, text: "Servizio rapido all'arrivo e molto simpatici." },
+  { name: "Luigi D.", city: "Verona", stars: 5, text: "Molto bravo a tagliare i capelli, super gentile!!" },
+  { name: "Francesco B.", city: "Verona", stars: 5, text: "Sanno quello che fanno. Professionali e molto simpatici." },
+  { name: "Diocla66", city: "Verona", stars: 5, text: "Cortesia e simpatia sono caratteristiche marcanti qui. La gentilezza e la competenza del team compensano qualsiasi piccola mancanza." },
+  { name: "Florin V.", city: "Verona", stars: 5, text: "Personale molto simpatico e accogliente, estremamente disponibile. Non troverai questo da nessun'altra parte a Verona." },
+  { name: "Angelo A.", city: "Verona", stars: 5, text: "Ottimo servizio, sempre un posto dove trovare bravi barbieri." },
+  { name: "Asya A.", city: "Verona", stars: 5, text: "Grazie mille per la vostra immensa gentilezza!" },
 ];
 
 /* ============================================================
@@ -595,13 +602,19 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 
 /* ── Gallery ── */
 /* ── Review cards ── */
-.review-card { background:rgba(28,22,14,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(199,154,69,0.15);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px;transition:transform 0.35s,box-shadow 0.35s,border-color 0.35s; }
-@media(hover:hover){ .review-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,0.4);border-color:rgba(199,154,69,0.35);} }
-.review-quote { font-size:72px;line-height:0.8;color:var(--brass);opacity:0.25;font-family:Georgia,serif;margin-bottom:-8px;user-select:none; }
+.review-card { background:rgba(28,22,14,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(199,154,69,0.15);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;width:300px;flex-shrink:0;transition:border-color 0.3s; }
+.review-card:hover { border-color:rgba(199,154,69,0.4); }
+.review-quote { font-size:64px;line-height:0.8;color:var(--brass);opacity:0.22;font-family:Georgia,serif;margin-bottom:-6px;user-select:none; }
 .review-stars { display:flex;gap:2px; }
-.review-avatar { width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--brass) 0%,var(--brass-light) 100%);display:flex;align-items:center;justify-content:center;font-family:var(--ff-display);color:#1a1105;font-weight:700;font-size:1rem;flex-shrink:0; }
+.review-avatar { width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--brass) 0%,var(--brass-light) 100%);display:flex;align-items:center;justify-content:center;font-family:var(--ff-display);color:#1a1105;font-weight:700;font-size:0.95rem;flex-shrink:0; }
 .review-google { display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:3px 9px;font-size:0.6rem;color:rgba(255,255,255,0.45);letter-spacing:0.06em; }
 .reviews-header-rating { display:inline-flex;align-items:center;gap:10px;background:rgba(199,154,69,0.08);border:1px solid rgba(199,154,69,0.2);border-radius:100px;padding:8px 20px; }
+/* Marquee */
+.reviews-marquee-wrap { overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0%,black 8%,black 92%,transparent 100%); }
+.reviews-marquee-wrap:hover .reviews-track { animation-play-state:paused; }
+.reviews-track { display:flex;gap:16px;width:max-content;animation:reviews-scroll 55s linear infinite;padding:10px 0; }
+.reviews-track-r { animation-direction:reverse; }
+@keyframes reviews-scroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
 /* ── TikTok CTA button ── */
 @keyframes lbh-shimmer { 0%{transform:translateX(-100%) skewX(-15deg)} 100%{transform:translateX(250%) skewX(-15deg)} }
@@ -1417,58 +1430,60 @@ export default function App() {
       <Gallery t={t} />
 
       {/* REVIEWS */}
-      <section id="reviews" className="px-4 py-20 panel-bg">
-        <div className="max-w-5xl mx-auto">
-          {/* Header */}
-          <div className="text-center mb-12 reveal">
-            <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-4">{t.reviews.title}</h2>
-            <div className="flex justify-center">
-              <div className="reviews-header-rating">
-                <span className="f-display text-2xl text-[var(--brass-light)]">4.5</span>
-                <div className="review-stars">
-                  {[1,2,3,4,5].map(s => (
-                    <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--brass-light)">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  ))}
-                </div>
-                <span className="text-xs text-[var(--cream-dim)] tracking-wider">119 Google Reviews</span>
+      <section id="reviews" className="py-20 panel-bg overflow-hidden">
+        {/* Header */}
+        <div className="max-w-5xl mx-auto px-4 text-center mb-12 reveal">
+          <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-4">{t.reviews.title}</h2>
+          <div className="flex justify-center">
+            <div className="reviews-header-rating">
+              <span className="f-display text-2xl text-[var(--brass-light)]">4.5</span>
+              <div className="review-stars">
+                {[1,2,3,4,5].map(s => (
+                  <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--brass-light)">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                ))}
               </div>
+              <span className="text-xs text-[var(--cream-dim)] tracking-wider">119 Google Reviews</span>
             </div>
           </div>
+        </div>
 
-          {/* Cards grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {REVIEWS.map((r, i) => (
-              <div key={r.name + i} className="review-card reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
-                <div className="review-quote">"</div>
-                <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
-                <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
-                  <div className="review-avatar">{r.name[0]}</div>
-                  <div className="flex flex-col gap-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="f-display text-sm text-[var(--cream)] truncate">{r.name}</p>
-                      <span className="text-xs text-[var(--cream-dim)] flex-shrink-0">· {r.city}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="review-stars">
-                        {Array.from({length: r.stars}).map((_, s) => (
-                          <svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass)">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                          </svg>
-                        ))}
+        {/* Marquee — row 1 left, row 2 right */}
+        {[REVIEWS.slice(0, Math.ceil(REVIEWS.length / 2)), REVIEWS.slice(Math.ceil(REVIEWS.length / 2))].map((group, gi) => (
+          <div key={gi} className="reviews-marquee-wrap mb-4">
+            <div className={`reviews-track${gi === 1 ? " reviews-track-r" : ""}`}>
+              {[...group, ...group].map((r, i) => (
+                <div key={i} className="review-card">
+                  <div className="review-quote">"</div>
+                  <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
+                  <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
+                    <div className="review-avatar">{r.name[0]}</div>
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="f-display text-sm text-[var(--cream)] truncate">{r.name}</p>
+                        <span className="text-xs text-[var(--cream-dim)] flex-shrink-0">· {r.city}</span>
                       </div>
-                      <span className="review-google">
-                        <svg width="8" height="8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                        Google
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="review-stars">
+                          {Array.from({length: r.stars}).map((_, s) => (
+                            <svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass)">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                          ))}
+                        </div>
+                        <span className="review-google">
+                          <svg width="8" height="8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                          Google
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        ))}
       </section>
 
       <div className="stripe-band" />
