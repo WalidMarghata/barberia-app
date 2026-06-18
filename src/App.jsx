@@ -582,12 +582,21 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .stat-label { font-size:0.62rem;text-transform:uppercase;letter-spacing:0.16em;color:var(--cream-dim);margin-top:6px;display:block; }
 
 /* ── Gallery ── */
-.gallery-item { overflow:hidden;cursor:pointer;aspect-ratio:9/16;border-radius:10px;border:1px solid rgba(199,154,69,0.18);position:relative;background:#0a0a0a; }
-.gallery-item video { width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s cubic-bezier(.4,0,.2,1); }
-@media(hover:hover){ .gallery-item:hover video { transform:scale(1.04); } }
-.gallery-play { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.28);transition:background 0.25s; }
-.gallery-item:hover .gallery-play { background:rgba(0,0,0,0.12); }
-.gallery-play-circle { width:52px;height:52px;border-radius:50%;background:rgba(199,154,69,0.85);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+/* ── Gallery carousel ── */
+.gallery-track { display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 4px 20px;cursor:grab;user-select:none; }
+.gallery-track::-webkit-scrollbar { display:none; }
+.gallery-track.is-dragging { cursor:grabbing; }
+.gallery-track-item { flex:0 0 auto;width:clamp(170px,36vw,240px);scroll-snap-align:center;border-radius:12px;overflow:hidden;border:1px solid rgba(199,154,69,0.2);position:relative;background:#0a0a0a;aspect-ratio:9/16;cursor:pointer;transition:transform 0.3s,box-shadow 0.3s; }
+@media(hover:hover){ .gallery-track-item:hover { transform:scale(1.03);box-shadow:0 12px 40px rgba(199,154,69,0.2); } }
+.gallery-track-item video { width:100%;height:100%;object-fit:cover;display:block; }
+.gallery-play { position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);transition:background 0.25s; }
+.gallery-track-item:hover .gallery-play { background:rgba(0,0,0,0.1); }
+.gallery-play-circle { width:54px;height:54px;border-radius:50%;background:rgba(199,154,69,0.88);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:transform 0.2s; }
+.gallery-track-item:hover .gallery-play-circle { transform:scale(1.1); }
+.gallery-arrow { position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:46px;height:46px;border-radius:50%;background:rgba(15,12,8,0.85);border:1px solid rgba(199,154,69,0.4);color:var(--brass-light);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s,border-color 0.2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px); }
+@media(hover:hover){ .gallery-arrow:hover { background:rgba(199,154,69,0.2);border-color:var(--brass); } }
+.gallery-arrow-left { left:-18px; } .gallery-arrow-right { right:-18px; }
+@media(max-width:640px){ .gallery-arrow { display:none; } }
 .lb-video { max-height:90vh;max-width:90vw;border-radius:8px;outline:none; }
 .lb-overlay { position:fixed;inset:0;z-index:300;background:rgba(4,3,2,0.97);display:flex;align-items:center;justify-content:center; }
 .lb-img { max-height:90vh;max-width:90vw;object-fit:contain;border-radius:6px;user-select:none; }
@@ -766,14 +775,19 @@ const GALLERY_VIDEOS = [gallery1, gallery2, gallery3, gallery4, gallery5];
 
 function Gallery({ t }) {
   const [active, setActive] = useState(null);
-  const touchStartX = useRef(null);
+  const trackRef = useRef(null);
   const lightboxVideoRef = useRef(null);
+  const isDragging = useRef(false);
+  const dragMoved = useRef(false);
+  const dragStartX = useRef(0);
+  const dragScrollLeft = useRef(0);
 
   const total = GALLERY_VIDEOS.length;
   const close = useCallback(() => setActive(null), []);
   const prev = useCallback(() => setActive((i) => (i - 1 + total) % total), [total]);
   const next = useCallback(() => setActive((i) => (i + 1) % total), [total]);
 
+  /* keyboard nav on lightbox */
   useEffect(() => {
     if (active === null) return;
     const h = (e) => {
@@ -785,7 +799,7 @@ function Gallery({ t }) {
     return () => window.removeEventListener("keydown", h);
   }, [active, close, prev, next]);
 
-  /* restart video when switching clips */
+  /* restart video on clip change */
   useEffect(() => {
     if (active !== null && lightboxVideoRef.current) {
       lightboxVideoRef.current.load();
@@ -793,56 +807,97 @@ function Gallery({ t }) {
     }
   }, [active]);
 
-  const onTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
-  const onTouchEnd = (e) => {
-    if (touchStartX.current === null) return;
-    const diff = e.changedTouches[0].clientX - touchStartX.current;
+  /* arrow scroll */
+  const scrollTrack = (dir) => {
+    trackRef.current?.scrollBy({ left: dir * 260, behavior: "smooth" });
+  };
+
+  /* desktop drag-to-scroll */
+  const onMouseDown = (e) => {
+    isDragging.current = true;
+    dragMoved.current = false;
+    dragStartX.current = e.pageX - trackRef.current.offsetLeft;
+    dragScrollLeft.current = trackRef.current.scrollLeft;
+    trackRef.current.classList.add("is-dragging");
+  };
+  const onMouseMove = (e) => {
+    if (!isDragging.current) return;
+    e.preventDefault();
+    const x = e.pageX - trackRef.current.offsetLeft;
+    const walk = x - dragStartX.current;
+    if (Math.abs(walk) > 5) dragMoved.current = true;
+    trackRef.current.scrollLeft = dragScrollLeft.current - walk * 1.2;
+  };
+  const onMouseUp = () => {
+    isDragging.current = false;
+    trackRef.current?.classList.remove("is-dragging");
+  };
+
+  /* lightbox touch swipe */
+  const lbTouchX = useRef(null);
+  const onLbTouchStart = (e) => { lbTouchX.current = e.touches[0].clientX; };
+  const onLbTouchEnd = (e) => {
+    if (lbTouchX.current === null) return;
+    const diff = e.changedTouches[0].clientX - lbTouchX.current;
     if (Math.abs(diff) > 50) { diff < 0 ? next() : prev(); }
-    touchStartX.current = null;
+    lbTouchX.current = null;
   };
 
   return (
-    <section id="gallery" className="px-4 py-20 panel-bg">
-      <div className="max-w-4xl mx-auto">
+    <section id="gallery" className="py-20 panel-bg overflow-hidden">
+      <div className="max-w-5xl mx-auto px-4">
         <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.gallery.title}</h2>
-        <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.gallery.subtitle}</p>
-        <div className="grid grid-cols-3 gap-3 sm:gap-4">
+        <p className="text-center text-[var(--cream-dim)] mb-10 text-sm reveal">{t.gallery.subtitle}</p>
+      </div>
+
+      {/* Carousel */}
+      <div className="relative max-w-5xl mx-auto px-8 sm:px-10">
+        <button className="gallery-arrow gallery-arrow-left" onClick={() => scrollTrack(-1)} aria-label="Precedente">
+          <ChevronLeft size={22} />
+        </button>
+
+        <div
+          ref={trackRef}
+          className="gallery-track"
+          onMouseDown={onMouseDown}
+          onMouseMove={onMouseMove}
+          onMouseUp={onMouseUp}
+          onMouseLeave={onMouseUp}
+        >
           {GALLERY_VIDEOS.map((src, i) => (
-            <div key={i} className="gallery-item reveal" style={{ transitionDelay: `${i * 0.12}s` }}
-              onClick={() => setActive(i)} role="button" aria-label={`Video ${i + 1}`} tabIndex={0}
+            <div key={i} className="gallery-track-item"
+              onClick={() => { if (!dragMoved.current) setActive(i); }}
+              role="button" aria-label={`Video ${i + 1}`} tabIndex={0}
               onKeyDown={(e) => e.key === "Enter" && setActive(i)}>
               <video src={src} muted preload="metadata" playsInline />
               <div className="gallery-play">
                 <div className="gallery-play-circle">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#241a0e">
-                    <path d="M8 5v14l11-7z"/>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="#241a0e">
+                    <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        <button className="gallery-arrow gallery-arrow-right" onClick={() => scrollTrack(1)} aria-label="Successivo">
+          <ChevronRight size={22} />
+        </button>
       </div>
 
+      {/* Lightbox */}
       {active !== null && (
-        <div className="lb-overlay" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onClick={close}>
+        <div className="lb-overlay" onTouchStart={onLbTouchStart} onTouchEnd={onLbTouchEnd} onClick={close}>
           <button className="lb-btn lb-prev" onClick={(e) => { e.stopPropagation(); prev(); }} aria-label="Precedente">
             <ChevronLeft size={26} />
           </button>
-          <video
-            ref={lightboxVideoRef}
-            className="lb-video"
-            src={GALLERY_VIDEOS[active]}
-            controls
-            playsInline
-            onClick={(e) => e.stopPropagation()}
-          />
+          <video ref={lightboxVideoRef} className="lb-video" src={GALLERY_VIDEOS[active]}
+            controls playsInline onClick={(e) => e.stopPropagation()} />
           <button className="lb-btn lb-next" onClick={(e) => { e.stopPropagation(); next(); }} aria-label="Successivo">
             <ChevronRight size={26} />
           </button>
-          <button className="lb-close" onClick={close} aria-label="Chiudi">
-            <X size={20} />
-          </button>
+          <button className="lb-close" onClick={close} aria-label="Chiudi"><X size={20} /></button>
         </div>
       )}
     </section>
