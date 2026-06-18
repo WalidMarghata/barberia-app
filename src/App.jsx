@@ -249,10 +249,10 @@ const TEAM = [
     photo: teamHassanImg,
     role: { it: "Titolare", en: "Owner", fr: "Propriétaire", ar: "المالك" },
     desc: {
-      it: "30+ anni di esperienza. Tradizione, precisione, tagli impeccabili.",
-      en: "30+ years of experience. Tradition, precision, impeccable cuts.",
-      fr: "30+ ans d'expérience. Tradition, précision, coupes impeccables.",
-      ar: "أكثر من 30 سنة خبرة. تقليد، دقة، قصات لا تشوبها شائبة.",
+      it: "30+ anni d'esperienza. Tradizione e precisione assoluta per tagli impeccabili e barbe scolpite su misura.",
+      en: "30+ years of experience. Tradition and absolute precision for impeccable cuts and perfectly sculpted beards.",
+      fr: "30+ ans d'expérience. Tradition et précision absolue pour des coupes impeccables et des barbes sculptées sur mesure.",
+      ar: "أكثر من 30 سنة خبرة. تقليد ودقة مطلقة لقصات لا تشوبها شائبة ولحى منحوتة بالمقاس.",
     },
   },
   {
@@ -260,10 +260,10 @@ const TEAM = [
     photo: teamHusamImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
-      it: "Tecnica e simmetria. Skin fade puliti, linee definite.",
-      en: "Technique and symmetry. Clean skin fades, defined lines.",
-      fr: "Technique et symétrie. Skin fades propres, lignes définies.",
-      ar: "تقنية وتناسق. تدرج نظيف، خطوط محددة.",
+      it: "Tecnica e simmetria perfetta. Skin fade pulite e linee definite per un look ordinato e professionale.",
+      en: "Perfect technique and symmetry. Clean skin fades and defined lines for a sharp, professional look.",
+      fr: "Technique et symétrie parfaites. Skin fades propres et lignes définies pour un look soigné et professionnel.",
+      ar: "تقنية وتناسق مثاليان. تدرج نظيف وخطوط محددة لمظهر أنيق واحترافي.",
     },
   },
   {
@@ -271,10 +271,10 @@ const TEAM = [
     photo: teamNabilImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
-      it: "Energia e tendenze. Tagli freschi e dinamici.",
-      en: "Energy and trends. Fresh and dynamic cuts.",
-      fr: "Énergie et tendances. Coupes fraîches et dynamiques.",
-      ar: "طاقة وأناقة. قصات عصرية وديناميكية.",
+      it: "Energia e tendenze moderne. Tagli freschi, dinamici e styling personalizzato per uno stile contemporaneo.",
+      en: "Energy and modern trends. Fresh, dynamic cuts and personalised styling for a contemporary look.",
+      fr: "Énergie et tendances modernes. Coupes fraîches, dynamiques et styling personnalisé pour un style contemporain.",
+      ar: "طاقة وأناقة عصرية. قصات عصرية وتسريحات مخصصة لأسلوب معاصر.",
     },
   },
   {
@@ -282,10 +282,10 @@ const TEAM = [
     photo: teamXhoiImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
-      it: "Fade morbidi, contorni nitidi, risultato impeccabile.",
-      en: "Smooth fades, sharp outlines, impeccable results.",
-      fr: "Fades doux, contours nets, résultat impeccable.",
-      ar: "تدرج ناعم، حواف حادة، نتيجة لا تشوبها شائبة.",
+      it: "Fade morbide e contorni netti per un risultato sempre impeccabile.",
+      en: "Smooth fades and sharp outlines for an always impeccable result.",
+      fr: "Fades doux et contours nets pour un résultat toujours impeccable.",
+      ar: "تدرج ناعم وحواف حادة لنتيجة لا تشوبها شائبة دائماً.",
     },
   },
   {
@@ -293,10 +293,10 @@ const TEAM = [
     photo: teamStevenImg,
     role: { it: "Barbiere", en: "Barber", fr: "Barbier", ar: "حلاق" },
     desc: {
-      it: "Creatività e attenzione. Tagli personalizzati, barba curata.",
-      en: "Creativity and care. Personalised cuts, groomed beard.",
-      fr: "Créativité et attention. Coupes personnalisées, barbe soignée.",
-      ar: "إبداع وعناية. قصات مخصصة، لحية مرتبة.",
+      it: "Creatività e attenzione al viso. Tagli personalizzati e barba curata per distinguerti con eleganza.",
+      en: "Creativity and attention to detail. Personalised cuts and groomed beard to distinguish you with elegance.",
+      fr: "Créativité et attention au détail. Coupes personnalisées et barbe soignée pour vous distinguer avec élégance.",
+      ar: "إبداع وعناية بالتفاصيل. قصات مخصصة ولحية مرتبة لتتميز بأناقة.",
     },
   },
 ];
@@ -741,14 +741,13 @@ export default function App() {
         <div className="max-w-5xl mx-auto">
           <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.team.title}</h2>
           <p className="text-center text-[var(--cream-dim)] mb-10 text-sm">{t.team.subtitle}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {TEAM.map((member) => (
-              <div key={member.name} className="border hairline rounded overflow-hidden flex flex-col">
+              <div key={member.name} className="flex flex-col rounded overflow-hidden">
                 <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top" }} />
-                <div className="p-4 flex flex-col gap-1">
-                  <h3 className="f-display text-lg text-[var(--brass-light)]">{member.name}</h3>
-                  <p className="text-xs text-[var(--brass)] uppercase tracking-wider">{member.role[lang]}</p>
-                  <p className="text-sm text-[var(--cream-dim)] mt-1">{member.desc[lang]}</p>
+                <div className="panel2-bg p-4 flex flex-col gap-2 flex-1 text-center border hairline border-t-0">
+                  <h3 className="f-display text-base text-[var(--cream)]">{member.name}<span className="text-[var(--brass)] font-normal">, {member.role[lang]}</span></h3>
+                  <p className="text-sm text-[var(--cream-dim)] leading-relaxed">{member.desc[lang]}</p>
                 </div>
               </div>
             ))}
