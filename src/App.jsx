@@ -1,4 +1,13 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+
+// Captura o evento de instalação PWA antes do React montar (evita race condition)
+let _pwaInstallEvent = null;
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    _pwaInstallEvent = e;
+  });
+}
 import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
   ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X,
@@ -1276,20 +1285,28 @@ export default function App() {
   const heroBgRef = useRef(null);
 
   /* PWA install prompt */
-  const [installPrompt, setInstallPrompt] = useState(null);
+  const [installPrompt, setInstallPrompt] = useState(() => _pwaInstallEvent);
   const [installDone, setInstallDone] = useState(false);
   const [installModal, setInstallModal] = useState(false);
   useEffect(() => {
-    const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
+    // Caso o evento dispare depois do React montar
+    const handler = (e) => { e.preventDefault(); _pwaInstallEvent = e; setInstallPrompt(e); };
     window.addEventListener("beforeinstallprompt", handler);
-    window.addEventListener("appinstalled", () => setInstallDone(true));
+    window.addEventListener("appinstalled", () => { setInstallDone(true); _pwaInstallEvent = null; });
+    // Se o evento já foi capturado antes de montar, sincroniza o estado
+    if (_pwaInstallEvent && !installPrompt) setInstallPrompt(_pwaInstallEvent);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
   const handleInstall = useCallback(async () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === "accepted") { setInstallDone(true); setInstallPrompt(null); }
+    const prompt = _pwaInstallEvent || installPrompt;
+    if (prompt) {
+      try {
+        prompt.prompt();
+        const { outcome } = await prompt.userChoice;
+        if (outcome === "accepted") { setInstallDone(true); setInstallPrompt(null); _pwaInstallEvent = null; }
+      } catch {
+        setInstallModal(true);
+      }
     } else {
       setInstallModal(true);
     }
