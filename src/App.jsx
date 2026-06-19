@@ -386,7 +386,7 @@ const REVIEWS = [
    ============================================================ */
 const SERVICES = [
   {
-    id: "classic", duration: 30, price: 20,
+    id: "classic", duration: 30, price: 15,
     name: { it: "Taglio", en: "Haircut", fr: "Coupe", ar: "قصة شعر" },
     desc: {
       it: "Taglio su misura con forbici e rifinitura a rasoio.",
