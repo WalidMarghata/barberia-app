@@ -1442,9 +1442,9 @@ export default function App() {
               <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
                 {[
                   { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>,
-                    text: <>Abre o site no <strong style={{color:"var(--cream)"}}>Safari</strong> e toca no botão <strong style={{color:"var(--cream)"}}>Condividi &#x2B06;</strong> (seta para cima, em baixo do ecrã)</> },
+                    text: <>Abre este site no <strong style={{color:"var(--cream)"}}>Safari</strong> e toca no ícone <strong style={{color:"var(--cream)"}}>&#x2B06;</strong> (quadrado com seta, na barra do Safari em baixo)</> },
                   { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>,
-                    text: <>Desliza a lista e toca em <strong style={{color:"var(--cream)"}}>"Aggiungi alla schermata Home"</strong></> },
+                    text: <><strong style={{color:"var(--brass-light)"}}>Desliza para baixo</strong> na lista até encontrar <strong style={{color:"var(--cream)"}}>"Aggiungi alla schermata Home"</strong> — <strong style={{color:"rgba(248,113,113,0.9)"}}>NÃO</strong> é "elenco di lettura"!</> },
                   { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
                     text: <>Toca em <strong style={{color:"var(--cream)"}}>Aggiungi</strong> — o ícone <strong style={{color:"var(--brass-light)"}}>H dourado</strong> aparece no ecrã!</> },
                 ].map((s, i) => (
