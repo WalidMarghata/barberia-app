@@ -1227,16 +1227,21 @@ export default function App() {
   /* PWA install prompt */
   const [installPrompt, setInstallPrompt] = useState(null);
   const [installDone, setInstallDone] = useState(false);
+  const [installModal, setInstallModal] = useState(false);
   useEffect(() => {
     const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
     window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("appinstalled", () => setInstallDone(true));
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
   const handleInstall = useCallback(async () => {
-    if (!installPrompt) return;
-    installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === "accepted") { setInstallDone(true); setInstallPrompt(null); }
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === "accepted") { setInstallDone(true); setInstallPrompt(null); }
+    } else {
+      setInstallModal(true);
+    }
   }, [installPrompt]);
 
   /* only activate observers after loading screen is gone */
@@ -1310,14 +1315,43 @@ export default function App() {
       {loading && <LoadingScreen onDone={handleLoadDone} />}
       <GrainOverlay />
 
-      {/* PWA install button — only visible when browser supports it */}
-      {installPrompt && !installDone && (
+      {/* PWA install button */}
+      {!installDone && (
         <button className="pwa-install-btn" onClick={handleInstall} aria-label="Installa app">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
           Installa App
         </button>
+      )}
+
+      {/* PWA install manual modal */}
+      {installModal && (
+        <div style={{ position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"flex-end",justifyContent:"center" }} onClick={() => setInstallModal(false)}>
+          <div style={{ background:"#1a1105",border:"1px solid rgba(199,154,69,0.3)",borderRadius:"20px 20px 0 0",padding:"28px 24px 40px",width:"100%",maxWidth:480 }} onClick={e => e.stopPropagation()}>
+            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20 }}>
+              <p className="f-display" style={{ color:"var(--brass-light)",fontSize:"1rem" }}>Installa Hassan Barber</p>
+              <button onClick={() => setInstallModal(false)} style={{ color:"var(--cream-dim)",background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",lineHeight:1 }}>×</button>
+            </div>
+            <div style={{ display:"flex",flexDirection:"column",gap:16 }}>
+              <div style={{ display:"flex",gap:14,alignItems:"flex-start" }}>
+                <span style={{ background:"var(--brass)",color:"#1a1105",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0 }}>1</span>
+                <p style={{ color:"var(--cream-dim)",fontSize:"0.9rem",lineHeight:1.5 }}>Toca nos <strong style={{color:"var(--cream)"}}>3 pontos ⋮</strong> no canto superior direito do Chrome</p>
+              </div>
+              <div style={{ display:"flex",gap:14,alignItems:"flex-start" }}>
+                <span style={{ background:"var(--brass)",color:"#1a1105",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0 }}>2</span>
+                <p style={{ color:"var(--cream-dim)",fontSize:"0.9rem",lineHeight:1.5 }}>Escolhe <strong style={{color:"var(--cream)"}}>"Adicionar ao ecrã inicial"</strong> ou <strong style={{color:"var(--cream)"}}>"Instalar aplicação"</strong></p>
+              </div>
+              <div style={{ display:"flex",gap:14,alignItems:"flex-start" }}>
+                <span style={{ background:"var(--brass)",color:"#1a1105",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0 }}>3</span>
+                <p style={{ color:"var(--cream-dim)",fontSize:"0.9rem",lineHeight:1.5 }}>Confirma — o ícone <strong style={{color:"var(--cream)"}}>H dourado</strong> aparece no teu ecrã!</p>
+              </div>
+            </div>
+            <button onClick={() => setInstallModal(false)} className="btn-brass" style={{ width:"100%",marginTop:24,padding:"12px",borderRadius:8,border:"none",cursor:"pointer",fontSize:"0.9rem" }}>
+              Entendido
+            </button>
+          </div>
+        </div>
       )}
 
       {/* NAV */}
