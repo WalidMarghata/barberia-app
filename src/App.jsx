@@ -1312,6 +1312,13 @@ export default function App() {
     }
   }, [installPrompt]);
 
+  /* Hora actual — atualiza a cada minuto para open/closed status */
+  const [nowTime, setNowTime] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNowTime(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   /* only activate observers after loading screen is gone */
   useScrollReveal(!loading);
   useParallax(heroBgRef, 0.2);
@@ -1478,9 +1485,8 @@ export default function App() {
 
               {/* Open / Closed status strip */}
               {(() => {
-                const now = new Date();
-                const day = now.getDay();
-                const h = now.getHours() + now.getMinutes() / 60;
+                const day = nowTime.getDay();
+                const h = nowTime.getHours() + nowTime.getMinutes() / 60;
                 const cfg = HOURS[day];
                 const open = cfg && h >= parseInt(cfg.open) && h < parseInt(cfg.close);
                 return (
@@ -1800,9 +1806,8 @@ export default function App() {
                 <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
                   <p className="f-display" style={{ fontSize:"0.85rem", color:"var(--cream)", display:"flex", alignItems:"center", gap:8 }}><Clock size={15} style={{ color:"var(--brass)" }} /> {t.hours.title}</p>
                   {(() => {
-                    const now = new Date();
-                    const day = now.getDay();
-                    const h = now.getHours() + now.getMinutes()/60;
+                    const day = nowTime.getDay();
+                    const h = nowTime.getHours() + nowTime.getMinutes()/60;
                     const cfg = HOURS[day];
                     const open = cfg && h >= parseInt(cfg.open) && h < parseInt(cfg.close);
                     return <span className={open ? "badge-open" : "badge-closed"}><span className="status-dot" />{open ? "Aperto" : "Chiuso"}</span>;
@@ -1811,7 +1816,7 @@ export default function App() {
                 <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
                   {DAY_ORDER.map((dayNumIdx, i) => {
                     const cfg = HOURS[dayNumIdx];
-                    const isToday = new Date().getDay() === dayNumIdx;
+                    const isToday = nowTime.getDay() === dayNumIdx;
                     return (
                       <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"9px 0", borderBottom:"1px solid rgba(199,154,69,0.07)", fontWeight: isToday ? 600 : 400 }}>
                         <span style={{ fontSize:"0.82rem", color: isToday ? "var(--cream)" : "var(--cream-dim)" }}>{t.hours.days[i]}</span>
