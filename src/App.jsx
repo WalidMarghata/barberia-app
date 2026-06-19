@@ -697,9 +697,10 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .bnav-tab[data-active="true"]{color:var(--brass-light);}
 .bnav-tab[data-active="true"]::after{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:linear-gradient(90deg,var(--brass-light),var(--brass));border-radius:2px;}
 .bnav-fab-wrap{flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:0;cursor:pointer;background:none;border:none;gap:3px;-webkit-tap-highlight-color:transparent;}
-.bnav-fab{width:52px;height:52px;background:linear-gradient(135deg,var(--brass-light) 0%,var(--brass) 55%,#9c7530 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1a1105;margin-top:-20px;box-shadow:0 0 0 6px rgba(199,154,69,0.1),0 8px 28px rgba(0,0,0,0.5);transition:transform 0.18s,box-shadow 0.18s;}
-.bnav-fab-wrap:active .bnav-fab{transform:scale(0.88);box-shadow:0 0 0 4px rgba(199,154,69,0.08),0 4px 12px rgba(0,0,0,0.4);}
-.bnav-fab-wrap[data-active="true"] .bnav-fab{box-shadow:0 0 0 8px rgba(199,154,69,0.15),0 8px 32px rgba(199,154,69,0.4);}
+.bnav-fab{width:52px;height:52px;background:linear-gradient(135deg,var(--brass-light) 0%,var(--brass) 55%,#9c7530 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1a1105;margin-top:-20px;box-shadow:0 0 0 6px rgba(199,154,69,0.1),0 8px 28px rgba(0,0,0,0.5);transition:transform 0.18s,box-shadow 0.18s;animation:fab-pulse 3s ease-in-out infinite;}
+@keyframes fab-pulse{0%,100%{box-shadow:0 0 0 6px rgba(199,154,69,0.1),0 8px 28px rgba(0,0,0,0.5)}50%{box-shadow:0 0 0 10px rgba(199,154,69,0.18),0 8px 32px rgba(199,154,69,0.25)}}
+.bnav-fab-wrap:active .bnav-fab{transform:scale(0.88);animation:none;box-shadow:0 0 0 4px rgba(199,154,69,0.08),0 4px 12px rgba(0,0,0,0.4);}
+.bnav-fab-wrap[data-active="true"] .bnav-fab{animation:none;box-shadow:0 0 0 8px rgba(199,154,69,0.15),0 8px 32px rgba(199,154,69,0.4);}
 .bnav-fab-label{font-size:0.52rem;color:var(--brass);letter-spacing:0.1em;text-transform:uppercase;font-family:'Work Sans';}
 /* Page header */
 .page-header-app{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;background:rgba(4,3,1,0.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(199,154,69,0.09);}
@@ -1431,17 +1432,50 @@ export default function App() {
                     <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>
                   ))}
                 </div>
+                {/* Emblem top-center */}
+                <div style={{ position:"absolute", top:24, left:"50%", transform:"translateX(-50%)", zIndex:2 }}>
+                  <BadgeEmblem size={72} />
+                </div>
                 {/* Hero text */}
                 <div style={{ position:"relative", padding:"0 24px 28px", width:"100%" }}>
                   <p className="f-display" style={{ fontSize:"0.65rem", letterSpacing:"0.35em", color:"var(--brass)", marginBottom:6 }}>{t.hero.kicker}</p>
                   <h1 className="f-display brass-text" style={{ fontSize:"clamp(2rem,8vw,3rem)", lineHeight:1.1, marginBottom:4 }}>LA BARBERIA</h1>
                   <h2 className="f-display" style={{ fontSize:"clamp(1.4rem,5vw,2rem)", color:"var(--cream)", marginBottom:8 }}>HASSAN</h2>
                   <p className="f-display" style={{ fontSize:"1rem", color:"var(--brass-light)", minHeight:"1.5rem" }}>{twWord}<span className="tw-cursor" /></p>
+                  <div style={{ display:"flex", gap:10, marginTop:16 }}>
+                    <button onClick={() => navigate("book")}
+                      style={{ flex:1, padding:"13px 0", borderRadius:100, background:"linear-gradient(135deg,var(--brass-light),var(--brass))", color:"#1a1105", fontWeight:700, fontSize:"0.82rem", border:"none", cursor:"pointer", letterSpacing:"0.05em" }}>
+                      {t.hero.ctaBook}
+                    </button>
+                    <button onClick={() => navigate("services")}
+                      style={{ flex:1, padding:"13px 0", borderRadius:100, background:"rgba(199,154,69,0.08)", color:"var(--cream)", fontSize:"0.82rem", border:"1px solid rgba(199,154,69,0.3)", cursor:"pointer", letterSpacing:"0.05em" }}>
+                      {t.hero.ctaServices}
+                    </button>
+                  </div>
                 </div>
               </section>
 
+              {/* Open / Closed status strip */}
+              {(() => {
+                const now = new Date();
+                const day = now.getDay();
+                const h = now.getHours() + now.getMinutes() / 60;
+                const cfg = HOURS[day];
+                const open = cfg && h >= parseInt(cfg.open) && h < parseInt(cfg.close);
+                return (
+                  <div style={{ margin:"16px 16px 0", background: open ? "rgba(34,197,94,0.06)" : "rgba(248,113,113,0.06)", border:`1px solid ${open ? "rgba(34,197,94,0.2)" : "rgba(248,113,113,0.2)"}`, borderRadius:12, padding:"10px 16px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                      <span style={{ width:8, height:8, borderRadius:"50%", background: open ? "#4ade80" : "#f87171", boxShadow: open ? "0 0 8px rgba(74,222,128,0.6)" : "0 0 8px rgba(248,113,113,0.6)", flexShrink:0 }} />
+                      <span style={{ fontSize:"0.75rem", color: open ? "#4ade80" : "#f87171", fontWeight:600 }}>{open ? "Aperto ora" : "Chiuso ora"}</span>
+                    </div>
+                    {cfg && <span style={{ fontSize:"0.68rem", color:"var(--cream-dim)" }}>{cfg.open} – {cfg.close}</span>}
+                    {!cfg && <span style={{ fontSize:"0.68rem", color:"var(--cream-dim)" }}>{t.hours.closed}</span>}
+                  </div>
+                );
+              })()}
+
               {/* Action grid */}
-              <div style={{ padding:"20px 16px 0" }}>
+              <div style={{ padding:"16px 16px 0" }}>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
                   <button onClick={() => navigate("book")} className="home-qcard home-qcard-gold">
                     <div className="home-qcard-icon"><CalendarIcon size={22} /></div>
@@ -1691,9 +1725,17 @@ export default function App() {
 
             {/* ── GALLERY ── */}
             <div className={`app-page${currentPage === "gallery" ? " active" : ""}`}>
-              <div className="page-header-app">
-                <span className="f-display" style={{ fontSize:"0.9rem", color:"var(--brass-light)" }}>La Nostra Arte</span>
-                <div style={{ display:"flex", gap:8 }}>
+              {/* Cinematic header */}
+              <div style={{ position:"relative", height:180, overflow:"hidden" }}>
+                <video autoPlay muted loop playsInline aria-hidden="true" src={gallery1}
+                  style={{ position:"absolute", inset:0, width:"100%", height:"150%", top:"-25%", objectFit:"cover", opacity:0.55 }} />
+                <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom,rgba(4,3,1,0.3),rgba(4,3,1,0.95))" }} />
+                <div style={{ position:"absolute", inset:0, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center" }}>
+                  <p className="f-display" style={{ fontSize:"0.62rem", letterSpacing:"0.35em", color:"var(--brass)", marginBottom:6 }}>LA NOSTRA ARTE</p>
+                  <h2 className="f-display brass-text" style={{ fontSize:"1.6rem" }}>Galleria</h2>
+                </div>
+                {/* Lang selector */}
+                <div style={{ position:"absolute", top:14, right:14, display:"flex", gap:6 }}>
                   {LANGS.map(code => <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
                 </div>
               </div>
