@@ -619,11 +619,13 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 
 /* ── TikTok CTA button ── */
 @keyframes lbh-shimmer { 0%{transform:translateX(-100%) skewX(-15deg)} 100%{transform:translateX(250%) skewX(-15deg)} }
-/* ── PWA install button ── */
-.pwa-install-btn { position:fixed;bottom:160px;right:20px;z-index:49;display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#1a1105,#2a1e08);border:1px solid rgba(199,154,69,0.5);color:var(--brass-light);border-radius:100px;padding:10px 18px;font-size:0.78rem;font-weight:600;letter-spacing:0.05em;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:transform 0.25s,border-color 0.25s,opacity 0.3s;white-space:nowrap; }
-.pwa-install-btn:hover { transform:translateY(-3px);border-color:rgba(199,154,69,0.9); }
-.pwa-install-btn.hide { opacity:0;pointer-events:none; }
-@media(max-width:480px){ .pwa-install-btn{bottom:88px;right:12px;padding:9px 14px;font-size:0.72rem;} }
+/* ── PWA install side tab ── */
+.pwa-side-tab { position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:49;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(180deg,#c79a45,#9a6b1a);color:#1a1105;border-radius:12px 0 0 12px;padding:14px 10px;cursor:pointer;border:none;box-shadow:-4px 0 24px rgba(0,0,0,0.45);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1),box-shadow 0.3s;writing-mode:initial; }
+.pwa-side-tab:hover { transform:translateY(-50%) translateX(-4px);box-shadow:-8px 0 32px rgba(199,154,69,0.35); }
+.pwa-side-tab:active { transform:translateY(-50%) translateX(-1px); }
+.pwa-side-tab-text { writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:0.62rem;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;font-family:'Work Sans',sans-serif;line-height:1;white-space:nowrap; }
+.pwa-side-tab-icon { width:28px;height:28px;background:rgba(26,17,5,0.25);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+@media(max-width:480px){ .pwa-side-tab{top:55%;padding:12px 9px;} }
 
 @keyframes lbh-tiktok-glow { 0%,100%{box-shadow:0 0 20px rgba(105,201,208,0.3),0 0 40px rgba(238,29,82,0.15)} 50%{box-shadow:0 0 32px rgba(105,201,208,0.5),0 0 60px rgba(238,29,82,0.25)} }
 .tiktok-btn {
@@ -1374,13 +1376,15 @@ export default function App() {
       {loading && <LoadingScreen onDone={handleLoadDone} />}
       <GrainOverlay />
 
-      {/* PWA install button - only in browser mode */}
+      {/* PWA install side tab - only in browser mode */}
       {!isApp && !installDone && (
-        <button className="pwa-install-btn" onClick={handleInstall} aria-label="Installa app">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-          Installa App
+        <button className="pwa-side-tab" onClick={handleInstall} aria-label="Installa app">
+          <div className="pwa-side-tab-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1a1105" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <span className="pwa-side-tab-text">Baixar App</span>
         </button>
       )}
 
