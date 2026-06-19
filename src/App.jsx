@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import {
   Scissors, MapPin, Phone, Camera, Clock, Check, ChevronLeft,
-  ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X
+  ChevronRight, MessageCircle, Calendar as CalendarIcon, User, Menu, X,
+  Home, Info
 } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -684,6 +685,18 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .leaflet-popup-content-wrapper { background:var(--panel) !important; border:1px solid var(--line) !important; border-radius:4px !important; box-shadow:0 4px 20px rgba(0,0,0,0.6) !important; }
 .leaflet-popup-tip { background:var(--panel) !important; }
 .leaflet-popup-content { color:var(--cream) !important; margin:12px 16px !important; }
+
+/* ── App mode (standalone PWA) ── */
+.app-page{display:none;min-height:calc(100svh - 64px);padding-bottom:80px;}
+.app-page.active{display:block;animation:pageFadeIn 0.28s ease both;}
+@keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(10,8,5,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(199,154,69,0.18);display:flex;align-items:stretch;z-index:100;padding-bottom:env(safe-area-inset-bottom,0px);}
+.bnav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;background:none;border:none;padding:0 4px;color:rgba(182,165,135,0.4);transition:color 0.2s;font-size:0.58rem;letter-spacing:0.05em;font-family:'Work Sans',sans-serif;text-transform:uppercase;}
+.bnav-tab[data-active="true"]{color:var(--brass-light);}
+.bnav-tab-book{flex:1.3;background:linear-gradient(180deg,rgba(199,154,69,0.1),transparent);border-left:1px solid rgba(199,154,69,0.1);border-right:1px solid rgba(199,154,69,0.1);}
+.bnav-tab-book[data-active="true"]{color:var(--brass);}
+.bnav-book-icon{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--brass-light),var(--brass));display:flex;align-items:center;justify-content:center;color:#1a1105;box-shadow:0 4px 16px rgba(199,154,69,0.35);}
+.page-header-app{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:rgba(10,8,5,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(199,154,69,0.12);}
 `;
 
 /* ============================================================
@@ -1205,6 +1218,9 @@ function BadgeEmblem({ size = 200 }) {
    APP
    ============================================================ */
 export default function App() {
+  const isApp = typeof window !== "undefined" &&
+    (window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true);
+
   const [loading, setLoading] = useState(true);
   /* useCallback keeps the reference stable across re-renders,
      preventing LoadingScreen's effect from resetting its timers */
@@ -1268,7 +1284,11 @@ export default function App() {
   function selectService(id) {
     setBooking((p) => ({ ...p, serviceId: id, time: "" }));
     setStep(2);
-    setTimeout(() => bookingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    if (isApp) {
+      navigate("book");
+    } else {
+      setTimeout(() => bookingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    }
   }
   function goStep(n) { setStep(n); }
   function canNext() {
@@ -1301,6 +1321,12 @@ export default function App() {
       )}`
     : "#";
 
+  const [currentPage, setCurrentPage] = useState("home");
+  const navigate = useCallback((page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+
   const navLinks = [
     { id: "hero", label: t.nav.home },
     { id: "services", label: t.nav.services },
@@ -1315,8 +1341,8 @@ export default function App() {
       {loading && <LoadingScreen onDone={handleLoadDone} />}
       <GrainOverlay />
 
-      {/* PWA install button */}
-      {!installDone && (
+      {/* PWA install button - only in browser mode */}
+      {!isApp && !installDone && (
         <button className="pwa-install-btn" onClick={handleInstall} aria-label="Installa app">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -1354,374 +1380,713 @@ export default function App() {
         </div>
       )}
 
-      {/* NAV */}
-      <header className="sticky top-0 z-40 panel-bg border-b hairline">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 gap-3">
-          <button className="md:hidden p-2 text-[var(--cream)]" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu">
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-          <a href="#hero" className="flex items-center gap-2 shrink-0">
-            <Scissors size={18} className="text-[var(--brass)]" />
-            <span className="f-display text-sm sm:text-base text-[var(--cream)]">LA BARBERIA <span className="text-[var(--brass-light)]">HASSAN</span></span>
-          </a>
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            {navLinks.map((l) => (
-              <a key={l.id} href={`#${l.id}`} className="text-[var(--cream-dim)] hover:text-[var(--brass-light)] transition-colors">{l.label}</a>
-            ))}
-          </nav>
-          <div className="flex items-center gap-3 text-xs font-semibold shrink-0">
-            {LANGS.map((code) => (
-              <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)} aria-label={T[code].label}>
-                {T[code].code}
-              </button>
-            ))}
-          </div>
-        </div>
-        {menuOpen && (
-          <nav className="md:hidden flex flex-col px-4 pb-3 gap-2 text-sm border-t hairline">
-            {navLinks.map((l) => (
-              <a key={l.id} href={`#${l.id}`} onClick={() => setMenuOpen(false)} className="py-1 text-[var(--cream-dim)]">{l.label}</a>
-            ))}
-          </nav>
-        )}
-      </header>
-      <div className="stripe-band" />
-
-      {/* HERO */}
-      <section id="hero" className="relative px-4 py-20 sm:py-32 text-center overflow-hidden" style={{ minHeight: "85vh", display: "flex", alignItems: "center" }}>
-        <video ref={heroBgRef} src={heroVideo} autoPlay muted loop playsInline aria-hidden="true"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", objectPosition: "center", opacity: 0.38, willChange: "transform" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(21,17,13,0.75) 0%, rgba(115,39,52,0.15) 50%, rgba(21,17,13,0.9) 100%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(199,154,69,0.12), transparent 65%)" }} />
-        <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-6 w-full hero-seq">
-          <BadgeEmblem size={160} />
-          <p className="f-display text-xs sm:text-sm tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
-          <h1 className="f-display brass-text text-5xl sm:text-7xl leading-tight">LA BARBERIA</h1>
-          <h2 className="f-display text-3xl sm:text-5xl text-[var(--cream)]">HASSAN</h2>
-          <p className="f-display text-xl sm:text-2xl" style={{ color: "var(--brass-light)", minHeight: "2rem", letterSpacing: "0.06em" }}>
-            {twWord}<span className="tw-cursor" aria-hidden="true" />
-          </p>
-          <p className="text-xs sm:text-sm tracking-[0.35em] text-[var(--cream-dim)] uppercase">{t.hero.location}</p>
-          <p className="f-tagline text-xl sm:text-2xl text-[var(--cream-dim)] max-w-md">{t.hero.tagline}</p>
-          <div className="flex flex-wrap justify-center gap-4 pt-2">
-            <a href="#booking" className="btn-brass px-8 py-3.5 rounded-full text-sm font-semibold">{t.hero.ctaBook}</a>
-            <a href="#services" className="btn-outline px-8 py-3.5 rounded-full text-sm font-semibold">{t.hero.ctaServices}</a>
-          </div>
-        </div>
-      </section>
-      {/* STATS */}
-      <StatsBand t={t} />
-
-      {/* ABOUT */}
-      <section id="about" className="px-4 py-20 max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        <div className="reveal-left">
-          <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-3">{t.about.badge}</p>
-          <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-5">{t.about.title}</h2>
-          <p className="text-[var(--cream-dim)] leading-relaxed text-base">{t.about.body}</p>
-        </div>
-        <div className="flex justify-center reveal-right">
-          <img src={hassanAboutImg} alt="Hassan" style={{ width: "100%", maxWidth: 400, borderRadius: 12, border: "1px solid rgba(199,154,69,0.3)", objectFit: "cover", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }} />
-        </div>
-      </section>
-
-      {/* TEAM */}
-      <section id="team" className="px-4 py-20 panel-bg">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.team.title}</h2>
-          <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.team.subtitle}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {TEAM.map((member, i) => (
-              <div key={member.name} className="team-card flex flex-col rounded-xl overflow-hidden border border-[rgba(199,154,69,0.2)] reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
-                <div className="tc-img">
-                  <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top", display: "block" }} />
-                </div>
-                <div className="glass-panel p-4 flex flex-col gap-2 flex-1 text-center border-t-0 rounded-none">
-                  <h3 className="f-display text-base text-[var(--cream)]">{member.name}<span className="text-[var(--brass)] font-normal">, {member.role[lang]}</span></h3>
-                  <p className="text-sm text-[var(--cream-dim)] leading-relaxed">{member.desc[lang]}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SERVICES */}
-      <section id="services" className="px-4 py-20 relative overflow-hidden panel-bg">
-        <video autoPlay muted loop playsInline aria-hidden="true"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.28 }}
-          src={gallery5} />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.55)" }} />
-        <div className="max-w-5xl mx-auto relative">
-          <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.services.title}</h2>
-          <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.services.subtitle}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SERVICES.map((s, i) => (
-              <div key={s.id} className="ticket-card p-6 flex flex-col gap-3 reveal" style={{ transitionDelay: `${i * 0.09}s` }}>
-                <span className="f-display text-xs text-[var(--brass)] tracking-widest">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="f-display text-xl text-[var(--cream)]">{s.name[lang]}</h3>
-                <p className="text-sm text-[var(--cream-dim)] flex-1 leading-relaxed">{s.desc[lang]}</p>
-                <div className="flex items-center justify-between pt-3 border-t hairline">
-                  <span className="text-xs text-[var(--cream-dim)]">{s.duration} {t.services.minutes}</span>
-                  <span className="f-display text-lg text-[var(--brass-light)]">€{s.price}</span>
-                </div>
-                <button onClick={() => selectService(s.id)} className="btn-outline mt-1 py-2.5 rounded-full text-sm font-semibold">
-                  {t.services.bookThis}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PROMOS */}
-      {[
-        { img: studentImg, promo: t.promos.student },
-        { img: militaryImg, promo: t.promos.military },
-      ].map(({ img, promo }) => (
-        <section key={promo.badge} className="relative overflow-hidden" style={{ minHeight: 220 }}>
-          <img src={img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
-          <div style={{ position: "absolute", inset: 0, background: "rgba(21,17,13,0.72)" }} />
-          <div className="relative flex items-center justify-center min-h-[220px] px-4 py-12">
-            <div className="text-center border hairline rounded p-8 max-w-sm" style={{ background: "rgba(21,17,13,0.75)", backdropFilter: "blur(6px)" }}>
-              <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-2">{promo.badge}</p>
-              <p className="text-sm text-[var(--cream-dim)] mb-1">{promo.title}</p>
-              <p className="f-display text-3xl brass-text mb-3">{promo.price}</p>
-              <p className="text-xs text-[var(--cream-dim)]">{promo.note}</p>
-            </div>
-          </div>
-        </section>
-      ))}
-
-      {/* GALLERY */}
-      <Gallery t={t} />
-
-      {/* REVIEWS */}
-      <section id="reviews" className="py-20 panel-bg overflow-hidden">
-        {/* Header */}
-        <div className="max-w-5xl mx-auto px-4 text-center mb-12 reveal">
-          <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-4">{t.reviews.title}</h2>
-          <div className="flex justify-center">
-            <div className="reviews-header-rating">
-              <span className="f-display text-2xl text-[var(--brass-light)]">4.5</span>
-              <div className="review-stars">
-                {[1,2,3,4,5].map(s => (
-                  <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--brass-light)">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
+      {isApp ? (
+        /* ===================== APP MODE UI ===================== */
+        <>
+          {/* HOME PAGE */}
+          <div className={`app-page${currentPage === "home" ? " active" : ""}`}>
+            {/* Hero - full screen */}
+            <section className="relative text-center overflow-hidden" style={{ height: "calc(100svh - 64px)", display: "flex", alignItems: "center" }}>
+              <video ref={heroBgRef} src={heroVideo} autoPlay muted loop playsInline aria-hidden="true"
+                style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", opacity: 0.38 }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(21,17,13,0.8) 0%,rgba(115,39,52,0.12) 50%,rgba(21,17,13,0.92) 100%)" }} />
+              <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%,rgba(199,154,69,0.12),transparent 65%)" }} />
+              {/* Lang selector top right */}
+              <div style={{ position: "absolute", top: 14, right: 14, display: "flex", gap: 6, zIndex: 10 }}>
+                {LANGS.map((code) => (
+                  <button key={code} className="lang-btn pb-0.5 px-0.5 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>
                 ))}
               </div>
-              <span className="text-xs text-[var(--cream-dim)] tracking-wider">119 Google Reviews</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Marquee — row 1 left, row 2 right */}
-        {[REVIEWS.slice(0, Math.ceil(REVIEWS.length / 2)), REVIEWS.slice(Math.ceil(REVIEWS.length / 2))].map((group, gi) => (
-          <div key={gi} className="reviews-marquee-wrap mb-4">
-            <div className={`reviews-track${gi === 1 ? " reviews-track-r" : ""}`}>
-              {[...group, ...group].map((r, i) => (
-                <div key={i} className="review-card">
-                  <div className="review-quote">"</div>
-                  <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
-                  <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
-                    <div className="review-avatar">{r.name[0]}</div>
-                    <div className="flex flex-col gap-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="f-display text-sm text-[var(--cream)] truncate">{r.name}</p>
-                        <span className="text-xs text-[var(--cream-dim)] flex-shrink-0">· {r.city}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="review-stars">
-                          {Array.from({length: r.stars}).map((_, s) => (
-                            <svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass)">
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                          ))}
-                        </div>
-                        <span className="review-google">
-                          <svg width="8" height="8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                          Google
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-4 w-full px-4">
+                <BadgeEmblem size={120} />
+                <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
+                <h1 className="f-display brass-text text-4xl leading-tight">LA BARBERIA</h1>
+                <h2 className="f-display text-2xl text-[var(--cream)]">HASSAN</h2>
+                <p className="f-display text-lg text-[var(--brass-light)] min-h-[2rem]">{twWord}<span className="tw-cursor" aria-hidden="true" /></p>
+                <div className="flex gap-3 pt-2 w-full max-w-xs">
+                  <button onClick={() => navigate("book")} className="btn-brass flex-1 py-3 rounded-full text-sm font-semibold">{t.hero.ctaBook}</button>
+                  <button onClick={() => navigate("services")} className="btn-outline flex-1 py-3 rounded-full text-sm font-semibold">{t.hero.ctaServices}</button>
                 </div>
+              </div>
+            </section>
+            <StatsBand t={t} />
+            {/* Quick nav cards */}
+            <div style={{ padding: "20px 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {[
+                { page: "services", icon: <Scissors size={22} />, label: t.nav.services },
+                { page: "gallery", icon: <Camera size={22} />, label: "Galleria" },
+                { page: "info", icon: <MapPin size={22} />, label: t.nav.contact },
+                { page: "book", icon: <CalendarIcon size={22} />, label: t.nav.booking, gold: true },
+              ].map(({ page, icon, label, gold }) => (
+                <button key={page} onClick={() => navigate(page)}
+                  style={{ background: gold ? "linear-gradient(135deg,var(--brass-light),var(--brass))" : "rgba(28,22,14,0.8)", border: "1px solid rgba(199,154,69,0.2)", borderRadius: 14, padding: "18px 12px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, cursor: "pointer", color: gold ? "#1a1105" : "var(--cream-dim)", fontWeight: 600, fontSize: "0.8rem" }}>
+                  {icon}
+                  {label}
+                </button>
               ))}
             </div>
           </div>
-        ))}
-      </section>
 
-      <div className="stripe-band" />
-
-      {/* BOOKING */}
-      <section id="booking" ref={bookingRef} className="px-4 py-16 max-w-2xl mx-auto">
-        <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.booking.title}</h2>
-        <p className="text-center text-[var(--cream-dim)] mb-8 text-sm">{t.booking.subtitle}</p>
-
-        {step < 5 && (
-          <div className="flex items-center justify-center gap-2 mb-8">
-            {[1, 2, 3, 4].map((n) => (
-              <span key={n} className="step-dot" data-active={step === n} data-done={step > n} />
+          {/* SERVICES PAGE */}
+          <div className={`app-page${currentPage === "services" ? " active" : ""}`}>
+            <div className="page-header-app">
+              <span className="f-display text-sm text-[var(--brass-light)]">{t.services.title}</span>
+              <div className="flex gap-3 text-xs">
+                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+              </div>
+            </div>
+            <section className="px-4 py-6 relative overflow-hidden">
+              <video autoPlay muted loop playsInline aria-hidden="true"
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.18 }} src={gallery5} />
+              <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.6)" }} />
+              <div className="relative flex flex-col gap-3">
+                {SERVICES.map((s, i) => (
+                  <div key={s.id} style={{ background: "rgba(28,22,14,0.85)", backdropFilter: "blur(12px)", border: "1px solid rgba(199,154,69,0.15)", borderRadius: 14, padding: "16px" }}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <span className="f-display text-[10px] text-[var(--brass)] tracking-widest">{String(i + 1).padStart(2, "0")}</span>
+                        <h3 className="f-display text-base text-[var(--cream)] mt-0.5">{s.name[lang]}</h3>
+                        <p className="text-xs text-[var(--cream-dim)] mt-1 leading-relaxed">{s.desc[lang]}</p>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="f-display text-xl text-[var(--brass-light)]">€{s.price}</p>
+                        <p className="text-[10px] text-[var(--cream-dim)]">{s.duration} {t.services.minutes}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => { selectService(s.id); navigate("book"); }} className="btn-outline w-full mt-3 py-2 rounded-full text-xs font-semibold">{t.services.bookThis}</button>
+                  </div>
+                ))}
+              </div>
+            </section>
+            {/* Promos */}
+            {[
+              { img: studentImg, promo: t.promos.student },
+              { img: militaryImg, promo: t.promos.military },
+            ].map(({ img, promo }) => (
+              <section key={promo.badge} className="relative overflow-hidden mx-4 mb-4 rounded-xl" style={{ minHeight: 160 }}>
+                <img src={img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                <div style={{ position: "absolute", inset: 0, background: "rgba(21,17,13,0.75)" }} />
+                <div className="relative flex items-center justify-center min-h-[160px] px-4 py-8 text-center">
+                  <div>
+                    <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-1">{promo.badge}</p>
+                    <p className="text-xs text-[var(--cream-dim)] mb-1">{promo.title}</p>
+                    <p className="f-display text-2xl brass-text mb-1">{promo.price}</p>
+                    <p className="text-[10px] text-[var(--cream-dim)]">{promo.note}</p>
+                  </div>
+                </div>
+              </section>
             ))}
           </div>
-        )}
 
-        <div className="ticket-card p-6">
-          {step === 1 && (
-            <div className="flex flex-col gap-3">
-              <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
-              <select value={booking.serviceId || ""} onChange={(e) => setBooking((p) => ({ ...p, serviceId: e.target.value, time: "" }))} className="px-3 py-2 text-sm">
-                <option value="" disabled>{t.booking.selectServicePlaceholder}</option>
-                {SERVICES.map((s) => (
-                  <option key={s.id} value={s.id}>{s.name[lang]} — €{s.price} ({s.duration} {t.services.minutes})</option>
-                ))}
-              </select>
+          {/* BOOK PAGE */}
+          <div className={`app-page${currentPage === "book" ? " active" : ""}`}>
+            <div className="page-header-app">
+              <span className="f-display text-sm text-[var(--brass-light)]">{t.booking.title}</span>
+              <div className="flex gap-3 text-xs">
+                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+              </div>
             </div>
-          )}
-
-          {step === 2 && (
-            <div className="flex flex-col gap-3">
-              <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><CalendarIcon size={14} /> {t.booking.dateLabel}</label>
-              <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
-                onChange={(e) => setBooking((p) => ({ ...p, date: e.target.value, time: "" }))}
-                className="px-3 py-2 text-sm" />
-              {isClosedDay && <p className="text-sm text-[var(--brass-light)]">{t.booking.closedNotice}</p>}
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="flex flex-col gap-3">
-              <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Clock size={14} /> {t.booking.timeLabel}</label>
-              {loadingSlots ? (
-                <p className="text-sm text-[var(--cream-dim)]">{t.booking.loadingSlots}</p>
-              ) : slots.length === 0 ? (
-                <p className="text-sm text-[var(--cream-dim)]">{t.booking.noSlots}</p>
-              ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {slots.map((tm) => (
-                    <button key={tm} onClick={() => setBooking((p) => ({ ...p, time: tm }))}
-                      className="py-2 rounded text-sm border hairline"
-                      style={booking.time === tm ? { background: "var(--brass)", color: "#241a0e", fontWeight: 600 } : { color: "var(--cream-dim)" }}>
-                      {tm}
-                    </button>
+            <section className="px-4 py-6 max-w-2xl mx-auto">
+              <p className="text-center text-[var(--cream-dim)] mb-6 text-sm">{t.booking.subtitle}</p>
+              {step < 5 && (
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  {[1, 2, 3, 4].map((n) => (
+                    <span key={n} className="step-dot" data-active={step === n} data-done={step > n} />
                   ))}
                 </div>
               )}
-            </div>
-          )}
+              <div className="ticket-card p-5">
+                {step === 1 && (
+                  <div className="flex flex-col gap-3">
+                    <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
+                    <select value={booking.serviceId || ""} onChange={(e) => setBooking((p) => ({ ...p, serviceId: e.target.value, time: "" }))} className="px-3 py-2 text-sm">
+                      <option value="" disabled>{t.booking.selectServicePlaceholder}</option>
+                      {SERVICES.map((s) => (
+                        <option key={s.id} value={s.id}>{s.name[lang]} — €{s.price} ({s.duration} {t.services.minutes})</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {step === 2 && (
+                  <div className="flex flex-col gap-3">
+                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><CalendarIcon size={14} /> {t.booking.dateLabel}</label>
+                    <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
+                      onChange={(e) => setBooking((p) => ({ ...p, date: e.target.value, time: "" }))} className="px-3 py-2 text-sm" />
+                    {isClosedDay && <p className="text-sm text-[var(--brass-light)]">{t.booking.closedNotice}</p>}
+                  </div>
+                )}
+                {step === 3 && (
+                  <div className="flex flex-col gap-3">
+                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Clock size={14} /> {t.booking.timeLabel}</label>
+                    {loadingSlots ? (
+                      <p className="text-sm text-[var(--cream-dim)]">{t.booking.loadingSlots}</p>
+                    ) : slots.length === 0 ? (
+                      <p className="text-sm text-[var(--cream-dim)]">{t.booking.noSlots}</p>
+                    ) : (
+                      <div className="grid grid-cols-3 gap-2">
+                        {slots.map((tm) => (
+                          <button key={tm} onClick={() => setBooking((p) => ({ ...p, time: tm }))}
+                            className="py-2 rounded text-sm border hairline"
+                            style={booking.time === tm ? { background: "var(--brass)", color: "#241a0e", fontWeight: 600 } : { color: "var(--cream-dim)" }}>
+                            {tm}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {step === 4 && (
+                  <div className="flex flex-col gap-3">
+                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><User size={14} /> {t.booking.nameLabel}</label>
+                    <input type="text" value={booking.name} onChange={(e) => setBooking((p) => ({ ...p, name: e.target.value }))} className="px-3 py-2 text-sm" />
+                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Phone size={14} /> {t.booking.phoneLabel}</label>
+                    <input type="tel" value={booking.phone} onChange={(e) => setBooking((p) => ({ ...p, phone: e.target.value }))} className="px-3 py-2 text-sm" />
+                    <label className="text-sm text-[var(--cream-dim)]">{t.booking.notesLabel}</label>
+                    <textarea rows={2} placeholder={t.booking.notesPlaceholder} value={booking.notes} onChange={(e) => setBooking((p) => ({ ...p, notes: e.target.value }))} className="px-3 py-2 text-sm" />
+                    {!canNext() && (booking.name || booking.phone) && (
+                      <p className="text-xs text-[var(--brass-light)]">{t.booking.requiredNotice}</p>
+                    )}
+                  </div>
+                )}
+                {step === 5 && service && (
+                  <div className="flex flex-col items-center gap-4 text-center">
+                    <div className="flex items-center gap-2 text-[var(--brass-light)]"><Check size={20} /><span className="f-display">{t.booking.successTitle}</span></div>
+                    <div className="w-full text-left border hairline rounded p-4 text-sm flex flex-col gap-1">
+                      <p><strong className="text-[var(--cream)]">{t.booking.summaryTitle}</strong></p>
+                      <p className="text-[var(--cream-dim)]">{service.name[lang]} — €{service.price}</p>
+                      <p className="text-[var(--cream-dim)]">{booking.date} · {booking.time}</p>
+                      <p className="text-[var(--cream-dim)]">{booking.name} · {booking.phone}</p>
+                      {booking.notes && <p className="text-[var(--cream-dim)]">{booking.notes}</p>}
+                    </div>
+                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-brass w-full py-3 rounded text-sm font-semibold flex items-center justify-center gap-2">
+                      <MessageCircle size={16} /> {t.booking.confirmButton}
+                    </a>
+                    <button onClick={resetBooking} className="btn-outline w-full py-2 rounded text-sm">{t.booking.newBooking}</button>
+                  </div>
+                )}
+                {step < 5 && (
+                  <div className="flex items-center justify-between pt-5 mt-2 border-t hairline">
+                    <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
+                      className="btn-outline px-4 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-30">
+                      <ChevronLeft size={14} /> {t.booking.backButton}
+                    </button>
+                    <button onClick={() => goStep(step + 1)} disabled={!canNext()}
+                      className="btn-brass px-5 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-40">
+                      {t.booking.nextButton} <ChevronRight size={14} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
 
-          {step === 4 && (
-            <div className="flex flex-col gap-3">
-              <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><User size={14} /> {t.booking.nameLabel}</label>
-              <input type="text" value={booking.name} onChange={(e) => setBooking((p) => ({ ...p, name: e.target.value }))} className="px-3 py-2 text-sm" />
-              <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Phone size={14} /> {t.booking.phoneLabel}</label>
-              <input type="tel" value={booking.phone} onChange={(e) => setBooking((p) => ({ ...p, phone: e.target.value }))} className="px-3 py-2 text-sm" />
-              <label className="text-sm text-[var(--cream-dim)]">{t.booking.notesLabel}</label>
-              <textarea rows={2} placeholder={t.booking.notesPlaceholder} value={booking.notes} onChange={(e) => setBooking((p) => ({ ...p, notes: e.target.value }))} className="px-3 py-2 text-sm" />
-              {!canNext() && (booking.name || booking.phone) && (
-                <p className="text-xs text-[var(--brass-light)]">{t.booking.requiredNotice}</p>
+          {/* GALLERY PAGE */}
+          <div className={`app-page${currentPage === "gallery" ? " active" : ""}`}>
+            <div className="page-header-app">
+              <span className="f-display text-sm text-[var(--brass-light)]">La Nostra Arte</span>
+              <div className="flex gap-3 text-xs">
+                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+              </div>
+            </div>
+            <Gallery t={t} />
+          </div>
+
+          {/* INFO PAGE */}
+          <div className={`app-page${currentPage === "info" ? " active" : ""}`}>
+            <div className="page-header-app">
+              <span className="f-display text-sm text-[var(--brass-light)]">Info</span>
+              <div className="flex gap-3 text-xs">
+                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+              </div>
+            </div>
+            {/* About */}
+            <section className="px-4 py-8 max-w-2xl mx-auto">
+              <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-2">{t.about.badge}</p>
+              <h2 className="f-display text-2xl text-[var(--cream)] mb-3">{t.about.title}</h2>
+              <p className="text-sm text-[var(--cream-dim)] leading-relaxed">{t.about.body}</p>
+            </section>
+            {/* Team - horizontal scroll */}
+            <section className="py-6 panel-bg">
+              <h2 className="f-display text-lg text-[var(--cream)] px-4 mb-4">{t.team.title}</h2>
+              <div style={{ display: "flex", gap: 12, overflowX: "auto", padding: "0 16px 8px", scrollSnapType: "x mandatory" }}>
+                {TEAM.map((member) => (
+                  <div key={member.name} style={{ flexShrink: 0, width: 160, background: "rgba(28,22,14,0.8)", border: "1px solid rgba(199,154,69,0.15)", borderRadius: 14, overflow: "hidden", scrollSnapAlign: "start" }}>
+                    <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top" }} />
+                    <div style={{ padding: "10px 10px 12px" }}>
+                      <p className="f-display text-xs text-[var(--cream)]">{member.name}</p>
+                      <p className="text-[10px] text-[var(--brass)] mt-0.5">{member.role[lang]}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+            {/* Reviews marquee */}
+            <section className="py-6 overflow-hidden">
+              <div className="flex justify-between items-center px-4 mb-4">
+                <h2 className="f-display text-lg text-[var(--cream)]">{t.reviews.title}</h2>
+                <div className="reviews-header-rating" style={{ padding: "4px 12px" }}>
+                  <span className="f-display text-sm text-[var(--brass-light)]">4.5</span>
+                  <div className="review-stars">{[1,2,3,4,5].map(s=><svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass-light)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}</div>
+                </div>
+              </div>
+              {[REVIEWS.slice(0, Math.ceil(REVIEWS.length / 2)), REVIEWS.slice(Math.ceil(REVIEWS.length / 2))].map((group, gi) => (
+                <div key={gi} className="reviews-marquee-wrap mb-3">
+                  <div className={`reviews-track${gi === 1 ? " reviews-track-r" : ""}`}>
+                    {[...group, ...group].map((r, i) => (
+                      <div key={i} className="review-card">
+                        <div className="review-quote">"</div>
+                        <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
+                        <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
+                          <div className="review-avatar">{r.name[0]}</div>
+                          <div className="flex flex-col gap-1 min-w-0">
+                            <p className="f-display text-xs text-[var(--cream)] truncate">{r.name}</p>
+                            <div className="review-stars">{Array.from({length:r.stars}).map((_,s)=><svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="var(--brass)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+            {/* Hours */}
+            <section className="px-4 py-6 max-w-2xl mx-auto">
+              <h2 className="f-display text-lg text-[var(--cream)] mb-3 flex items-center gap-2"><Clock size={16} className="text-[var(--brass)]" /> {t.hours.title}</h2>
+              <ul className="text-sm divide-y hairline">
+                {DAY_ORDER.map((dayNumIdx, i) => {
+                  const cfg = HOURS[dayNumIdx];
+                  return (
+                    <li key={i} className="flex justify-between py-2">
+                      <span className="text-[var(--cream-dim)]">{t.hours.days[i]}</span>
+                      <span className="text-[var(--cream)]">{cfg ? `${cfg.open} – ${cfg.close}` : t.hours.closed}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+            {/* Map */}
+            <section className="px-4 pb-4">
+              <h2 className="f-display text-lg text-[var(--cream)] mb-3 flex items-center gap-2"><MapPin size={16} className="text-[var(--brass)]" /> {t.location.title}</h2>
+              <p className="text-xs text-[var(--cream-dim)] mb-3">{SHOP.address}</p>
+              <ShopMap address={SHOP.address} shopName={SHOP.name} mapsQuery={SHOP.mapsQuery} />
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`} target="_blank" rel="noopener noreferrer" className="btn-outline inline-flex items-center gap-2 px-4 py-2 rounded text-sm mt-3">
+                <MapPin size={13} /> {t.location.openInMaps}
+              </a>
+            </section>
+            {/* Contact */}
+            <section className="px-4 py-6 panel-bg mt-4">
+              <h2 className="f-display text-lg text-[var(--cream)] mb-4 text-center">{t.contact.title}</h2>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a href={`tel:${SHOP.phoneDisplay.replace(/\s/g,"")}`} className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><Phone size={14}/> {t.contact.call}</a>
+                <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><MessageCircle size={14}/> WhatsApp</a>
+                <a href={`https://instagram.com/${SHOP.instagram}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><Camera size={14}/> Instagram</a>
+                <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><TikTokIcon size={14}/> TikTok</a>
+              </div>
+            </section>
+            <footer className="px-4 py-6 text-center text-xs text-[var(--cream-dim)] border-t hairline">
+              © {new Date().getFullYear()} {SHOP.name} — Verona
+            </footer>
+          </div>
+
+          {/* BOTTOM NAV */}
+          <nav className="bottom-nav">
+            <button className="bnav-tab" data-active={currentPage === "home"} onClick={() => navigate("home")}>
+              <Home size={20} />
+              <span>Home</span>
+            </button>
+            <button className="bnav-tab" data-active={currentPage === "services"} onClick={() => navigate("services")}>
+              <Scissors size={20} />
+              <span>Servizi</span>
+            </button>
+            <button className="bnav-tab bnav-tab-book" data-active={currentPage === "book"} onClick={() => navigate("book")}>
+              <div className="bnav-book-icon"><CalendarIcon size={20} /></div>
+              <span>Prenota</span>
+            </button>
+            <button className="bnav-tab" data-active={currentPage === "gallery"} onClick={() => navigate("gallery")}>
+              <Camera size={20} />
+              <span>Galleria</span>
+            </button>
+            <button className="bnav-tab" data-active={currentPage === "info"} onClick={() => navigate("info")}>
+              <Info size={20} />
+              <span>Info</span>
+            </button>
+          </nav>
+
+          <WhatsAppChat shopName={SHOP.name} waNumber={SHOP.whatsapp} t={t} />
+        </>
+      ) : (
+        /* ===================== SITE MODE UI (UNCHANGED) ===================== */
+        <>
+          {/* NAV */}
+          <header className="sticky top-0 z-40 panel-bg border-b hairline">
+            <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3 gap-3">
+              <button className="md:hidden p-2 text-[var(--cream)]" onClick={() => setMenuOpen((o) => !o)} aria-label="Menu">
+                {menuOpen ? <X size={22} /> : <Menu size={22} />}
+              </button>
+              <a href="#hero" className="flex items-center gap-2 shrink-0">
+                <Scissors size={18} className="text-[var(--brass)]" />
+                <span className="f-display text-sm sm:text-base text-[var(--cream)]">LA BARBERIA <span className="text-[var(--brass-light)]">HASSAN</span></span>
+              </a>
+              <nav className="hidden md:flex items-center gap-6 text-sm">
+                {navLinks.map((l) => (
+                  <a key={l.id} href={`#${l.id}`} className="text-[var(--cream-dim)] hover:text-[var(--brass-light)] transition-colors">{l.label}</a>
+                ))}
+              </nav>
+              <div className="flex items-center gap-3 text-xs font-semibold shrink-0">
+                {LANGS.map((code) => (
+                  <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)} aria-label={T[code].label}>
+                    {T[code].code}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {menuOpen && (
+              <nav className="md:hidden flex flex-col px-4 pb-3 gap-2 text-sm border-t hairline">
+                {navLinks.map((l) => (
+                  <a key={l.id} href={`#${l.id}`} onClick={() => setMenuOpen(false)} className="py-1 text-[var(--cream-dim)]">{l.label}</a>
+                ))}
+              </nav>
+            )}
+          </header>
+          <div className="stripe-band" />
+
+          {/* HERO */}
+          <section id="hero" className="relative px-4 py-20 sm:py-32 text-center overflow-hidden" style={{ minHeight: "85vh", display: "flex", alignItems: "center" }}>
+            <video ref={heroBgRef} src={heroVideo} autoPlay muted loop playsInline aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", objectPosition: "center", opacity: 0.38, willChange: "transform" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(21,17,13,0.75) 0%, rgba(115,39,52,0.15) 50%, rgba(21,17,13,0.9) 100%)" }} />
+            <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%, rgba(199,154,69,0.12), transparent 65%)" }} />
+            <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-6 w-full hero-seq">
+              <BadgeEmblem size={160} />
+              <p className="f-display text-xs sm:text-sm tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
+              <h1 className="f-display brass-text text-5xl sm:text-7xl leading-tight">LA BARBERIA</h1>
+              <h2 className="f-display text-3xl sm:text-5xl text-[var(--cream)]">HASSAN</h2>
+              <p className="f-display text-xl sm:text-2xl" style={{ color: "var(--brass-light)", minHeight: "2rem", letterSpacing: "0.06em" }}>
+                {twWord}<span className="tw-cursor" aria-hidden="true" />
+              </p>
+              <p className="text-xs sm:text-sm tracking-[0.35em] text-[var(--cream-dim)] uppercase">{t.hero.location}</p>
+              <p className="f-tagline text-xl sm:text-2xl text-[var(--cream-dim)] max-w-md">{t.hero.tagline}</p>
+              <div className="flex flex-wrap justify-center gap-4 pt-2">
+                <a href="#booking" className="btn-brass px-8 py-3.5 rounded-full text-sm font-semibold">{t.hero.ctaBook}</a>
+                <a href="#services" className="btn-outline px-8 py-3.5 rounded-full text-sm font-semibold">{t.hero.ctaServices}</a>
+              </div>
+            </div>
+          </section>
+          {/* STATS */}
+          <StatsBand t={t} />
+
+          {/* ABOUT */}
+          <section id="about" className="px-4 py-20 max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div className="reveal-left">
+              <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-3">{t.about.badge}</p>
+              <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-5">{t.about.title}</h2>
+              <p className="text-[var(--cream-dim)] leading-relaxed text-base">{t.about.body}</p>
+            </div>
+            <div className="flex justify-center reveal-right">
+              <img src={hassanAboutImg} alt="Hassan" style={{ width: "100%", maxWidth: 400, borderRadius: 12, border: "1px solid rgba(199,154,69,0.3)", objectFit: "cover", boxShadow: "0 24px 80px rgba(0,0,0,0.5)" }} />
+            </div>
+          </section>
+
+          {/* TEAM */}
+          <section id="team" className="px-4 py-20 panel-bg">
+            <div className="max-w-5xl mx-auto">
+              <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.team.title}</h2>
+              <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.team.subtitle}</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {TEAM.map((member, i) => (
+                  <div key={member.name} className="team-card flex flex-col rounded-xl overflow-hidden border border-[rgba(199,154,69,0.2)] reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
+                    <div className="tc-img">
+                      <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top", display: "block" }} />
+                    </div>
+                    <div className="glass-panel p-4 flex flex-col gap-2 flex-1 text-center border-t-0 rounded-none">
+                      <h3 className="f-display text-base text-[var(--cream)]">{member.name}<span className="text-[var(--brass)] font-normal">, {member.role[lang]}</span></h3>
+                      <p className="text-sm text-[var(--cream-dim)] leading-relaxed">{member.desc[lang]}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* SERVICES */}
+          <section id="services" className="px-4 py-20 relative overflow-hidden panel-bg">
+            <video autoPlay muted loop playsInline aria-hidden="true"
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", opacity: 0.28 }}
+              src={gallery5} />
+            <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.55)" }} />
+            <div className="max-w-5xl mx-auto relative">
+              <h2 className="f-display text-3xl sm:text-4xl text-center text-[var(--cream)] mb-2 reveal">{t.services.title}</h2>
+              <p className="text-center text-[var(--cream-dim)] mb-12 text-sm reveal">{t.services.subtitle}</p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {SERVICES.map((s, i) => (
+                  <div key={s.id} className="ticket-card p-6 flex flex-col gap-3 reveal" style={{ transitionDelay: `${i * 0.09}s` }}>
+                    <span className="f-display text-xs text-[var(--brass)] tracking-widest">{String(i + 1).padStart(2, "0")}</span>
+                    <h3 className="f-display text-xl text-[var(--cream)]">{s.name[lang]}</h3>
+                    <p className="text-sm text-[var(--cream-dim)] flex-1 leading-relaxed">{s.desc[lang]}</p>
+                    <div className="flex items-center justify-between pt-3 border-t hairline">
+                      <span className="text-xs text-[var(--cream-dim)]">{s.duration} {t.services.minutes}</span>
+                      <span className="f-display text-lg text-[var(--brass-light)]">€{s.price}</span>
+                    </div>
+                    <button onClick={() => selectService(s.id)} className="btn-outline mt-1 py-2.5 rounded-full text-sm font-semibold">
+                      {t.services.bookThis}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* PROMOS */}
+          {[
+            { img: studentImg, promo: t.promos.student },
+            { img: militaryImg, promo: t.promos.military },
+          ].map(({ img, promo }) => (
+            <section key={promo.badge} className="relative overflow-hidden" style={{ minHeight: 220 }}>
+              <img src={img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+              <div style={{ position: "absolute", inset: 0, background: "rgba(21,17,13,0.72)" }} />
+              <div className="relative flex items-center justify-center min-h-[220px] px-4 py-12">
+                <div className="text-center border hairline rounded p-8 max-w-sm" style={{ background: "rgba(21,17,13,0.75)", backdropFilter: "blur(6px)" }}>
+                  <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-2">{promo.badge}</p>
+                  <p className="text-sm text-[var(--cream-dim)] mb-1">{promo.title}</p>
+                  <p className="f-display text-3xl brass-text mb-3">{promo.price}</p>
+                  <p className="text-xs text-[var(--cream-dim)]">{promo.note}</p>
+                </div>
+              </div>
+            </section>
+          ))}
+
+          {/* GALLERY */}
+          <Gallery t={t} />
+
+          {/* REVIEWS */}
+          <section id="reviews" className="py-20 panel-bg overflow-hidden">
+            {/* Header */}
+            <div className="max-w-5xl mx-auto px-4 text-center mb-12 reveal">
+              <h2 className="f-display text-3xl sm:text-4xl text-[var(--cream)] mb-4">{t.reviews.title}</h2>
+              <div className="flex justify-center">
+                <div className="reviews-header-rating">
+                  <span className="f-display text-2xl text-[var(--brass-light)]">4.5</span>
+                  <div className="review-stars">
+                    {[1,2,3,4,5].map(s => (
+                      <svg key={s} width="18" height="18" viewBox="0 0 24 24" fill="var(--brass-light)">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="text-xs text-[var(--cream-dim)] tracking-wider">119 Google Reviews</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Marquee — row 1 left, row 2 right */}
+            {[REVIEWS.slice(0, Math.ceil(REVIEWS.length / 2)), REVIEWS.slice(Math.ceil(REVIEWS.length / 2))].map((group, gi) => (
+              <div key={gi} className="reviews-marquee-wrap mb-4">
+                <div className={`reviews-track${gi === 1 ? " reviews-track-r" : ""}`}>
+                  {[...group, ...group].map((r, i) => (
+                    <div key={i} className="review-card">
+                      <div className="review-quote">"</div>
+                      <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
+                      <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
+                        <div className="review-avatar">{r.name[0]}</div>
+                        <div className="flex flex-col gap-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="f-display text-sm text-[var(--cream)] truncate">{r.name}</p>
+                            <span className="text-xs text-[var(--cream-dim)] flex-shrink-0">· {r.city}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="review-stars">
+                              {Array.from({length: r.stars}).map((_, s) => (
+                                <svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass)">
+                                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                              ))}
+                            </div>
+                            <span className="review-google">
+                              <svg width="8" height="8" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                              Google
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <div className="stripe-band" />
+
+          {/* BOOKING */}
+          <section id="booking" ref={bookingRef} className="px-4 py-16 max-w-2xl mx-auto">
+            <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.booking.title}</h2>
+            <p className="text-center text-[var(--cream-dim)] mb-8 text-sm">{t.booking.subtitle}</p>
+
+            {step < 5 && (
+              <div className="flex items-center justify-center gap-2 mb-8">
+                {[1, 2, 3, 4].map((n) => (
+                  <span key={n} className="step-dot" data-active={step === n} data-done={step > n} />
+                ))}
+              </div>
+            )}
+
+            <div className="ticket-card p-6">
+              {step === 1 && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
+                  <select value={booking.serviceId || ""} onChange={(e) => setBooking((p) => ({ ...p, serviceId: e.target.value, time: "" }))} className="px-3 py-2 text-sm">
+                    <option value="" disabled>{t.booking.selectServicePlaceholder}</option>
+                    {SERVICES.map((s) => (
+                      <option key={s.id} value={s.id}>{s.name[lang]} — €{s.price} ({s.duration} {t.services.minutes})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><CalendarIcon size={14} /> {t.booking.dateLabel}</label>
+                  <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
+                    onChange={(e) => setBooking((p) => ({ ...p, date: e.target.value, time: "" }))}
+                    className="px-3 py-2 text-sm" />
+                  {isClosedDay && <p className="text-sm text-[var(--brass-light)]">{t.booking.closedNotice}</p>}
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Clock size={14} /> {t.booking.timeLabel}</label>
+                  {loadingSlots ? (
+                    <p className="text-sm text-[var(--cream-dim)]">{t.booking.loadingSlots}</p>
+                  ) : slots.length === 0 ? (
+                    <p className="text-sm text-[var(--cream-dim)]">{t.booking.noSlots}</p>
+                  ) : (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                      {slots.map((tm) => (
+                        <button key={tm} onClick={() => setBooking((p) => ({ ...p, time: tm }))}
+                          className="py-2 rounded text-sm border hairline"
+                          style={booking.time === tm ? { background: "var(--brass)", color: "#241a0e", fontWeight: 600 } : { color: "var(--cream-dim)" }}>
+                          {tm}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {step === 4 && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><User size={14} /> {t.booking.nameLabel}</label>
+                  <input type="text" value={booking.name} onChange={(e) => setBooking((p) => ({ ...p, name: e.target.value }))} className="px-3 py-2 text-sm" />
+                  <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Phone size={14} /> {t.booking.phoneLabel}</label>
+                  <input type="tel" value={booking.phone} onChange={(e) => setBooking((p) => ({ ...p, phone: e.target.value }))} className="px-3 py-2 text-sm" />
+                  <label className="text-sm text-[var(--cream-dim)]">{t.booking.notesLabel}</label>
+                  <textarea rows={2} placeholder={t.booking.notesPlaceholder} value={booking.notes} onChange={(e) => setBooking((p) => ({ ...p, notes: e.target.value }))} className="px-3 py-2 text-sm" />
+                  {!canNext() && (booking.name || booking.phone) && (
+                    <p className="text-xs text-[var(--brass-light)]">{t.booking.requiredNotice}</p>
+                  )}
+                </div>
+              )}
+
+              {step === 5 && service && (
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <div className="flex items-center gap-2 text-[var(--brass-light)]"><Check size={20} /><span className="f-display">{t.booking.successTitle}</span></div>
+                  <div className="w-full text-left rtl:text-right border hairline rounded p-4 text-sm flex flex-col gap-1">
+                    <p><strong className="text-[var(--cream)]">{t.booking.summaryTitle}</strong></p>
+                    <p className="text-[var(--cream-dim)]">{service.name[lang]} — €{service.price}</p>
+                    <p className="text-[var(--cream-dim)]">{booking.date} · {booking.time}</p>
+                    <p className="text-[var(--cream-dim)]">{booking.name} · {booking.phone}</p>
+                    {booking.notes && <p className="text-[var(--cream-dim)]">{booking.notes}</p>}
+                  </div>
+                  <p className="text-sm text-[var(--cream-dim)]">{reserving ? t.booking.reserving : t.booking.successBody}</p>
+                  <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-brass w-full py-3 rounded text-sm font-semibold flex items-center justify-center gap-2">
+                    <MessageCircle size={16} /> {t.booking.confirmButton}
+                  </a>
+                  <button onClick={resetBooking} className="btn-outline w-full py-2 rounded text-sm">{t.booking.newBooking}</button>
+                </div>
+              )}
+
+              {step < 5 && (
+                <div className="flex items-center justify-between pt-6 mt-2 border-t hairline">
+                  <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
+                    className="btn-outline px-4 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-30">
+                    <ChevronLeft size={14} /> {t.booking.backButton}
+                  </button>
+                  <button onClick={() => goStep(step + 1)} disabled={!canNext()}
+                    className="btn-brass px-5 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-40">
+                    {t.booking.nextButton} <ChevronRight size={14} />
+                  </button>
+                </div>
               )}
             </div>
-          )}
+          </section>
 
-          {step === 5 && service && (
-            <div className="flex flex-col items-center gap-4 text-center">
-              <div className="flex items-center gap-2 text-[var(--brass-light)]"><Check size={20} /><span className="f-display">{t.booking.successTitle}</span></div>
-              <div className="w-full text-left rtl:text-right border hairline rounded p-4 text-sm flex flex-col gap-1">
-                <p><strong className="text-[var(--cream)]">{t.booking.summaryTitle}</strong></p>
-                <p className="text-[var(--cream-dim)]">{service.name[lang]} — €{service.price}</p>
-                <p className="text-[var(--cream-dim)]">{booking.date} · {booking.time}</p>
-                <p className="text-[var(--cream-dim)]">{booking.name} · {booking.phone}</p>
-                {booking.notes && <p className="text-[var(--cream-dim)]">{booking.notes}</p>}
-              </div>
-              <p className="text-sm text-[var(--cream-dim)]">{reserving ? t.booking.reserving : t.booking.successBody}</p>
-              <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-brass w-full py-3 rounded text-sm font-semibold flex items-center justify-center gap-2">
-                <MessageCircle size={16} /> {t.booking.confirmButton}
+          <div className="stripe-band" />
+
+          {/* HOURS + LOCATION */}
+          <section id="hours-location" className="px-4 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
+            <div>
+              <h2 className="f-display text-2xl text-[var(--cream)] mb-4 flex items-center gap-2"><Clock size={18} className="text-[var(--brass)]" /> {t.hours.title}</h2>
+              <ul className="text-sm divide-y hairline">
+                {DAY_ORDER.map((dayNumIdx, i) => {
+                  const cfg = HOURS[dayNumIdx];
+                  return (
+                    <li key={i} className="flex justify-between py-2">
+                      <span className="text-[var(--cream-dim)]">{t.hours.days[i]}</span>
+                      <span className="text-[var(--cream)]">{cfg ? `${cfg.open} – ${cfg.close}` : t.hours.closed}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="text-xs text-[var(--cream-dim)] mt-3">{t.hours.note}</p>
+            </div>
+            <div>
+              <h2 className="f-display text-2xl text-[var(--cream)] mb-4 flex items-center gap-2"><MapPin size={18} className="text-[var(--brass)]" /> {t.location.title}</h2>
+              <p className="text-sm text-[var(--cream-dim)] mb-1">{SHOP.address}</p>
+              <p className="text-xs text-[var(--brass)] mb-4">{t.location.nearby}</p>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`} target="_blank" rel="noopener noreferrer" className="btn-outline inline-flex items-center gap-2 px-4 py-2 rounded text-sm">
+                <MapPin size={14} /> {t.location.openInMaps}
               </a>
-              <button onClick={resetBooking} className="btn-outline w-full py-2 rounded text-sm">{t.booking.newBooking}</button>
             </div>
-          )}
+          </section>
 
-          {step < 5 && (
-            <div className="flex items-center justify-between pt-6 mt-2 border-t hairline">
-              <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
-                className="btn-outline px-4 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-30">
-                <ChevronLeft size={14} /> {t.booking.backButton}
-              </button>
-              <button onClick={() => goStep(step + 1)} disabled={!canNext()}
-                className="btn-brass px-5 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-40">
-                {t.booking.nextButton} <ChevronRight size={14} />
-              </button>
+          {/* MAP */}
+          <section id="map" className="px-4 pb-16 max-w-5xl mx-auto">
+            <ShopMap address={SHOP.address} shopName={SHOP.name} mapsQuery={SHOP.mapsQuery} />
+          </section>
+
+          {/* CONTACT */}
+          <section id="contact" className="px-4 py-16 panel-bg">
+            <div className="max-w-2xl mx-auto text-center">
+              <h2 className="f-display text-2xl text-[var(--cream)] mb-6">{t.contact.title}</h2>
+              <div className="flex flex-wrap justify-center gap-4">
+                <a href={`tel:${SHOP.phoneDisplay.replace(/\s/g, "")}`} className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><Phone size={15} /> {t.contact.call}</a>
+                <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><MessageCircle size={15} /> {t.contact.whatsapp}</a>
+                <a href={`https://instagram.com/${SHOP.instagram}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><Camera size={15} /> {t.contact.instagram}</a>
+                <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><TikTokIcon size={15} /> {t.contact.tiktok}</a>
+              </div>
             </div>
-          )}
-        </div>
-      </section>
+          </section>
 
-      <div className="stripe-band" />
+          {/* FOOTER */}
+          <footer className="px-4 py-8 text-center text-xs text-[var(--cream-dim)] border-t hairline pb-24 md:pb-8">
+            © {new Date().getFullYear()} {SHOP.name} — Verona
+          </footer>
 
-      {/* HOURS + LOCATION */}
-      <section id="hours-location" className="px-4 py-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-10">
-        <div>
-          <h2 className="f-display text-2xl text-[var(--cream)] mb-4 flex items-center gap-2"><Clock size={18} className="text-[var(--brass)]" /> {t.hours.title}</h2>
-          <ul className="text-sm divide-y hairline">
-            {DAY_ORDER.map((dayNumIdx, i) => {
-              const cfg = HOURS[dayNumIdx];
-              return (
-                <li key={i} className="flex justify-between py-2">
-                  <span className="text-[var(--cream-dim)]">{t.hours.days[i]}</span>
-                  <span className="text-[var(--cream)]">{cfg ? `${cfg.open} – ${cfg.close}` : t.hours.closed}</span>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="text-xs text-[var(--cream-dim)] mt-3">{t.hours.note}</p>
-        </div>
-        <div>
-          <h2 className="f-display text-2xl text-[var(--cream)] mb-4 flex items-center gap-2"><MapPin size={18} className="text-[var(--brass)]" /> {t.location.title}</h2>
-          <p className="text-sm text-[var(--cream-dim)] mb-1">{SHOP.address}</p>
-          <p className="text-xs text-[var(--brass)] mb-4">{t.location.nearby}</p>
-          <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`} target="_blank" rel="noopener noreferrer" className="btn-outline inline-flex items-center gap-2 px-4 py-2 rounded text-sm">
-            <MapPin size={14} /> {t.location.openInMaps}
-          </a>
-        </div>
-      </section>
+          {/* WHATSAPP CHAT WIDGET */}
+          <WhatsAppChat shopName={SHOP.name} waNumber={SHOP.whatsapp} t={t} />
 
-      {/* MAP */}
-      <section id="map" className="px-4 pb-16 max-w-5xl mx-auto">
-        <ShopMap address={SHOP.address} shopName={SHOP.name} mapsQuery={SHOP.mapsQuery} />
-      </section>
-
-      {/* CONTACT */}
-      <section id="contact" className="px-4 py-16 panel-bg">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="f-display text-2xl text-[var(--cream)] mb-6">{t.contact.title}</h2>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href={`tel:${SHOP.phoneDisplay.replace(/\s/g, "")}`} className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><Phone size={15} /> {t.contact.call}</a>
-            <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><MessageCircle size={15} /> {t.contact.whatsapp}</a>
-            <a href={`https://instagram.com/${SHOP.instagram}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><Camera size={15} /> {t.contact.instagram}</a>
-            <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-5 py-2.5 rounded text-sm flex items-center gap-2"><TikTokIcon size={15} /> {t.contact.tiktok}</a>
+          {/* MOBILE QUICK BAR */}
+          <div className="md:hidden fixed bottom-0 inset-x-0 z-40 panel-bg border-t hairline flex">
+            <a href="#booking" className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[var(--brass-light)]">
+              <CalendarIcon size={18} /><span className="text-[11px]">{t.nav.booking}</span>
+            </a>
+            <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[var(--cream-dim)]">
+              <MessageCircle size={18} /><span className="text-[11px]">{t.contact.whatsapp}</span>
+            </a>
           </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="px-4 py-8 text-center text-xs text-[var(--cream-dim)] border-t hairline pb-24 md:pb-8">
-        © {new Date().getFullYear()} {SHOP.name} — Verona
-      </footer>
-
-      {/* WHATSAPP CHAT WIDGET */}
-      <WhatsAppChat shopName={SHOP.name} waNumber={SHOP.whatsapp} t={t} />
-
-      {/* MOBILE QUICK BAR */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-40 panel-bg border-t hairline flex">
-        <a href="#booking" className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[var(--brass-light)]">
-          <CalendarIcon size={18} /><span className="text-[11px]">{t.nav.booking}</span>
-        </a>
-        <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[var(--cream-dim)]">
-          <MessageCircle size={18} /><span className="text-[11px]">{t.contact.whatsapp}</span>
-        </a>
-      </div>
+        </>
+      )}
     </div>
   );
 }
