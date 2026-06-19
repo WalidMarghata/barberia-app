@@ -686,17 +686,49 @@ input::placeholder, textarea::placeholder { color:var(--cream-dim); }
 .leaflet-popup-tip { background:var(--panel) !important; }
 .leaflet-popup-content { color:var(--cream) !important; margin:12px 16px !important; }
 
-/* ── App mode (standalone PWA) ── */
-.app-page{display:none;min-height:calc(100svh - 64px);padding-bottom:80px;}
-.app-page.active{display:block;animation:pageFadeIn 0.28s ease both;}
-@keyframes pageFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:rgba(10,8,5,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(199,154,69,0.18);display:flex;align-items:stretch;z-index:100;padding-bottom:env(safe-area-inset-bottom,0px);}
-.bnav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;background:none;border:none;padding:0 4px;color:rgba(182,165,135,0.4);transition:color 0.2s;font-size:0.58rem;letter-spacing:0.05em;font-family:'Work Sans',sans-serif;text-transform:uppercase;}
+/* ── Premium App Mode ── */
+.app-shell{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--ink);}
+.app-pages-wrap{flex:1;position:relative;overflow:hidden;}
+.app-page{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transform:translateY(20px);transition:opacity 0.35s cubic-bezier(0.4,0,0.2,1),transform 0.35s cubic-bezier(0.4,0,0.2,1);}
+.app-page.active{opacity:1;pointer-events:auto;transform:none;}
+/* Bottom nav */
+.bottom-nav{flex-shrink:0;display:flex;align-items:flex-start;padding-top:10px;padding-bottom:env(safe-area-inset-bottom,10px);height:calc(66px + env(safe-area-inset-bottom,0px));background:rgba(4,3,1,0.98);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-top:1px solid rgba(199,154,69,0.1);}
+.bnav-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;background:none;border:none;padding:0;color:rgba(182,165,135,0.28);font-size:0.52rem;letter-spacing:0.1em;font-family:'Work Sans',sans-serif;text-transform:uppercase;transition:color 0.22s;position:relative;-webkit-tap-highlight-color:transparent;}
 .bnav-tab[data-active="true"]{color:var(--brass-light);}
-.bnav-tab-book{flex:1.3;background:linear-gradient(180deg,rgba(199,154,69,0.1),transparent);border-left:1px solid rgba(199,154,69,0.1);border-right:1px solid rgba(199,154,69,0.1);}
-.bnav-tab-book[data-active="true"]{color:var(--brass);}
-.bnav-book-icon{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--brass-light),var(--brass));display:flex;align-items:center;justify-content:center;color:#1a1105;box-shadow:0 4px 16px rgba(199,154,69,0.35);}
-.page-header-app{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:rgba(10,8,5,0.92);backdrop-filter:blur(12px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(199,154,69,0.12);}
+.bnav-tab[data-active="true"]::after{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:20px;height:2px;background:linear-gradient(90deg,var(--brass-light),var(--brass));border-radius:2px;}
+.bnav-fab-wrap{flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:0;cursor:pointer;background:none;border:none;gap:3px;-webkit-tap-highlight-color:transparent;}
+.bnav-fab{width:52px;height:52px;background:linear-gradient(135deg,var(--brass-light) 0%,var(--brass) 55%,#9c7530 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1a1105;margin-top:-20px;box-shadow:0 0 0 6px rgba(199,154,69,0.1),0 8px 28px rgba(0,0,0,0.5);transition:transform 0.18s,box-shadow 0.18s;}
+.bnav-fab-wrap:active .bnav-fab{transform:scale(0.88);box-shadow:0 0 0 4px rgba(199,154,69,0.08),0 4px 12px rgba(0,0,0,0.4);}
+.bnav-fab-wrap[data-active="true"] .bnav-fab{box-shadow:0 0 0 8px rgba(199,154,69,0.15),0 8px 32px rgba(199,154,69,0.4);}
+.bnav-fab-label{font-size:0.52rem;color:var(--brass);letter-spacing:0.1em;text-transform:uppercase;font-family:'Work Sans';}
+/* Page header */
+.page-header-app{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;background:rgba(4,3,1,0.9);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(199,154,69,0.09);}
+/* Home quick cards */
+.home-qcard{background:rgba(20,15,8,0.92);backdrop-filter:blur(16px);border:1px solid rgba(199,154,69,0.13);border-radius:20px;padding:20px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;cursor:pointer;transition:transform 0.18s,border-color 0.18s;-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;}
+.home-qcard::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(199,154,69,0.04),transparent 60%);pointer-events:none;}
+.home-qcard:active{transform:scale(0.95);}
+.home-qcard-gold{border-color:rgba(199,154,69,0.32);background:linear-gradient(135deg,rgba(232,200,122,0.1),rgba(154,107,26,0.06));}
+.home-qcard-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:rgba(199,154,69,0.09);color:var(--brass);}
+.home-qcard-gold .home-qcard-icon{background:linear-gradient(135deg,var(--brass-light),var(--brass));color:#1a1105;box-shadow:0 4px 16px rgba(199,154,69,0.3);}
+/* Service cards */
+.svc-card-app{background:rgba(18,13,6,0.9);backdrop-filter:blur(16px);border:1px solid rgba(199,154,69,0.11);border-radius:18px;padding:0;overflow:hidden;transition:border-color 0.2s;position:relative;}
+.svc-card-app::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(199,154,69,0.25),transparent);}
+.svc-card-body{padding:18px 18px 14px;}
+.svc-card-footer{padding:0 18px 16px;}
+/* Booking */
+.book-bar{height:2px;background:rgba(199,154,69,0.1);margin-bottom:28px;border-radius:2px;overflow:hidden;}
+.book-bar-fill{height:100%;background:linear-gradient(90deg,var(--brass-light),var(--brass));border-radius:2px;transition:width 0.4s cubic-bezier(0.4,0,0.2,1);}
+.time-slot-btn{padding:11px 4px;border-radius:12px;border:1px solid rgba(199,154,69,0.14);background:rgba(18,13,6,0.8);color:var(--cream-dim);font-size:0.82rem;cursor:pointer;transition:all 0.18s;text-align:center;-webkit-tap-highlight-color:transparent;}
+.time-slot-btn.sel{background:var(--brass);color:#1a1105;font-weight:700;border-color:var(--brass);box-shadow:0 4px 16px rgba(199,154,69,0.3);}
+/* Hours badges */
+.badge-open{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,0.09);border:1px solid rgba(34,197,94,0.22);border-radius:100px;padding:3px 10px;font-size:0.65rem;color:#4ade80;letter-spacing:0.05em;}
+.badge-closed{background:rgba(248,113,113,0.09);border-color:rgba(248,113,113,0.22);color:#f87171;}
+.status-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+/* Info sections */
+.info-section{padding:24px 20px;border-bottom:1px solid rgba(199,154,69,0.08);}
+.info-section:last-child{border-bottom:none;}
+.contact-pill{display:flex;align-items:center;gap:8px;background:rgba(20,15,8,0.8);border:1px solid rgba(199,154,69,0.15);border-radius:100px;padding:12px 18px;color:var(--cream-dim);font-size:0.82rem;cursor:pointer;text-decoration:none;transition:border-color 0.2s,color 0.2s;-webkit-tap-highlight-color:transparent;}
+.contact-pill:active{border-color:rgba(199,154,69,0.4);color:var(--cream);}
 `;
 
 /* ============================================================
@@ -1382,338 +1414,411 @@ export default function App() {
 
       {isApp ? (
         /* ===================== APP MODE UI ===================== */
-        <>
-          {/* HOME PAGE */}
-          <div className={`app-page${currentPage === "home" ? " active" : ""}`}>
-            {/* Hero - full screen */}
-            <section className="relative text-center overflow-hidden" style={{ height: "calc(100svh - 64px)", display: "flex", alignItems: "center" }}>
-              <video ref={heroBgRef} src={heroVideo} autoPlay muted loop playsInline aria-hidden="true"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "120%", top: "-10%", objectFit: "cover", opacity: 0.38 }} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg,rgba(21,17,13,0.8) 0%,rgba(115,39,52,0.12) 50%,rgba(21,17,13,0.92) 100%)" }} />
-              <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 40%,rgba(199,154,69,0.12),transparent 65%)" }} />
-              {/* Lang selector top right */}
-              <div style={{ position: "absolute", top: 14, right: 14, display: "flex", gap: 6, zIndex: 10 }}>
-                {LANGS.map((code) => (
-                  <button key={code} className="lang-btn pb-0.5 px-0.5 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>
-                ))}
-              </div>
-              <div className="relative max-w-2xl mx-auto flex flex-col items-center gap-4 w-full px-4">
-                <BadgeEmblem size={120} />
-                <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)]">{t.hero.kicker}</p>
-                <h1 className="f-display brass-text text-4xl leading-tight">LA BARBERIA</h1>
-                <h2 className="f-display text-2xl text-[var(--cream)]">HASSAN</h2>
-                <p className="f-display text-lg text-[var(--brass-light)] min-h-[2rem]">{twWord}<span className="tw-cursor" aria-hidden="true" /></p>
-                <div className="flex gap-3 pt-2 w-full max-w-xs">
-                  <button onClick={() => navigate("book")} className="btn-brass flex-1 py-3 rounded-full text-sm font-semibold">{t.hero.ctaBook}</button>
-                  <button onClick={() => navigate("services")} className="btn-outline flex-1 py-3 rounded-full text-sm font-semibold">{t.hero.ctaServices}</button>
-                </div>
-              </div>
-            </section>
-            <StatsBand t={t} />
-            {/* Quick nav cards */}
-            <div style={{ padding: "20px 16px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-              {[
-                { page: "services", icon: <Scissors size={22} />, label: t.nav.services },
-                { page: "gallery", icon: <Camera size={22} />, label: "Galleria" },
-                { page: "info", icon: <MapPin size={22} />, label: t.nav.contact },
-                { page: "book", icon: <CalendarIcon size={22} />, label: t.nav.booking, gold: true },
-              ].map(({ page, icon, label, gold }) => (
-                <button key={page} onClick={() => navigate(page)}
-                  style={{ background: gold ? "linear-gradient(135deg,var(--brass-light),var(--brass))" : "rgba(28,22,14,0.8)", border: "1px solid rgba(199,154,69,0.2)", borderRadius: 14, padding: "18px 12px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, cursor: "pointer", color: gold ? "#1a1105" : "var(--cream-dim)", fontWeight: 600, fontSize: "0.8rem" }}>
-                  {icon}
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
+        <div className="app-shell">
+          <div className="app-pages-wrap">
 
-          {/* SERVICES PAGE */}
-          <div className={`app-page${currentPage === "services" ? " active" : ""}`}>
-            <div className="page-header-app">
-              <span className="f-display text-sm text-[var(--brass-light)]">{t.services.title}</span>
-              <div className="flex gap-3 text-xs">
-                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
-              </div>
-            </div>
-            <section className="px-4 py-6 relative overflow-hidden">
-              <video autoPlay muted loop playsInline aria-hidden="true"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.18 }} src={gallery5} />
-              <div style={{ position: "absolute", inset: 0, background: "rgba(10,8,5,0.6)" }} />
-              <div className="relative flex flex-col gap-3">
-                {SERVICES.map((s, i) => (
-                  <div key={s.id} style={{ background: "rgba(28,22,14,0.85)", backdropFilter: "blur(12px)", border: "1px solid rgba(199,154,69,0.15)", borderRadius: 14, padding: "16px" }}>
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <span className="f-display text-[10px] text-[var(--brass)] tracking-widest">{String(i + 1).padStart(2, "0")}</span>
-                        <h3 className="f-display text-base text-[var(--cream)] mt-0.5">{s.name[lang]}</h3>
-                        <p className="text-xs text-[var(--cream-dim)] mt-1 leading-relaxed">{s.desc[lang]}</p>
-                      </div>
-                      <div className="text-right flex-shrink-0">
-                        <p className="f-display text-xl text-[var(--brass-light)]">€{s.price}</p>
-                        <p className="text-[10px] text-[var(--cream-dim)]">{s.duration} {t.services.minutes}</p>
-                      </div>
-                    </div>
-                    <button onClick={() => { selectService(s.id); navigate("book"); }} className="btn-outline w-full mt-3 py-2 rounded-full text-xs font-semibold">{t.services.bookThis}</button>
-                  </div>
-                ))}
-              </div>
-            </section>
-            {/* Promos */}
-            {[
-              { img: studentImg, promo: t.promos.student },
-              { img: militaryImg, promo: t.promos.military },
-            ].map(({ img, promo }) => (
-              <section key={promo.badge} className="relative overflow-hidden mx-4 mb-4 rounded-xl" style={{ minHeight: 160 }}>
-                <img src={img} alt="" aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-                <div style={{ position: "absolute", inset: 0, background: "rgba(21,17,13,0.75)" }} />
-                <div className="relative flex items-center justify-center min-h-[160px] px-4 py-8 text-center">
-                  <div>
-                    <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-1">{promo.badge}</p>
-                    <p className="text-xs text-[var(--cream-dim)] mb-1">{promo.title}</p>
-                    <p className="f-display text-2xl brass-text mb-1">{promo.price}</p>
-                    <p className="text-[10px] text-[var(--cream-dim)]">{promo.note}</p>
-                  </div>
-                </div>
-              </section>
-            ))}
-          </div>
-
-          {/* BOOK PAGE */}
-          <div className={`app-page${currentPage === "book" ? " active" : ""}`}>
-            <div className="page-header-app">
-              <span className="f-display text-sm text-[var(--brass-light)]">{t.booking.title}</span>
-              <div className="flex gap-3 text-xs">
-                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
-              </div>
-            </div>
-            <section className="px-4 py-6 max-w-2xl mx-auto">
-              <p className="text-center text-[var(--cream-dim)] mb-6 text-sm">{t.booking.subtitle}</p>
-              {step < 5 && (
-                <div className="flex items-center justify-center gap-2 mb-6">
-                  {[1, 2, 3, 4].map((n) => (
-                    <span key={n} className="step-dot" data-active={step === n} data-done={step > n} />
+            {/* ── HOME ── */}
+            <div className={`app-page${currentPage === "home" ? " active" : ""}`}>
+              {/* Hero */}
+              <section style={{ position:"relative", height:"58svh", minHeight:320, display:"flex", alignItems:"flex-end", overflow:"hidden" }}>
+                <video ref={heroBgRef} src={heroVideo} autoPlay muted loop playsInline aria-hidden="true"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"120%", top:"-10%", objectFit:"cover", opacity:0.45 }} />
+                <div style={{ position:"absolute", inset:0, background:"linear-gradient(to bottom, rgba(4,3,1,0.1) 0%, rgba(4,3,1,0.5) 60%, rgba(4,3,1,0.97) 100%)" }} />
+                <div style={{ position:"absolute", inset:0, background:"radial-gradient(ellipse at 50% 60%, rgba(199,154,69,0.1), transparent 70%)" }} />
+                {/* Lang selector */}
+                <div style={{ position:"absolute", top:16, right:16, display:"flex", gap:6 }}>
+                  {LANGS.map(code => (
+                    <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>
                   ))}
                 </div>
-              )}
-              <div className="ticket-card p-5">
-                {step === 1 && (
-                  <div className="flex flex-col gap-3">
-                    <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
-                    <select value={booking.serviceId || ""} onChange={(e) => setBooking((p) => ({ ...p, serviceId: e.target.value, time: "" }))} className="px-3 py-2 text-sm">
-                      <option value="" disabled>{t.booking.selectServicePlaceholder}</option>
-                      {SERVICES.map((s) => (
-                        <option key={s.id} value={s.id}>{s.name[lang]} — €{s.price} ({s.duration} {t.services.minutes})</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                {step === 2 && (
-                  <div className="flex flex-col gap-3">
-                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><CalendarIcon size={14} /> {t.booking.dateLabel}</label>
-                    <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
-                      onChange={(e) => setBooking((p) => ({ ...p, date: e.target.value, time: "" }))} className="px-3 py-2 text-sm" />
-                    {isClosedDay && <p className="text-sm text-[var(--brass-light)]">{t.booking.closedNotice}</p>}
-                  </div>
-                )}
-                {step === 3 && (
-                  <div className="flex flex-col gap-3">
-                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Clock size={14} /> {t.booking.timeLabel}</label>
-                    {loadingSlots ? (
-                      <p className="text-sm text-[var(--cream-dim)]">{t.booking.loadingSlots}</p>
-                    ) : slots.length === 0 ? (
-                      <p className="text-sm text-[var(--cream-dim)]">{t.booking.noSlots}</p>
-                    ) : (
-                      <div className="grid grid-cols-3 gap-2">
-                        {slots.map((tm) => (
-                          <button key={tm} onClick={() => setBooking((p) => ({ ...p, time: tm }))}
-                            className="py-2 rounded text-sm border hairline"
-                            style={booking.time === tm ? { background: "var(--brass)", color: "#241a0e", fontWeight: 600 } : { color: "var(--cream-dim)" }}>
-                            {tm}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-                {step === 4 && (
-                  <div className="flex flex-col gap-3">
-                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><User size={14} /> {t.booking.nameLabel}</label>
-                    <input type="text" value={booking.name} onChange={(e) => setBooking((p) => ({ ...p, name: e.target.value }))} className="px-3 py-2 text-sm" />
-                    <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Phone size={14} /> {t.booking.phoneLabel}</label>
-                    <input type="tel" value={booking.phone} onChange={(e) => setBooking((p) => ({ ...p, phone: e.target.value }))} className="px-3 py-2 text-sm" />
-                    <label className="text-sm text-[var(--cream-dim)]">{t.booking.notesLabel}</label>
-                    <textarea rows={2} placeholder={t.booking.notesPlaceholder} value={booking.notes} onChange={(e) => setBooking((p) => ({ ...p, notes: e.target.value }))} className="px-3 py-2 text-sm" />
-                    {!canNext() && (booking.name || booking.phone) && (
-                      <p className="text-xs text-[var(--brass-light)]">{t.booking.requiredNotice}</p>
-                    )}
-                  </div>
-                )}
-                {step === 5 && service && (
-                  <div className="flex flex-col items-center gap-4 text-center">
-                    <div className="flex items-center gap-2 text-[var(--brass-light)]"><Check size={20} /><span className="f-display">{t.booking.successTitle}</span></div>
-                    <div className="w-full text-left border hairline rounded p-4 text-sm flex flex-col gap-1">
-                      <p><strong className="text-[var(--cream)]">{t.booking.summaryTitle}</strong></p>
-                      <p className="text-[var(--cream-dim)]">{service.name[lang]} — €{service.price}</p>
-                      <p className="text-[var(--cream-dim)]">{booking.date} · {booking.time}</p>
-                      <p className="text-[var(--cream-dim)]">{booking.name} · {booking.phone}</p>
-                      {booking.notes && <p className="text-[var(--cream-dim)]">{booking.notes}</p>}
-                    </div>
-                    <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-brass w-full py-3 rounded text-sm font-semibold flex items-center justify-center gap-2">
-                      <MessageCircle size={16} /> {t.booking.confirmButton}
-                    </a>
-                    <button onClick={resetBooking} className="btn-outline w-full py-2 rounded text-sm">{t.booking.newBooking}</button>
-                  </div>
-                )}
-                {step < 5 && (
-                  <div className="flex items-center justify-between pt-5 mt-2 border-t hairline">
-                    <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
-                      className="btn-outline px-4 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-30">
-                      <ChevronLeft size={14} /> {t.booking.backButton}
-                    </button>
-                    <button onClick={() => goStep(step + 1)} disabled={!canNext()}
-                      className="btn-brass px-5 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-40">
-                      {t.booking.nextButton} <ChevronRight size={14} />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </section>
-          </div>
+                {/* Hero text */}
+                <div style={{ position:"relative", padding:"0 24px 28px", width:"100%" }}>
+                  <p className="f-display" style={{ fontSize:"0.65rem", letterSpacing:"0.35em", color:"var(--brass)", marginBottom:6 }}>{t.hero.kicker}</p>
+                  <h1 className="f-display brass-text" style={{ fontSize:"clamp(2rem,8vw,3rem)", lineHeight:1.1, marginBottom:4 }}>LA BARBERIA</h1>
+                  <h2 className="f-display" style={{ fontSize:"clamp(1.4rem,5vw,2rem)", color:"var(--cream)", marginBottom:8 }}>HASSAN</h2>
+                  <p className="f-display" style={{ fontSize:"1rem", color:"var(--brass-light)", minHeight:"1.5rem" }}>{twWord}<span className="tw-cursor" /></p>
+                </div>
+              </section>
 
-          {/* GALLERY PAGE */}
-          <div className={`app-page${currentPage === "gallery" ? " active" : ""}`}>
-            <div className="page-header-app">
-              <span className="f-display text-sm text-[var(--brass-light)]">La Nostra Arte</span>
-              <div className="flex gap-3 text-xs">
-                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
-              </div>
-            </div>
-            <Gallery t={t} />
-          </div>
-
-          {/* INFO PAGE */}
-          <div className={`app-page${currentPage === "info" ? " active" : ""}`}>
-            <div className="page-header-app">
-              <span className="f-display text-sm text-[var(--brass-light)]">Info</span>
-              <div className="flex gap-3 text-xs">
-                {LANGS.map((code) => <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
-              </div>
-            </div>
-            {/* About */}
-            <section className="px-4 py-8 max-w-2xl mx-auto">
-              <p className="f-display text-xs tracking-[0.3em] text-[var(--brass)] mb-2">{t.about.badge}</p>
-              <h2 className="f-display text-2xl text-[var(--cream)] mb-3">{t.about.title}</h2>
-              <p className="text-sm text-[var(--cream-dim)] leading-relaxed">{t.about.body}</p>
-            </section>
-            {/* Team - horizontal scroll */}
-            <section className="py-6 panel-bg">
-              <h2 className="f-display text-lg text-[var(--cream)] px-4 mb-4">{t.team.title}</h2>
-              <div style={{ display: "flex", gap: 12, overflowX: "auto", padding: "0 16px 8px", scrollSnapType: "x mandatory" }}>
-                {TEAM.map((member) => (
-                  <div key={member.name} style={{ flexShrink: 0, width: 160, background: "rgba(28,22,14,0.8)", border: "1px solid rgba(199,154,69,0.15)", borderRadius: 14, overflow: "hidden", scrollSnapAlign: "start" }}>
-                    <img src={member.photo} alt={member.name} style={{ width: "100%", aspectRatio: "3/4", objectFit: "cover", objectPosition: "top" }} />
-                    <div style={{ padding: "10px 10px 12px" }}>
-                      <p className="f-display text-xs text-[var(--cream)]">{member.name}</p>
-                      <p className="text-[10px] text-[var(--brass)] mt-0.5">{member.role[lang]}</p>
+              {/* Action grid */}
+              <div style={{ padding:"20px 16px 0" }}>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:10 }}>
+                  <button onClick={() => navigate("book")} className="home-qcard home-qcard-gold">
+                    <div className="home-qcard-icon"><CalendarIcon size={22} /></div>
+                    <div>
+                      <p className="f-display" style={{ fontSize:"0.78rem", color:"var(--brass-light)" }}>{t.hero.ctaBook}</p>
+                      <p style={{ fontSize:"0.65rem", color:"var(--brass)", marginTop:2 }}>da €15</p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-            {/* Reviews marquee */}
-            <section className="py-6 overflow-hidden">
-              <div className="flex justify-between items-center px-4 mb-4">
-                <h2 className="f-display text-lg text-[var(--cream)]">{t.reviews.title}</h2>
-                <div className="reviews-header-rating" style={{ padding: "4px 12px" }}>
-                  <span className="f-display text-sm text-[var(--brass-light)]">4.5</span>
-                  <div className="review-stars">{[1,2,3,4,5].map(s=><svg key={s} width="11" height="11" viewBox="0 0 24 24" fill="var(--brass-light)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}</div>
+                  </button>
+                  <button onClick={() => navigate("services")} className="home-qcard">
+                    <div className="home-qcard-icon"><Scissors size={22} /></div>
+                    <div>
+                      <p className="f-display" style={{ fontSize:"0.78rem", color:"var(--cream)" }}>{t.nav.services}</p>
+                      <p style={{ fontSize:"0.65rem", color:"var(--cream-dim)", marginTop:2 }}>7 servizi</p>
+                    </div>
+                  </button>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10, marginBottom:24 }}>
+                  <button onClick={() => navigate("gallery")} className="home-qcard">
+                    <div className="home-qcard-icon"><Camera size={22} /></div>
+                    <div>
+                      <p className="f-display" style={{ fontSize:"0.78rem", color:"var(--cream)" }}>Galleria</p>
+                      <p style={{ fontSize:"0.65rem", color:"var(--cream-dim)", marginTop:2 }}>Video &amp; Arte</p>
+                    </div>
+                  </button>
+                  <button onClick={() => navigate("info")} className="home-qcard">
+                    <div className="home-qcard-icon"><MapPin size={22} /></div>
+                    <div>
+                      <p className="f-display" style={{ fontSize:"0.78rem", color:"var(--cream)" }}>Info</p>
+                      <p style={{ fontSize:"0.65rem", color:"var(--cream-dim)", marginTop:2 }}>Orari &amp; Mappa</p>
+                    </div>
+                  </button>
                 </div>
               </div>
-              {[REVIEWS.slice(0, Math.ceil(REVIEWS.length / 2)), REVIEWS.slice(Math.ceil(REVIEWS.length / 2))].map((group, gi) => (
-                <div key={gi} className="reviews-marquee-wrap mb-3">
-                  <div className={`reviews-track${gi === 1 ? " reviews-track-r" : ""}`}>
-                    {[...group, ...group].map((r, i) => (
-                      <div key={i} className="review-card">
-                        <div className="review-quote">"</div>
-                        <p className="text-sm text-[var(--cream-dim)] leading-relaxed flex-1 italic">{r.text}</p>
-                        <div className="flex items-center gap-3 pt-2 border-t" style={{ borderColor: "rgba(199,154,69,0.12)" }}>
-                          <div className="review-avatar">{r.name[0]}</div>
-                          <div className="flex flex-col gap-1 min-w-0">
-                            <p className="f-display text-xs text-[var(--cream)] truncate">{r.name}</p>
-                            <div className="review-stars">{Array.from({length:r.stars}).map((_,s)=><svg key={s} width="10" height="10" viewBox="0 0 24 24" fill="var(--brass)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}</div>
+
+              {/* Stats */}
+              <StatsBand t={t} />
+
+              {/* Google rating strip */}
+              <div style={{ margin:"16px 16px 24px", background:"rgba(18,13,6,0.85)", border:"1px solid rgba(199,154,69,0.14)", borderRadius:16, padding:"14px 18px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <div>
+                  <p className="f-display" style={{ fontSize:"0.62rem", letterSpacing:"0.2em", color:"var(--brass)", marginBottom:4 }}>GOOGLE REVIEWS</p>
+                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+                    <span className="f-display" style={{ fontSize:"1.6rem", color:"var(--brass-light)", lineHeight:1 }}>4.5</span>
+                    <div style={{ display:"flex", gap:2 }}>
+                      {[1,2,3,4,5].map(s => <svg key={s} width="14" height="14" viewBox="0 0 24 24" fill="var(--brass)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>)}
+                    </div>
+                  </div>
+                  <p style={{ fontSize:"0.65rem", color:"var(--cream-dim)", marginTop:3 }}>119 recensioni verificate</p>
+                </div>
+                <div style={{ textAlign:"right" }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            {/* ── SERVICES ── */}
+            <div className={`app-page${currentPage === "services" ? " active" : ""}`}>
+              <div className="page-header-app">
+                <span className="f-display" style={{ fontSize:"0.9rem", color:"var(--brass-light)" }}>{t.services.title}</span>
+                <div style={{ display:"flex", gap:8 }}>
+                  {LANGS.map(code => <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+                </div>
+              </div>
+              <div style={{ position:"relative", overflow:"hidden" }}>
+                <video autoPlay muted loop playsInline aria-hidden="true"
+                  style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", opacity:0.12 }} src={gallery5} />
+                <div style={{ position:"absolute", inset:0, background:"rgba(4,3,1,0.7)" }} />
+                <div style={{ position:"relative", padding:"16px 14px", display:"flex", flexDirection:"column", gap:10 }}>
+                  {SERVICES.map((s, i) => (
+                    <div key={s.id} className="svc-card-app">
+                      <div className="svc-card-body">
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:12 }}>
+                          <div style={{ flex:1 }}>
+                            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+                              <span className="f-display" style={{ fontSize:"0.6rem", letterSpacing:"0.2em", color:"var(--brass)", opacity:0.7 }}>{String(i+1).padStart(2,"0")}</span>
+                              <div style={{ height:1, flex:1, background:"rgba(199,154,69,0.15)" }} />
+                            </div>
+                            <h3 className="f-display" style={{ fontSize:"1.05rem", color:"var(--cream)", marginBottom:4 }}>{s.name[lang]}</h3>
+                            <p style={{ fontSize:"0.75rem", color:"var(--cream-dim)", lineHeight:1.5 }}>{s.desc[lang]}</p>
+                          </div>
+                          <div style={{ textAlign:"right", flexShrink:0 }}>
+                            <p className="f-display" style={{ fontSize:"1.4rem", color:"var(--brass-light)", lineHeight:1 }}>€{s.price}</p>
+                            <p style={{ fontSize:"0.65rem", color:"var(--cream-dim)", marginTop:3 }}>{s.duration} {t.services.minutes}</p>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="svc-card-footer">
+                        <button onClick={() => { selectService(s.id); navigate("book"); }}
+                          style={{ width:"100%", padding:"11px", borderRadius:12, background:"rgba(199,154,69,0.08)", border:"1px solid rgba(199,154,69,0.22)", color:"var(--brass-light)", fontSize:"0.78rem", fontWeight:600, cursor:"pointer", letterSpacing:"0.05em", transition:"background 0.18s" }}>
+                          {t.services.bookThis}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </section>
-            {/* Hours */}
-            <section className="px-4 py-6 max-w-2xl mx-auto">
-              <h2 className="f-display text-lg text-[var(--cream)] mb-3 flex items-center gap-2"><Clock size={16} className="text-[var(--brass)]" /> {t.hours.title}</h2>
-              <ul className="text-sm divide-y hairline">
-                {DAY_ORDER.map((dayNumIdx, i) => {
-                  const cfg = HOURS[dayNumIdx];
-                  return (
-                    <li key={i} className="flex justify-between py-2">
-                      <span className="text-[var(--cream-dim)]">{t.hours.days[i]}</span>
-                      <span className="text-[var(--cream)]">{cfg ? `${cfg.open} – ${cfg.close}` : t.hours.closed}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-            {/* Map */}
-            <section className="px-4 pb-4">
-              <h2 className="f-display text-lg text-[var(--cream)] mb-3 flex items-center gap-2"><MapPin size={16} className="text-[var(--brass)]" /> {t.location.title}</h2>
-              <p className="text-xs text-[var(--cream-dim)] mb-3">{SHOP.address}</p>
-              <ShopMap address={SHOP.address} shopName={SHOP.name} mapsQuery={SHOP.mapsQuery} />
-              <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`} target="_blank" rel="noopener noreferrer" className="btn-outline inline-flex items-center gap-2 px-4 py-2 rounded text-sm mt-3">
-                <MapPin size={13} /> {t.location.openInMaps}
-              </a>
-            </section>
-            {/* Contact */}
-            <section className="px-4 py-6 panel-bg mt-4">
-              <h2 className="f-display text-lg text-[var(--cream)] mb-4 text-center">{t.contact.title}</h2>
-              <div className="flex flex-wrap justify-center gap-3">
-                <a href={`tel:${SHOP.phoneDisplay.replace(/\s/g,"")}`} className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><Phone size={14}/> {t.contact.call}</a>
-                <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><MessageCircle size={14}/> WhatsApp</a>
-                <a href={`https://instagram.com/${SHOP.instagram}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><Camera size={14}/> Instagram</a>
-                <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer" className="btn-outline px-4 py-2.5 rounded text-sm flex items-center gap-2"><TikTokIcon size={14}/> TikTok</a>
               </div>
-            </section>
-            <footer className="px-4 py-6 text-center text-xs text-[var(--cream-dim)] border-t hairline">
-              © {new Date().getFullYear()} {SHOP.name} — Verona
-            </footer>
-          </div>
+              {/* Promos */}
+              <div style={{ padding:"0 14px 24px", display:"flex", flexDirection:"column", gap:10 }}>
+                {[
+                  { img: studentImg, promo: t.promos.student },
+                  { img: militaryImg, promo: t.promos.military },
+                ].map(({ img, promo }) => (
+                  <div key={promo.badge} style={{ position:"relative", borderRadius:18, overflow:"hidden", minHeight:120 }}>
+                    <img src={img} alt="" aria-hidden="true" style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover" }} />
+                    <div style={{ position:"absolute", inset:0, background:"rgba(4,3,1,0.72)" }} />
+                    <div style={{ position:"relative", padding:"20px", display:"flex", justifyContent:"space-between", alignItems:"center", minHeight:120 }}>
+                      <div>
+                        <p className="f-display" style={{ fontSize:"0.6rem", letterSpacing:"0.3em", color:"var(--brass)", marginBottom:4 }}>{promo.badge}</p>
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>{promo.title}</p>
+                        <p style={{ fontSize:"0.7rem", color:"var(--cream-dim)", marginTop:2 }}>{promo.note}</p>
+                      </div>
+                      <p className="f-display brass-text" style={{ fontSize:"2rem" }}>{promo.price}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-          {/* BOTTOM NAV */}
+            {/* ── BOOK ── */}
+            <div className={`app-page${currentPage === "book" ? " active" : ""}`}>
+              <div className="page-header-app">
+                <span className="f-display" style={{ fontSize:"0.9rem", color:"var(--brass-light)" }}>{t.booking.title}</span>
+                <div style={{ display:"flex", gap:8 }}>
+                  {LANGS.map(code => <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+                </div>
+              </div>
+              <div style={{ padding:"20px 16px" }}>
+                {step < 5 && (
+                  <>
+                    <div className="book-bar">
+                      <div className="book-bar-fill" style={{ width:`${(step/4)*100}%` }} />
+                    </div>
+                    <p style={{ fontSize:"0.7rem", color:"var(--cream-dim)", textAlign:"center", marginTop:-20, marginBottom:20, letterSpacing:"0.08em" }}>
+                      {t.booking.subtitle}
+                    </p>
+                  </>
+                )}
+                <div className="ticket-card" style={{ padding:"22px 18px" }}>
+                  {step === 1 && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>01 — {t.booking.selectServicePlaceholder}</p>
+                      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                        {SERVICES.map(s => (
+                          <button key={s.id} onClick={() => setBooking(p => ({ ...p, serviceId: s.id, time:"" }))}
+                            style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 16px", borderRadius:14, border:"1px solid", borderColor: booking.serviceId === s.id ? "var(--brass)" : "rgba(199,154,69,0.15)", background: booking.serviceId === s.id ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
+                            <span style={{ fontSize:"0.88rem", color:"var(--cream)", fontWeight: booking.serviceId === s.id ? 600 : 400 }}>{s.name[lang]}</span>
+                            <div style={{ textAlign:"right" }}>
+                              <span className="f-display" style={{ fontSize:"1rem", color:"var(--brass-light)" }}>€{s.price}</span>
+                              <p style={{ fontSize:"0.62rem", color:"var(--cream-dim)", marginTop:1 }}>{s.duration} {t.services.minutes}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {step === 2 && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>02 — {t.booking.dateLabel}</p>
+                      <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
+                        onChange={e => setBooking(p => ({ ...p, date: e.target.value, time:"" }))}
+                        style={{ padding:"14px 16px", borderRadius:14, border:"1px solid rgba(199,154,69,0.2)", background:"rgba(18,13,6,0.8)", color:"var(--cream)", fontSize:"0.95rem", width:"100%" }} />
+                      {isClosedDay && <p style={{ fontSize:"0.82rem", color:"var(--brass-light)", padding:"8px 12px", background:"rgba(199,154,69,0.06)", borderRadius:10, border:"1px solid rgba(199,154,69,0.15)" }}>{t.booking.closedNotice}</p>}
+                    </div>
+                  )}
+                  {step === 3 && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>03 — {t.booking.timeLabel}</p>
+                      {loadingSlots ? (
+                        <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", textAlign:"center", padding:"24px 0" }}>{t.booking.loadingSlots}</p>
+                      ) : slots.length === 0 ? (
+                        <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", textAlign:"center", padding:"24px 0" }}>{t.booking.noSlots}</p>
+                      ) : (
+                        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
+                          {slots.map(tm => (
+                            <button key={tm} onClick={() => setBooking(p => ({ ...p, time: tm }))}
+                              className={`time-slot-btn${booking.time === tm ? " sel" : ""}`}>
+                              {tm}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {step === 4 && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>04 — {t.booking.nameLabel}</p>
+                      {[
+                        { label: t.booking.nameLabel, key:"name", type:"text", icon:<User size={14}/> },
+                        { label: t.booking.phoneLabel, key:"phone", type:"tel", icon:<Phone size={14}/> },
+                      ].map(f => (
+                        <div key={f.key}>
+                          <label style={{ display:"flex", alignItems:"center", gap:6, fontSize:"0.72rem", color:"var(--cream-dim)", marginBottom:6 }}>{f.icon} {f.label}</label>
+                          <input type={f.type} value={booking[f.key]} onChange={e => setBooking(p => ({ ...p, [f.key]: e.target.value }))}
+                            style={{ width:"100%", padding:"13px 16px", borderRadius:14, border:"1px solid rgba(199,154,69,0.18)", background:"rgba(18,13,6,0.8)", color:"var(--cream)", fontSize:"0.9rem" }} />
+                        </div>
+                      ))}
+                      <div>
+                        <label style={{ fontSize:"0.72rem", color:"var(--cream-dim)", display:"block", marginBottom:6 }}>{t.booking.notesLabel}</label>
+                        <textarea rows={2} placeholder={t.booking.notesPlaceholder} value={booking.notes} onChange={e => setBooking(p => ({ ...p, notes: e.target.value }))}
+                          style={{ width:"100%", padding:"12px 16px", borderRadius:14, border:"1px solid rgba(199,154,69,0.15)", background:"rgba(18,13,6,0.8)", color:"var(--cream)", fontSize:"0.88rem", resize:"none" }} />
+                      </div>
+                      {!canNext() && (booking.name || booking.phone) && (
+                        <p style={{ fontSize:"0.75rem", color:"var(--brass-light)" }}>{t.booking.requiredNotice}</p>
+                      )}
+                    </div>
+                  )}
+                  {step === 5 && service && (
+                    <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
+                      <div style={{ width:64, height:64, borderRadius:"50%", background:"linear-gradient(135deg,rgba(199,154,69,0.2),rgba(199,154,69,0.05))", border:"1px solid rgba(199,154,69,0.3)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <Check size={28} style={{ color:"var(--brass-light)" }} />
+                      </div>
+                      <div>
+                        <p className="f-display" style={{ fontSize:"1rem", color:"var(--brass-light)" }}>{t.booking.successTitle}</p>
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)", marginTop:4 }}>{t.booking.successBody}</p>
+                      </div>
+                      <div style={{ width:"100%", background:"rgba(18,13,6,0.8)", border:"1px solid rgba(199,154,69,0.15)", borderRadius:14, padding:"16px", textAlign:"left", display:"flex", flexDirection:"column", gap:6 }}>
+                        <p style={{ fontSize:"0.9rem", color:"var(--cream)", fontWeight:600 }}>{service.name[lang]}</p>
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>€{service.price} · {service.duration} {t.services.minutes}</p>
+                        <div style={{ height:1, background:"rgba(199,154,69,0.1)", margin:"4px 0" }} />
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>{booking.date} alle {booking.time}</p>
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>{booking.name} · {booking.phone}</p>
+                      </div>
+                      <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-brass"
+                        style={{ width:"100%", padding:"14px", borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center", gap:8, textDecoration:"none", fontSize:"0.88rem", fontWeight:600 }}>
+                        <MessageCircle size={16} /> {t.booking.confirmButton}
+                      </a>
+                      <button onClick={resetBooking} className="btn-outline" style={{ width:"100%", padding:"12px", borderRadius:14, fontSize:"0.85rem" }}>
+                        {t.booking.newBooking}
+                      </button>
+                    </div>
+                  )}
+                  {step < 5 && (
+                    <div style={{ display:"flex", justifyContent:"space-between", paddingTop:20, marginTop:16, borderTop:"1px solid rgba(199,154,69,0.1)" }}>
+                      <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
+                        className="btn-outline" style={{ padding:"11px 20px", borderRadius:12, display:"flex", alignItems:"center", gap:6, fontSize:"0.82rem", opacity: step === 1 ? 0.3 : 1 }}>
+                        <ChevronLeft size={14} /> {t.booking.backButton}
+                      </button>
+                      <button onClick={() => goStep(step + 1)} disabled={!canNext()}
+                        className="btn-brass" style={{ padding:"11px 22px", borderRadius:12, display:"flex", alignItems:"center", gap:6, fontSize:"0.82rem", opacity: !canNext() ? 0.4 : 1 }}>
+                        {t.booking.nextButton} <ChevronRight size={14} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── GALLERY ── */}
+            <div className={`app-page${currentPage === "gallery" ? " active" : ""}`}>
+              <div className="page-header-app">
+                <span className="f-display" style={{ fontSize:"0.9rem", color:"var(--brass-light)" }}>La Nostra Arte</span>
+                <div style={{ display:"flex", gap:8 }}>
+                  {LANGS.map(code => <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+                </div>
+              </div>
+              <Gallery t={t} />
+            </div>
+
+            {/* ── INFO ── */}
+            <div className={`app-page${currentPage === "info" ? " active" : ""}`}>
+              <div className="page-header-app">
+                <span className="f-display" style={{ fontSize:"0.9rem", color:"var(--brass-light)" }}>Info</span>
+                <div style={{ display:"flex", gap:8 }}>
+                  {LANGS.map(code => <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>)}
+                </div>
+              </div>
+
+              {/* About */}
+              <div className="info-section">
+                <p className="f-display" style={{ fontSize:"0.62rem", letterSpacing:"0.25em", color:"var(--brass)", marginBottom:8 }}>{t.about.badge}</p>
+                <h2 className="f-display" style={{ fontSize:"1.2rem", color:"var(--cream)", marginBottom:10 }}>{t.about.title}</h2>
+                <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", lineHeight:1.65 }}>{t.about.body}</p>
+              </div>
+
+              {/* Team */}
+              <div style={{ paddingTop:20, paddingBottom:20, borderBottom:"1px solid rgba(199,154,69,0.08)" }}>
+                <p className="f-display" style={{ fontSize:"0.85rem", color:"var(--cream)", paddingLeft:20, marginBottom:14 }}>{t.team.title}</p>
+                <div style={{ display:"flex", gap:12, overflowX:"auto", padding:"0 20px 4px", scrollSnapType:"x mandatory" }}>
+                  {TEAM.map(member => (
+                    <div key={member.name} style={{ flexShrink:0, width:148, background:"rgba(18,13,6,0.85)", border:"1px solid rgba(199,154,69,0.14)", borderRadius:16, overflow:"hidden", scrollSnapAlign:"start" }}>
+                      <img src={member.photo} alt={member.name} style={{ width:"100%", aspectRatio:"4/5", objectFit:"cover", objectPosition:"top", display:"block" }} />
+                      <div style={{ padding:"10px 12px 12px" }}>
+                        <p className="f-display" style={{ fontSize:"0.8rem", color:"var(--cream)" }}>{member.name}</p>
+                        <p style={{ fontSize:"0.67rem", color:"var(--brass)", marginTop:2 }}>{member.role[lang]}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hours */}
+              <div className="info-section">
+                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
+                  <p className="f-display" style={{ fontSize:"0.85rem", color:"var(--cream)", display:"flex", alignItems:"center", gap:8 }}><Clock size={15} style={{ color:"var(--brass)" }} /> {t.hours.title}</p>
+                  {(() => {
+                    const now = new Date();
+                    const day = now.getDay();
+                    const h = now.getHours() + now.getMinutes()/60;
+                    const cfg = HOURS[day];
+                    const open = cfg && h >= parseInt(cfg.open) && h < parseInt(cfg.close);
+                    return <span className={open ? "badge-open" : "badge-closed"}><span className="status-dot" />{open ? "Aperto" : "Chiuso"}</span>;
+                  })()}
+                </div>
+                <div style={{ display:"flex", flexDirection:"column", gap:0 }}>
+                  {DAY_ORDER.map((dayNumIdx, i) => {
+                    const cfg = HOURS[dayNumIdx];
+                    const isToday = new Date().getDay() === dayNumIdx;
+                    return (
+                      <div key={i} style={{ display:"flex", justifyContent:"space-between", padding:"9px 0", borderBottom:"1px solid rgba(199,154,69,0.07)", fontWeight: isToday ? 600 : 400 }}>
+                        <span style={{ fontSize:"0.82rem", color: isToday ? "var(--cream)" : "var(--cream-dim)" }}>{t.hours.days[i]}</span>
+                        <span style={{ fontSize:"0.82rem", color: isToday ? "var(--brass-light)" : cfg ? "var(--cream)" : "rgba(182,165,135,0.4)" }}>{cfg ? `${cfg.open} – ${cfg.close}` : t.hours.closed}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Map */}
+              <div className="info-section" style={{ paddingBottom:0 }}>
+                <p className="f-display" style={{ fontSize:"0.85rem", color:"var(--cream)", display:"flex", alignItems:"center", gap:8, marginBottom:12 }}><MapPin size={15} style={{ color:"var(--brass)" }} /> {t.location.title}</p>
+                <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)", marginBottom:14 }}>{SHOP.address}</p>
+                <div style={{ borderRadius:14, overflow:"hidden", marginBottom:14 }}>
+                  <ShopMap address={SHOP.address} shopName={SHOP.name} mapsQuery={SHOP.mapsQuery} />
+                </div>
+                <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOP.mapsQuery)}`}
+                  target="_blank" rel="noopener noreferrer" className="contact-pill" style={{ justifyContent:"center", marginBottom:24 }}>
+                  <MapPin size={14} /> {t.location.openInMaps}
+                </a>
+              </div>
+
+              {/* Contact */}
+              <div className="info-section">
+                <p className="f-display" style={{ fontSize:"0.85rem", color:"var(--cream)", marginBottom:14 }}>{t.contact.title}</p>
+                <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                  <a href={`tel:${SHOP.phoneDisplay.replace(/\s/g,"")}`} className="contact-pill"><Phone size={16} style={{ color:"var(--brass)" }} />{SHOP.phoneDisplay}</a>
+                  <a href={`https://wa.me/${SHOP.whatsapp}`} target="_blank" rel="noopener noreferrer" className="contact-pill">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    WhatsApp
+                  </a>
+                  <a href={`https://instagram.com/${SHOP.instagram}`} target="_blank" rel="noopener noreferrer" className="contact-pill"><Camera size={16} style={{ color:"var(--brass)" }} /> Instagram</a>
+                  <a href={`https://www.tiktok.com/@${SHOP.tiktok}`} target="_blank" rel="noopener noreferrer" className="contact-pill"><TikTokIcon size={16} /> TikTok</a>
+                </div>
+              </div>
+
+              <div style={{ padding:"20px", textAlign:"center", borderTop:"1px solid rgba(199,154,69,0.08)" }}>
+                <p style={{ fontSize:"0.68rem", color:"rgba(182,165,135,0.35)", letterSpacing:"0.08em" }}>© {new Date().getFullYear()} {SHOP.name} — Verona</p>
+              </div>
+            </div>
+
+          </div>{/* end app-pages-wrap */}
+
+          {/* ── BOTTOM NAV ── */}
           <nav className="bottom-nav">
             <button className="bnav-tab" data-active={currentPage === "home"} onClick={() => navigate("home")}>
-              <Home size={20} />
+              <Home size={21} />
               <span>Home</span>
             </button>
             <button className="bnav-tab" data-active={currentPage === "services"} onClick={() => navigate("services")}>
-              <Scissors size={20} />
+              <Scissors size={21} />
               <span>Servizi</span>
             </button>
-            <button className="bnav-tab bnav-tab-book" data-active={currentPage === "book"} onClick={() => navigate("book")}>
-              <div className="bnav-book-icon"><CalendarIcon size={20} /></div>
-              <span>Prenota</span>
+            <button className="bnav-fab-wrap" data-active={currentPage === "book"} onClick={() => navigate("book")}>
+              <div className="bnav-fab"><CalendarIcon size={22} /></div>
+              <span className="bnav-fab-label">Prenota</span>
             </button>
             <button className="bnav-tab" data-active={currentPage === "gallery"} onClick={() => navigate("gallery")}>
-              <Camera size={20} />
+              <Camera size={21} />
               <span>Galleria</span>
             </button>
             <button className="bnav-tab" data-active={currentPage === "info"} onClick={() => navigate("info")}>
-              <Info size={20} />
+              <Info size={21} />
               <span>Info</span>
             </button>
           </nav>
 
           <WhatsAppChat shopName={SHOP.name} waNumber={SHOP.whatsapp} t={t} />
-        </>
+        </div>
       ) : (
         /* ===================== SITE MODE UI (UNCHANGED) ===================== */
         <>
