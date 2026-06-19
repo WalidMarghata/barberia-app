@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8C87A"/>
+      <stop offset="100%" stop-color="#9A6B1A"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#241a0e"/>
+      <stop offset="100%" stop-color="#0d0804"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <!-- Outer decorative ring -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="#C79A45" stroke-width="2" opacity="0.35"/>
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#C79A45" stroke-width="1" opacity="0.2"/>
+  <!-- Bold H monogram -->
+  <rect x="122" y="124" width="56" height="264" rx="28" fill="url(#gold)"/>
+  <rect x="334" y="124" width="56" height="264" rx="28" fill="url(#gold)"/>
+  <rect x="122" y="228" width="268" height="56" rx="28" fill="url(#gold)"/>
+  <!-- Small scissors below the H (decorative) -->
+  <g transform="translate(256,430) scale(0.55)" opacity="0.6">
+    <circle cx="-30" cy="0" r="18" fill="none" stroke="#C79A45" stroke-width="6"/>
+    <circle cx="30" cy="0" r="18" fill="none" stroke="#C79A45" stroke-width="6"/>
+    <line x1="-15" y1="-10" x2="80" y2="-38" stroke="#C79A45" stroke-width="6" stroke-linecap="round"/>
+    <line x1="-15" y1="10" x2="80" y2="38" stroke="#C79A45" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
