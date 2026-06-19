@@ -1285,6 +1285,7 @@ export default function App() {
   const heroBgRef = useRef(null);
 
   /* PWA install prompt */
+  const isIOS = typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const [installPrompt, setInstallPrompt] = useState(() => _pwaInstallEvent);
   const [installDone, setInstallDone] = useState(false);
   const [installModal, setInstallModal] = useState(false);
@@ -1414,28 +1415,67 @@ export default function App() {
 
       {/* PWA install manual modal */}
       {installModal && (
-        <div style={{ position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.85)",display:"flex",alignItems:"flex-end",justifyContent:"center" }} onClick={() => setInstallModal(false)}>
-          <div style={{ background:"#1a1105",border:"1px solid rgba(199,154,69,0.3)",borderRadius:"20px 20px 0 0",padding:"28px 24px 40px",width:"100%",maxWidth:480 }} onClick={e => e.stopPropagation()}>
-            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20 }}>
-              <p className="f-display" style={{ color:"var(--brass-light)",fontSize:"1rem" }}>Installa Hassan Barber</p>
-              <button onClick={() => setInstallModal(false)} style={{ color:"var(--cream-dim)",background:"none",border:"none",fontSize:"1.4rem",cursor:"pointer",lineHeight:1 }}>×</button>
+        <div style={{ position:"fixed",inset:0,zIndex:200,background:"rgba(0,0,0,0.88)",display:"flex",alignItems:"flex-end",justifyContent:"center" }} onClick={() => setInstallModal(false)}>
+          <div style={{ background:"#130e06",border:"1px solid rgba(199,154,69,0.28)",borderRadius:"24px 24px 0 0",padding:"28px 22px 44px",width:"100%",maxWidth:480 }} onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6 }}>
+              <div style={{ display:"flex",alignItems:"center",gap:10 }}>
+                <div style={{ width:36,height:36,borderRadius:10,background:"linear-gradient(135deg,var(--brass-light),var(--brass))",display:"flex",alignItems:"center",justifyContent:"center",color:"#1a1105",fontWeight:900,fontSize:"1rem",fontFamily:"serif" }}>H</div>
+                <div>
+                  <p className="f-display" style={{ color:"var(--brass-light)",fontSize:"0.95rem",lineHeight:1 }}>Installa Hassan Barber</p>
+                  <p style={{ color:"var(--cream-dim)",fontSize:"0.68rem",marginTop:2 }}>Barberia Professionale — Verona</p>
+                </div>
+              </div>
+              <button onClick={() => setInstallModal(false)} style={{ color:"var(--cream-dim)",background:"rgba(255,255,255,0.06)",border:"none",borderRadius:"50%",width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:"1.1rem",lineHeight:1 }}>&#215;</button>
             </div>
-            <div style={{ display:"flex",flexDirection:"column",gap:16 }}>
-              <div style={{ display:"flex",gap:14,alignItems:"flex-start" }}>
-                <span style={{ background:"var(--brass)",color:"#1a1105",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0 }}>1</span>
-                <p style={{ color:"var(--cream-dim)",fontSize:"0.9rem",lineHeight:1.5 }}>Toca nos <strong style={{color:"var(--cream)"}}>3 pontos ⋮</strong> no canto superior direito do Chrome</p>
-              </div>
-              <div style={{ display:"flex",gap:14,alignItems:"flex-start" }}>
-                <span style={{ background:"var(--brass)",color:"#1a1105",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0 }}>2</span>
-                <p style={{ color:"var(--cream-dim)",fontSize:"0.9rem",lineHeight:1.5 }}>Escolhe <strong style={{color:"var(--cream)"}}>"Adicionar ao ecrã inicial"</strong> ou <strong style={{color:"var(--cream)"}}>"Instalar aplicação"</strong></p>
-              </div>
-              <div style={{ display:"flex",gap:14,alignItems:"flex-start" }}>
-                <span style={{ background:"var(--brass)",color:"#1a1105",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,flexShrink:0 }}>3</span>
-                <p style={{ color:"var(--cream-dim)",fontSize:"0.9rem",lineHeight:1.5 }}>Confirma — o ícone <strong style={{color:"var(--cream)"}}>H dourado</strong> aparece no teu ecrã!</p>
-              </div>
+            {/* Platform tabs */}
+            <div style={{ display:"flex",gap:8,margin:"18px 0 20px",background:"rgba(255,255,255,0.04)",borderRadius:12,padding:4 }}>
+              {["iPhone / iPad","Android"].map((label, idx) => (
+                <div key={label} style={{ flex:1,padding:"8px 0",borderRadius:9,fontSize:"0.72rem",fontWeight:600,letterSpacing:"0.04em",textAlign:"center",
+                  background: (isIOS ? idx===0 : idx===1) ? "var(--brass)" : "transparent",
+                  color: (isIOS ? idx===0 : idx===1) ? "#1a1105" : "var(--cream-dim)" }}>
+                  {label}
+                </div>
+              ))}
             </div>
-            <button onClick={() => setInstallModal(false)} className="btn-brass" style={{ width:"100%",marginTop:24,padding:"12px",borderRadius:8,border:"none",cursor:"pointer",fontSize:"0.9rem" }}>
-              Entendido
+            {isIOS ? (
+              <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
+                {[
+                  { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>,
+                    text: <>Abre o site no <strong style={{color:"var(--cream)"}}>Safari</strong> e toca no botão <strong style={{color:"var(--cream)"}}>Condividi &#x2B06;</strong> (seta para cima, em baixo do ecrã)</> },
+                  { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>,
+                    text: <>Desliza a lista e toca em <strong style={{color:"var(--cream)"}}>"Aggiungi alla schermata Home"</strong></> },
+                  { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+                    text: <>Toca em <strong style={{color:"var(--cream)"}}>Aggiungi</strong> — o ícone <strong style={{color:"var(--brass-light)"}}>H dourado</strong> aparece no ecrã!</> },
+                ].map((s, i) => (
+                  <div key={i} style={{ display:"flex",gap:14,alignItems:"center" }}>
+                    <div style={{ width:40,height:40,borderRadius:12,background:"rgba(199,154,69,0.1)",border:"1px solid rgba(199,154,69,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{s.icon}</div>
+                    <p style={{ color:"var(--cream-dim)",fontSize:"0.86rem",lineHeight:1.5 }}>{s.text}</p>
+                  </div>
+                ))}
+                <div style={{ marginTop:4,padding:"10px 14px",background:"rgba(251,191,36,0.06)",border:"1px solid rgba(251,191,36,0.15)",borderRadius:10 }}>
+                  <p style={{ fontSize:"0.72rem",color:"rgba(251,191,36,0.8)",lineHeight:1.5 }}>&#9888; Funciona apenas no <strong>Safari</strong>. Chrome e outros browsers no iPhone não suportam instalação.</p>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display:"flex",flexDirection:"column",gap:14 }}>
+                {[
+                  { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>,
+                    text: <>Toca nos <strong style={{color:"var(--cream)"}}>3 pontos &#8942;</strong> no canto superior direito do Chrome</> },
+                  { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+                    text: <>Seleciona <strong style={{color:"var(--cream)"}}>"Aggiungi a schermata Home"</strong> ou <strong style={{color:"var(--cream)"}}>"Installa app"</strong></> },
+                  { icon:<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brass-light)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+                    text: <>Confirma — o ícone <strong style={{color:"var(--brass-light)"}}>H dourado</strong> aparece no ecrã!</> },
+                ].map((s, i) => (
+                  <div key={i} style={{ display:"flex",gap:14,alignItems:"center" }}>
+                    <div style={{ width:40,height:40,borderRadius:12,background:"rgba(199,154,69,0.1)",border:"1px solid rgba(199,154,69,0.2)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>{s.icon}</div>
+                    <p style={{ color:"var(--cream-dim)",fontSize:"0.86rem",lineHeight:1.5 }}>{s.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button onClick={() => setInstallModal(false)} style={{ width:"100%",marginTop:22,padding:"13px",borderRadius:12,border:"none",cursor:"pointer",fontSize:"0.88rem",fontWeight:700,background:"linear-gradient(135deg,var(--brass-light),var(--brass))",color:"#1a1105",letterSpacing:"0.05em" }}>
+              Capito!
             </button>
           </div>
         </div>
