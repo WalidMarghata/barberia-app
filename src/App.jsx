@@ -1896,6 +1896,7 @@ export default function App() {
 
               <div style={{ padding:"20px", textAlign:"center", borderTop:"1px solid rgba(199,154,69,0.08)" }}>
                 <p style={{ fontSize:"0.68rem", color:"rgba(182,165,135,0.35)", letterSpacing:"0.08em" }}>© {new Date().getFullYear()} {SHOP.name} — Verona</p>
+                <p style={{ fontSize:"0.62rem", color:"rgba(182,165,135,0.25)", letterSpacing:"0.05em", marginTop:4 }}>Sviluppato da Walid Marghata</p>
               </div>
             </div>
 
@@ -2284,6 +2285,8 @@ export default function App() {
           {/* FOOTER */}
           <footer className="px-4 py-8 text-center text-xs text-[var(--cream-dim)] border-t hairline pb-24 md:pb-8">
             © {new Date().getFullYear()} {SHOP.name} — Verona
+            <br />
+            <span style={{ opacity:0.45, fontSize:"0.65rem", letterSpacing:"0.05em" }}>Sviluppato da Walid Marghata</span>
           </footer>
 
           {/* WHATSAPP CHAT WIDGET */}
