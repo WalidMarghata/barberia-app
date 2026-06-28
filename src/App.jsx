@@ -1524,6 +1524,10 @@ export default function App() {
                     <button key={code} className="lang-btn pb-0.5 px-1 text-xs" data-active={lang === code} onClick={() => setLang(code)}>{T[code].code}</button>
                   ))}
                 </div>
+                {/* Staff access */}
+                <a href="/#/barber" style={{ position:"absolute", top:16, left:16, display:"flex", alignItems:"center", gap:6, padding:"7px 13px", borderRadius:10, background:"rgba(10,8,4,0.7)", backdropFilter:"blur(12px)", border:"1px solid rgba(199,154,69,0.35)", color:"var(--brass-light)", fontSize:"0.7rem", fontWeight:700, letterSpacing:"0.06em", textDecoration:"none", zIndex:10 }}>
+                  🔐 Staff
+                </a>
                 {/* Emblem top-center */}
                 <div style={{ position:"absolute", top:24, left:"50%", transform:"translateX(-50%)", zIndex:2 }}>
                   <BadgeEmblem size={72} />
