@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { supabase } from './supabase.js';
 
 // Captura o evento de instalação PWA antes do React montar (evita race condition)
 let _pwaInstallEvent = null;
@@ -92,8 +93,9 @@ const T = {
     },
     booking: {
       title: "Prenota il tuo turno",
-      subtitle: "Scegli servizio, data e orario: confermiamo su WhatsApp.",
-      steps: ["Servizio", "Data", "Orario", "I tuoi dati"],
+      subtitle: "Scegli barbiere, servizio, data e orario: confermiamo su WhatsApp.",
+      steps: ["Barbiere", "Servizio", "Data", "Orario", "I tuoi dati"],
+      barberLabel: "Scegli il barbiere",
       selectServicePlaceholder: "Seleziona un servizio",
       dateLabel: "Data", closedNotice: "Siamo chiusi in questo giorno. Scegli un'altra data.",
       timeLabel: "Orario disponibile", noSlots: "Nessun orario libero in questa data, prova un altro giorno.",
@@ -103,10 +105,10 @@ const T = {
       summaryTitle: "Riepilogo prenotazione",
       confirmButton: "Conferma e invia su WhatsApp",
       backButton: "Indietro", nextButton: "Continua",
-      successTitle: "Richiesta inviata!",
-      successBody: "Apri WhatsApp per confermare con la barberia. Il tuo orario è riservato per qualche minuto.",
+      successTitle: "Prenotazione salvata!",
+      successBody: "Apri WhatsApp per confermare con la barberia.",
       requiredNotice: "Compila nome e telefono per continuare.",
-      reserving: "Sto riservando il tuo orario…",
+      reserving: "Sto salvando la prenotazione…",
       newBooking: "Nuova prenotazione",
     },
     hours: {
@@ -116,7 +118,7 @@ const T = {
     location: { title: "Dove siamo", openInMaps: "Apri in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min · Stazione 20 min" },
     contact: { title: "Contatti", call: "Chiama", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
-      `Ciao! Vorrei prenotare:\nServizio: ${d.serviceName}\nData: ${d.date}\nOrario: ${d.time}\nNome: ${d.name}\nTelefono: ${d.phone}${d.notes ? `\nNote: ${d.notes}` : ""}`,
+      `Ciao! Vorrei prenotare:\nBarbiere: ${d.barberName}\nServizio: ${d.serviceName}\nData: ${d.date}\nOrario: ${d.time}\nNome: ${d.name}\nTelefono: ${d.phone}${d.notes ? `\nNote: ${d.notes}` : ""}`,
   },
   en: {
     dir: "ltr", code: "EN", label: "English",
@@ -149,8 +151,9 @@ const T = {
     },
     booking: {
       title: "Book your turn",
-      subtitle: "Pick a service, date and time — we'll confirm on WhatsApp.",
-      steps: ["Service", "Date", "Time", "Your details"],
+      subtitle: "Pick a barber, service, date and time — we'll confirm on WhatsApp.",
+      steps: ["Barber", "Service", "Date", "Time", "Your details"],
+      barberLabel: "Choose your barber",
       selectServicePlaceholder: "Select a service",
       dateLabel: "Date", closedNotice: "We're closed this day. Pick another date.",
       timeLabel: "Available time", noSlots: "No free slots this day, try another one.",
@@ -160,10 +163,10 @@ const T = {
       summaryTitle: "Booking summary",
       confirmButton: "Confirm and send on WhatsApp",
       backButton: "Back", nextButton: "Continue",
-      successTitle: "Request sent!",
-      successBody: "Open WhatsApp to confirm with the barbershop. Your slot is held for a few minutes.",
+      successTitle: "Booking saved!",
+      successBody: "Open WhatsApp to confirm with the barbershop.",
       requiredNotice: "Fill in name and phone to continue.",
-      reserving: "Holding your slot…",
+      reserving: "Saving your booking…",
       newBooking: "New booking",
     },
     hours: {
@@ -173,7 +176,7 @@ const T = {
     location: { title: "Find us", openInMaps: "Open in Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min · Stazione 20 min" },
     contact: { title: "Contact", call: "Call", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
-      `Hi! I'd like to book:\nService: ${d.serviceName}\nDate: ${d.date}\nTime: ${d.time}\nName: ${d.name}\nPhone: ${d.phone}${d.notes ? `\nNotes: ${d.notes}` : ""}`,
+      `Hi! I'd like to book:\nBarber: ${d.barberName}\nService: ${d.serviceName}\nDate: ${d.date}\nTime: ${d.time}\nName: ${d.name}\nPhone: ${d.phone}${d.notes ? `\nNotes: ${d.notes}` : ""}`,
   },
   fr: {
     dir: "ltr", code: "FR", label: "Français",
@@ -206,8 +209,9 @@ const T = {
     },
     booking: {
       title: "Réserver votre tour",
-      subtitle: "Choisissez service, date et heure — nous confirmons sur WhatsApp.",
-      steps: ["Service", "Date", "Heure", "Vos coordonnées"],
+      subtitle: "Choisissez barbier, service, date et heure — nous confirmons sur WhatsApp.",
+      steps: ["Barbier", "Service", "Date", "Heure", "Vos coordonnées"],
+      barberLabel: "Choisir le barbier",
       selectServicePlaceholder: "Choisir un service",
       dateLabel: "Date", closedNotice: "Nous sommes fermés ce jour. Choisissez une autre date.",
       timeLabel: "Heure disponible", noSlots: "Aucun créneau libre ce jour, essayez un autre jour.",
@@ -217,10 +221,10 @@ const T = {
       summaryTitle: "Récapitulatif de la réservation",
       confirmButton: "Confirmer et envoyer sur WhatsApp",
       backButton: "Retour", nextButton: "Continuer",
-      successTitle: "Demande envoyée !",
-      successBody: "Ouvrez WhatsApp pour confirmer avec le salon. Votre créneau est réservé quelques minutes.",
+      successTitle: "Réservation enregistrée !",
+      successBody: "Ouvrez WhatsApp pour confirmer avec le salon.",
       requiredNotice: "Remplissez nom et téléphone pour continuer.",
-      reserving: "Réservation du créneau…",
+      reserving: "Enregistrement de la réservation…",
       newBooking: "Nouvelle réservation",
     },
     hours: {
@@ -230,7 +234,7 @@ const T = {
     location: { title: "Où nous trouver", openInMaps: "Ouvrir sur Maps", nearby: "Arena / Piazza Bra 3 min · Castelvecchio 5 min · Piazza Erbe 8 min · Stazione 20 min" },
     contact: { title: "Contact", call: "Appeler", whatsapp: "WhatsApp", instagram: "Instagram", tiktok: "TikTok" },
     waMessage: (d) =>
-      `Bonjour ! Je souhaite réserver :\nService : ${d.serviceName}\nDate : ${d.date}\nHeure : ${d.time}\nNom : ${d.name}\nTéléphone : ${d.phone}${d.notes ? `\nNotes : ${d.notes}` : ""}`,
+      `Bonjour ! Je souhaite réserver :\nBarbier : ${d.barberName}\nService : ${d.serviceName}\nDate : ${d.date}\nHeure : ${d.time}\nNom : ${d.name}\nTéléphone : ${d.phone}${d.notes ? `\nNotes : ${d.notes}` : ""}`,
   },
   ar: {
     dir: "rtl", code: "AR", label: "العربية",
@@ -263,8 +267,9 @@ const T = {
     },
     booking: {
       title: "احجز دورك",
-      subtitle: "اختر الخدمة والتاريخ والوقت — نؤكد عبر واتساب.",
-      steps: ["الخدمة", "التاريخ", "الوقت", "بياناتك"],
+      subtitle: "اختر الحلاق والخدمة والتاريخ والوقت — نؤكد عبر واتساب.",
+      steps: ["الحلاق", "الخدمة", "التاريخ", "الوقت", "بياناتك"],
+      barberLabel: "اختر الحلاق",
       selectServicePlaceholder: "اختر خدمة",
       dateLabel: "التاريخ", closedNotice: "نحن مغلقون في هذا اليوم. اختر تاريخًا آخر.",
       timeLabel: "الوقت المتاح", noSlots: "لا توجد مواعيد متاحة في هذا اليوم، جرّب يومًا آخر.",
@@ -274,10 +279,10 @@ const T = {
       summaryTitle: "ملخص الحجز",
       confirmButton: "تأكيد والإرسال عبر واتساب",
       backButton: "رجوع", nextButton: "استمرار",
-      successTitle: "تم إرسال الطلب!",
-      successBody: "افتح واتساب لتأكيد الحجز مع الصالون. موعدك محجوز لبضع دقائق.",
+      successTitle: "تم حفظ الحجز!",
+      successBody: "افتح واتساب لتأكيد الحجز مع الصالون.",
       requiredNotice: "أدخل الاسم والهاتف للاستمرار.",
-      reserving: "جارٍ حجز موعدك…",
+      reserving: "جارٍ حفظ الحجز…",
       newBooking: "حجز جديد",
     },
     hours: {
@@ -287,7 +292,7 @@ const T = {
     location: { title: "موقعنا", openInMaps: "فتح في الخرائط", nearby: "Arena / Piazza Bra 3 دقائق · Castelvecchio 5 دقائق · Piazza Erbe 8 دقائق" },
     contact: { title: "تواصل معنا", call: "اتصال", whatsapp: "واتساب", instagram: "إنستغرام", tiktok: "تيك توك" },
     waMessage: (d) =>
-      `مرحباً! أرغب في حجز موعد:\nالخدمة: ${d.serviceName}\nالتاريخ: ${d.date}\nالوقت: ${d.time}\nالاسم: ${d.name}\nالهاتف: ${d.phone}${d.notes ? `\nملاحظات: ${d.notes}` : ""}`,
+      `مرحباً! أرغب في حجز موعد:\nالحلاق: ${d.barberName}\nالخدمة: ${d.serviceName}\nالتاريخ: ${d.date}\nالوقت: ${d.time}\nالاسم: ${d.name}\nالهاتف: ${d.phone}${d.notes ? `\nملاحظات: ${d.notes}` : ""}`,
   },
 };
 
@@ -1085,7 +1090,7 @@ function minToTime(m) {
   const mm = (m % 60).toString().padStart(2, "0");
   return `${h}:${mm}`;
 }
-function getSlots(dateStr, durationMin, reserved) {
+function getSlots(dateStr, durationMin, bookedTimes) {
   if (!dateStr) return [];
   const dayNum = new Date(dateStr + "T00:00:00").getDay();
   const cfg = HOURS[dayNum];
@@ -1102,32 +1107,33 @@ function getSlots(dateStr, durationMin, reserved) {
   for (let t = openM; t + durationMin <= closeM; t += step) {
     if (lunchStartM != null && t < lunchEndM && t + durationMin > lunchStartM) continue;
     if (isToday && t <= nowM) continue;
-    const overlaps = reserved.some((r) => t < r.start + r.duration && t + durationMin > r.start);
-    if (overlaps) continue;
+    // bookedTimes is an array of "HH:MM" strings already booked for this barber+date
+    if (bookedTimes.includes(minToTime(t))) continue;
     slots.push(t);
   }
   return slots.map(minToTime);
 }
-/*
- * NOTE on storage: this demo blocks repeat-booked times using the browser's
- * localStorage, so it only prevents double-booking within the SAME browser.
- * It does NOT share availability between different customers' devices.
- * For real shared availability across all visitors you need a small backend
- * (e.g. Supabase, Firebase, or a Vercel serverless function + database).
- * The actual booking notification still works fully via WhatsApp regardless.
- */
-async function fetchReserved(dateStr) {
+
+/* Fetch booked times for a barber on a given date from Supabase */
+async function fetchBookedTimes(barberId, dateStr) {
+  if (!barberId || !dateStr) return [];
   try {
-    const raw = localStorage.getItem(`slots:${dateStr}`);
-    return raw ? JSON.parse(raw) : [];
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('time')
+      .eq('barber_id', barberId)
+      .eq('date', dateStr)
+      .eq('status', 'confirmed');
+    if (error) { console.error('fetchBookedTimes error:', error); return []; }
+    return (data || []).map(r => r.time);
   } catch (e) { return []; }
 }
-async function reserveSlot(dateStr, startMin, durationMin) {
+
+/* Save appointment to Supabase */
+async function saveAppointment(payload) {
   try {
-    const key = `slots:${dateStr}`;
-    const existing = await fetchReserved(dateStr);
-    existing.push({ start: startMin, duration: durationMin });
-    localStorage.setItem(key, JSON.stringify(existing));
+    const { error } = await supabase.from('appointments').insert(payload);
+    if (error) { console.error('saveAppointment error:', error); return false; }
     return true;
   } catch (e) { return false; }
 }
@@ -1274,9 +1280,9 @@ export default function App() {
   const t = T[lang];
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const [booking, setBooking] = useState({ serviceId: null, date: "", time: "", name: "", phone: "", notes: "" });
+  const [booking, setBooking] = useState({ barberId: "", barberName: "", serviceId: null, date: "", time: "", name: "", phone: "", notes: "" });
   const [step, setStep] = useState(1);
-  const [reserved, setReserved] = useState([]);
+  const [bookedTimes, setBookedTimes] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [reserving, setReserving] = useState(false);
   const [reservedDone, setReservedDone] = useState(false);
@@ -1328,14 +1334,17 @@ export default function App() {
   const service = SERVICES.find((s) => s.id === booking.serviceId) || null;
 
   useEffect(() => {
-    if (!booking.date) { setReserved([]); return; }
+    if (!booking.date || !booking.barberId) { setBookedTimes([]); return; }
     setLoadingSlots(true);
-    fetchReserved(booking.date).then((r) => { setReserved(r); setLoadingSlots(false); });
-  }, [booking.date]);
+    fetchBookedTimes(booking.barberId, booking.date).then((times) => {
+      setBookedTimes(times);
+      setLoadingSlots(false);
+    });
+  }, [booking.date, booking.barberId]);
 
   const slots = useMemo(
-    () => (service && booking.date ? getSlots(booking.date, service.duration, reserved) : []),
-    [service, booking.date, reserved]
+    () => (service && booking.date ? getSlots(booking.date, service.duration, bookedTimes) : []),
+    [service, booking.date, bookedTimes]
   );
 
   const dayNum = booking.date ? new Date(booking.date + "T00:00:00").getDay() : null;
@@ -1343,7 +1352,8 @@ export default function App() {
 
   function selectService(id) {
     setBooking((p) => ({ ...p, serviceId: id, time: "" }));
-    setStep(2);
+    // If barber already chosen go to step 3 (date), else go to step 2 (service selection)
+    setStep(booking.barberId ? 3 : 2);
     if (isApp) {
       navigate("book");
     } else {
@@ -1352,18 +1362,32 @@ export default function App() {
   }
   function goStep(n) { setStep(n); }
   function canNext() {
-    if (step === 1) return !!booking.serviceId;
-    if (step === 2) return !!booking.date && !isClosedDay;
-    if (step === 3) return !!booking.time;
-    if (step === 4) return booking.name.trim() && booking.phone.trim();
+    if (step === 1) return !!booking.barberId;
+    if (step === 2) return !!booking.serviceId;
+    if (step === 3) return !!booking.date && !isClosedDay;
+    if (step === 4) return !!booking.time;
+    if (step === 5) return booking.name.trim().length >= 2 && booking.phone.trim().length >= 6;
     return true;
   }
 
   useEffect(() => {
-    if (step === 5 && !reserveGuard.current && service && booking.date && booking.time) {
+    if (step === 6 && !reserveGuard.current && service && booking.date && booking.time) {
       reserveGuard.current = true;
       setReserving(true);
-      reserveSlot(booking.date, timeToMin(booking.time), service.duration).then(() => {
+      saveAppointment({
+        barber_id: booking.barberId,
+        barber_name: booking.barberName,
+        service_id: booking.serviceId,
+        service_name: service.name["it"],
+        service_price: service.price,
+        service_duration: service.duration,
+        date: booking.date,
+        time: booking.time,
+        customer_name: booking.name,
+        customer_phone: booking.phone,
+        notes: booking.notes || '',
+        status: 'confirmed',
+      }).then(() => {
         setReserving(false);
         setReservedDone(true);
       });
@@ -1371,13 +1395,13 @@ export default function App() {
   }, [step]); // eslint-disable-line
 
   function resetBooking() {
-    setBooking({ serviceId: null, date: "", time: "", name: "", phone: "", notes: "" });
+    setBooking({ barberId: "", barberName: "", serviceId: null, date: "", time: "", name: "", phone: "", notes: "" });
     setStep(1); setReservedDone(false); reserveGuard.current = false;
   }
 
   const waLink = service && booking.date && booking.time
     ? `https://wa.me/${SHOP.whatsapp}?text=${encodeURIComponent(
-        t.waMessage({ serviceName: service.name[lang], date: booking.date, time: booking.time, name: booking.name, phone: booking.phone, notes: booking.notes })
+        t.waMessage({ barberName: booking.barberName, serviceName: service.name[lang], date: booking.date, time: booking.time, name: booking.name, phone: booking.phone, notes: booking.notes })
       )}`
     : "#";
 
@@ -1670,10 +1694,10 @@ export default function App() {
                 </div>
               </div>
               <div style={{ padding:"20px 16px" }}>
-                {step < 5 && (
+                {step < 6 && (
                   <>
                     <div className="book-bar">
-                      <div className="book-bar-fill" style={{ width:`${(step/4)*100}%` }} />
+                      <div className="book-bar-fill" style={{ width:`${(step/5)*100}%` }} />
                     </div>
                     <p style={{ fontSize:"0.7rem", color:"var(--cream-dim)", textAlign:"center", marginTop:-20, marginBottom:20, letterSpacing:"0.08em" }}>
                       {t.booking.subtitle}
@@ -1683,7 +1707,26 @@ export default function App() {
                 <div className="ticket-card" style={{ padding:"22px 18px" }}>
                   {step === 1 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>01 — {t.booking.selectServicePlaceholder}</p>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>01 — {t.booking.barberLabel}</p>
+                      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(130px, 1fr))", gap:10 }}>
+                        {TEAM.map(member => {
+                          const bid = member.name.toLowerCase().replace(' ', '-');
+                          const sel = booking.barberId === bid;
+                          return (
+                            <button key={member.name} onClick={() => setBooking(p => ({ ...p, barberId: bid, barberName: member.name }))}
+                              style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, padding:"14px 10px", borderRadius:14, border:"1px solid", borderColor: sel ? "var(--brass)" : "rgba(199,154,69,0.15)", background: sel ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
+                              <img src={member.photo} alt={member.name} style={{ width:60, height:60, borderRadius:"50%", objectFit:"cover", objectPosition:"top", border: sel ? "2px solid var(--brass)" : "2px solid rgba(199,154,69,0.2)" }} />
+                              <span style={{ fontSize:"0.82rem", color:"var(--cream)", fontWeight: sel ? 600 : 400 }}>{member.name}</span>
+                              <span style={{ fontSize:"0.65rem", color:"var(--brass)" }}>{member.role[lang]}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  {step === 2 && (
+                    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>02 — {t.booking.selectServicePlaceholder}</p>
                       <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                         {SERVICES.map(s => (
                           <button key={s.id} onClick={() => setBooking(p => ({ ...p, serviceId: s.id, time:"" }))}
@@ -1698,18 +1741,18 @@ export default function App() {
                       </div>
                     </div>
                   )}
-                  {step === 2 && (
+                  {step === 3 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>02 — {t.booking.dateLabel}</p>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>03 — {t.booking.dateLabel}</p>
                       <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
                         onChange={e => setBooking(p => ({ ...p, date: e.target.value, time:"" }))}
                         style={{ padding:"14px 16px", borderRadius:14, border:"1px solid rgba(199,154,69,0.2)", background:"rgba(18,13,6,0.8)", color:"var(--cream)", fontSize:"0.95rem", width:"100%" }} />
                       {isClosedDay && <p style={{ fontSize:"0.82rem", color:"var(--brass-light)", padding:"8px 12px", background:"rgba(199,154,69,0.06)", borderRadius:10, border:"1px solid rgba(199,154,69,0.15)" }}>{t.booking.closedNotice}</p>}
                     </div>
                   )}
-                  {step === 3 && (
+                  {step === 4 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>03 — {t.booking.timeLabel}</p>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>04 — {t.booking.timeLabel}</p>
                       {loadingSlots ? (
                         <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", textAlign:"center", padding:"24px 0" }}>{t.booking.loadingSlots}</p>
                       ) : slots.length === 0 ? (
@@ -1726,9 +1769,9 @@ export default function App() {
                       )}
                     </div>
                   )}
-                  {step === 4 && (
+                  {step === 5 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>04 — {t.booking.nameLabel}</p>
+                      <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>05 — {t.booking.nameLabel}</p>
                       {[
                         { label: t.booking.nameLabel, key:"name", type:"text", icon:<User size={14}/> },
                         { label: t.booking.phoneLabel, key:"phone", type:"tel", icon:<Phone size={14}/> },
@@ -1749,20 +1792,20 @@ export default function App() {
                       )}
                     </div>
                   )}
-                  {step === 5 && service && (
+                  {step === 6 && service && (
                     <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:16, textAlign:"center" }}>
                       <div style={{ width:64, height:64, borderRadius:"50%", background:"linear-gradient(135deg,rgba(199,154,69,0.2),rgba(199,154,69,0.05))", border:"1px solid rgba(199,154,69,0.3)", display:"flex", alignItems:"center", justifyContent:"center" }}>
                         <Check size={28} style={{ color:"var(--brass-light)" }} />
                       </div>
                       <div>
                         <p className="f-display" style={{ fontSize:"1rem", color:"var(--brass-light)" }}>{t.booking.successTitle}</p>
-                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)", marginTop:4 }}>{t.booking.successBody}</p>
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)", marginTop:4 }}>{reserving ? t.booking.reserving : t.booking.successBody}</p>
                       </div>
                       <div style={{ width:"100%", background:"rgba(18,13,6,0.8)", border:"1px solid rgba(199,154,69,0.15)", borderRadius:14, padding:"16px", textAlign:"left", display:"flex", flexDirection:"column", gap:6 }}>
-                        <p style={{ fontSize:"0.9rem", color:"var(--cream)", fontWeight:600 }}>{service.name[lang]}</p>
+                        <p style={{ fontSize:"0.9rem", color:"var(--cream)", fontWeight:600 }}>{booking.barberName} · {service.name[lang]}</p>
                         <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>€{service.price} · {service.duration} {t.services.minutes}</p>
                         <div style={{ height:1, background:"rgba(199,154,69,0.1)", margin:"4px 0" }} />
-                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>{booking.date} alle {booking.time}</p>
+                        <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>{booking.date} · {booking.time}</p>
                         <p style={{ fontSize:"0.8rem", color:"var(--cream-dim)" }}>{booking.name} · {booking.phone}</p>
                       </div>
                       <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn-brass"
@@ -1774,7 +1817,7 @@ export default function App() {
                       </button>
                     </div>
                   )}
-                  {step < 5 && (
+                  {step < 6 && (
                     <div style={{ display:"flex", justifyContent:"space-between", paddingTop:20, marginTop:16, borderTop:"1px solid rgba(199,154,69,0.1)" }}>
                       <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
                         className="btn-outline" style={{ padding:"11px 20px", borderRadius:12, display:"flex", alignItems:"center", gap:6, fontSize:"0.82rem", opacity: step === 1 ? 0.3 : 1 }}>
@@ -2136,9 +2179,9 @@ export default function App() {
             <h2 className="f-display text-3xl text-center text-[var(--cream)] mb-2">{t.booking.title}</h2>
             <p className="text-center text-[var(--cream-dim)] mb-8 text-sm">{t.booking.subtitle}</p>
 
-            {step < 5 && (
+            {step < 6 && (
               <div className="flex items-center justify-center gap-2 mb-8">
-                {[1, 2, 3, 4].map((n) => (
+                {[1, 2, 3, 4, 5].map((n) => (
                   <span key={n} className="step-dot" data-active={step === n} data-done={step > n} />
                 ))}
               </div>
@@ -2147,17 +2190,43 @@ export default function App() {
             <div className="ticket-card p-6">
               {step === 1 && (
                 <div className="flex flex-col gap-3">
-                  <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
-                  <select value={booking.serviceId || ""} onChange={(e) => setBooking((p) => ({ ...p, serviceId: e.target.value, time: "" }))} className="px-3 py-2 text-sm">
-                    <option value="" disabled>{t.booking.selectServicePlaceholder}</option>
-                    {SERVICES.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name[lang]} — €{s.price} ({s.duration} {t.services.minutes})</option>
-                    ))}
-                  </select>
+                  <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><User size={14} /> {t.booking.barberLabel}</label>
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(130px, 1fr))", gap:10 }}>
+                    {TEAM.map(member => {
+                      const bid = member.name.toLowerCase().replace(' ', '-');
+                      const sel = booking.barberId === bid;
+                      return (
+                        <button key={member.name} onClick={() => setBooking(p => ({ ...p, barberId: bid, barberName: member.name }))}
+                          style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, padding:"14px 10px", borderRadius:14, border:"1px solid", borderColor: sel ? "var(--brass)" : "rgba(199,154,69,0.15)", background: sel ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
+                          <img src={member.photo} alt={member.name} style={{ width:60, height:60, borderRadius:"50%", objectFit:"cover", objectPosition:"top", border: sel ? "2px solid var(--brass)" : "2px solid rgba(199,154,69,0.2)" }} />
+                          <span style={{ fontSize:"0.82rem", color:"var(--cream)", fontWeight: sel ? 600 : 400 }}>{member.name}</span>
+                          <span style={{ fontSize:"0.65rem", color:"var(--brass)" }}>{member.role[lang]}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
               {step === 2 && (
+                <div className="flex flex-col gap-3">
+                  <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
+                  <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                    {SERVICES.map(s => (
+                      <button key={s.id} onClick={() => setBooking(p => ({ ...p, serviceId: s.id, time:"" }))}
+                        style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderRadius:12, border:"1px solid", borderColor: booking.serviceId === s.id ? "var(--brass)" : "rgba(199,154,69,0.15)", background: booking.serviceId === s.id ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
+                        <span style={{ fontSize:"0.88rem", color:"var(--cream)", fontWeight: booking.serviceId === s.id ? 600 : 400 }}>{s.name[lang]}</span>
+                        <div style={{ textAlign:"right" }}>
+                          <span className="f-display" style={{ fontSize:"1rem", color:"var(--brass-light)" }}>€{s.price}</span>
+                          <p style={{ fontSize:"0.62rem", color:"var(--cream-dim)", marginTop:1 }}>{s.duration} {t.services.minutes}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><CalendarIcon size={14} /> {t.booking.dateLabel}</label>
                   <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
@@ -2167,7 +2236,7 @@ export default function App() {
                 </div>
               )}
 
-              {step === 3 && (
+              {step === 4 && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Clock size={14} /> {t.booking.timeLabel}</label>
                   {loadingSlots ? (
@@ -2188,7 +2257,7 @@ export default function App() {
                 </div>
               )}
 
-              {step === 4 && (
+              {step === 5 && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><User size={14} /> {t.booking.nameLabel}</label>
                   <input type="text" value={booking.name} onChange={(e) => setBooking((p) => ({ ...p, name: e.target.value }))} className="px-3 py-2 text-sm" />
@@ -2202,12 +2271,12 @@ export default function App() {
                 </div>
               )}
 
-              {step === 5 && service && (
+              {step === 6 && service && (
                 <div className="flex flex-col items-center gap-4 text-center">
                   <div className="flex items-center gap-2 text-[var(--brass-light)]"><Check size={20} /><span className="f-display">{t.booking.successTitle}</span></div>
                   <div className="w-full text-left rtl:text-right border hairline rounded p-4 text-sm flex flex-col gap-1">
                     <p><strong className="text-[var(--cream)]">{t.booking.summaryTitle}</strong></p>
-                    <p className="text-[var(--cream-dim)]">{service.name[lang]} — €{service.price}</p>
+                    <p className="text-[var(--cream-dim)]">{booking.barberName} · {service.name[lang]} — €{service.price}</p>
                     <p className="text-[var(--cream-dim)]">{booking.date} · {booking.time}</p>
                     <p className="text-[var(--cream-dim)]">{booking.name} · {booking.phone}</p>
                     {booking.notes && <p className="text-[var(--cream-dim)]">{booking.notes}</p>}
@@ -2220,7 +2289,7 @@ export default function App() {
                 </div>
               )}
 
-              {step < 5 && (
+              {step < 6 && (
                 <div className="flex items-center justify-between pt-6 mt-2 border-t hairline">
                   <button onClick={() => goStep(Math.max(1, step - 1))} disabled={step === 1}
                     className="btn-outline px-4 py-2 rounded text-sm flex items-center gap-1 disabled:opacity-30">
