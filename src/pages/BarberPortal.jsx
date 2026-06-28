@@ -8,6 +8,98 @@ function fmt(d) { return d.toISOString().split('T')[0] }
 function addDays(s, n) { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return fmt(d) }
 function dayLabel(s) { return new Date(s + 'T12:00:00').toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }) }
 
+const ADMIN_PASSWORD = 'admin2025'
+
+const PROFILE_TYPES = [
+  { id: 'barber', icon: '✂', label: 'Barbiere', desc: 'Accedi con il tuo PIN personale', color: '#C79A45' },
+  { id: 'admin',  icon: '👑', label: 'Amministratore', desc: 'Gestione completa del salone', color: '#E8A87C' },
+]
+
+function LoginScreen({ barbers, onBarberLogin }) {
+  const [profile, setProfile] = useState(null) // 'barber' | 'admin'
+  const [credential, setCredential] = useState('')
+  const [err, setErr] = useState(false)
+
+  function handleLogin() {
+    if (profile === 'admin') {
+      if (credential === ADMIN_PASSWORD) { window.location.hash = '/admin' }
+      else setErr(true)
+    } else {
+      const found = barbers.find(b => b.pin === credential)
+      if (found) onBarberLogin(found)
+      else setErr(true)
+    }
+  }
+
+  return (
+    <div style={{ minHeight: '100svh', background: '#0d0804', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Work Sans', sans-serif", padding: 16 }}>
+      <div style={{ background: 'rgba(16,12,6,0.97)', border: '1px solid rgba(199,154,69,0.25)', borderRadius: 24, padding: '36px 28px', width: '100%', maxWidth: 360, textAlign: 'center' }}>
+
+        {/* Logo */}
+        <div style={{ width: 56, height: 56, borderRadius: 16, background: 'linear-gradient(135deg,#e8c87a,#9a6b1a)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '1.5rem', boxShadow: '0 6px 24px rgba(199,154,69,0.3)' }}>✂</div>
+        <h1 style={{ fontFamily: 'serif', color: '#e8c87a', fontSize: '1rem', letterSpacing: '0.2em', marginBottom: 4 }}>AREA RISERVATA</h1>
+        <p style={{ color: 'rgba(182,165,135,0.4)', fontSize: '0.72rem', marginBottom: 28 }}>Hassan Barber — Verona</p>
+
+        {/* Profile type selector */}
+        {!profile ? (
+          <>
+            <p style={{ fontSize: '0.7rem', color: 'rgba(182,165,135,0.45)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 14 }}>Seleziona il profilo</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {PROFILE_TYPES.map(pt => (
+                <button key={pt.id} onClick={() => { setProfile(pt.id); setCredential(''); setErr(false) }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', borderRadius: 14, border: `1px solid ${pt.color}40`, background: `${pt.color}0a`, cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.2s,background 0.2s', WebkitTapHighlightColor: 'transparent' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = `${pt.color}80`; e.currentTarget.style.background = `${pt.color}15` }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = `${pt.color}40`; e.currentTarget.style.background = `${pt.color}0a` }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg,${pt.color},${pt.color}88)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>{pt.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f0e6d0', marginBottom: 3 }}>{pt.label}</p>
+                    <p style={{ fontSize: '0.68rem', color: 'rgba(182,165,135,0.45)' }}>{pt.desc}</p>
+                  </div>
+                  <span style={{ color: pt.color, fontSize: '1.1rem', opacity: 0.6 }}>›</span>
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Back + selected profile badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22 }}>
+              <button onClick={() => { setProfile(null); setCredential(''); setErr(false) }}
+                style={{ padding: '6px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(199,154,69,0.15)', color: 'rgba(182,165,135,0.5)', fontSize: '0.75rem', cursor: 'pointer' }}>← Indietro</button>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 10, background: `${PROFILE_TYPES.find(p=>p.id===profile)?.color}0d`, border: `1px solid ${PROFILE_TYPES.find(p=>p.id===profile)?.color}30` }}>
+                <span style={{ fontSize: '0.9rem' }}>{PROFILE_TYPES.find(p=>p.id===profile)?.icon}</span>
+                <span style={{ fontSize: '0.78rem', color: '#f0e6d0', fontWeight: 600 }}>{PROFILE_TYPES.find(p=>p.id===profile)?.label}</span>
+              </div>
+            </div>
+
+            <p style={{ fontSize: '0.72rem', color: 'rgba(182,165,135,0.45)', marginBottom: 12 }}>
+              {profile === 'admin' ? 'Inserisci la password' : 'Inserisci il tuo PIN (4 cifre)'}
+            </p>
+
+            <input
+              type="password"
+              inputMode={profile === 'barber' ? 'numeric' : 'text'}
+              maxLength={profile === 'barber' ? 4 : undefined}
+              placeholder={profile === 'barber' ? '● ● ● ●' : 'Password'}
+              value={credential}
+              autoFocus
+              onChange={e => { setCredential(e.target.value); setErr(false) }}
+              onKeyDown={e => e.key === 'Enter' && handleLogin()}
+              style={{ width: '100%', padding: '14px', borderRadius: 12, border: `1px solid ${err ? '#f87171' : 'rgba(199,154,69,0.25)'}`, background: 'rgba(10,8,4,0.8)', color: '#f0e6d0', fontSize: profile === 'barber' ? '1.4rem' : '1rem', textAlign: 'center', letterSpacing: profile === 'barber' ? '0.4em' : '0.05em', boxSizing: 'border-box', marginBottom: 12, outline: 'none' }}
+            />
+            {err && <p style={{ color: '#f87171', fontSize: '0.75rem', marginBottom: 10 }}>{profile === 'admin' ? 'Password errata' : 'PIN non valido'}</p>}
+
+            <button onClick={handleLogin}
+              style={{ width: '100%', padding: '13px', borderRadius: 12, background: `linear-gradient(135deg,#e8c87a,#c79a45)`, color: '#1a1105', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '0.92rem', letterSpacing: '0.05em' }}>
+              Accedi
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function BarberPortal() {
   const [barber, setBarber] = useState(null)
   const [pin, setPin] = useState('')
@@ -81,32 +173,8 @@ export default function BarberPortal() {
   const color = barber?.color || '#C79A45'
   const today = fmt(new Date())
 
-  if (!barber) return (
-    <div style={{ minHeight: '100svh', background: '#0d0804', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Work Sans', sans-serif" }}>
-      <div style={{ background: 'rgba(20,15,8,0.95)', border: '1px solid rgba(199,154,69,0.3)', borderRadius: 20, padding: '36px', width: 320, textAlign: 'center' }}>
-        <div style={{ width: 52, height: 52, borderRadius: 14, background: 'linear-gradient(135deg,#e8c87a,#9a6b1a)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontWeight: 900, fontSize: '1.3rem', color: '#1a1105', fontFamily: 'serif' }}>✂</div>
-        <h1 style={{ color: '#e8c87a', fontSize: '1rem', letterSpacing: '0.15em', fontFamily: 'serif', marginBottom: 4 }}>AREA BARBIERI</h1>
-        <p style={{ color: 'rgba(182,165,135,0.4)', fontSize: '0.72rem', marginBottom: 24 }}>Inserisci il tuo PIN</p>
-        <input
-          type="password"
-          inputMode="numeric"
-          maxLength={4}
-          placeholder="PIN (4 cifre)"
-          value={pin}
-          onChange={e => { setPin(e.target.value); setPinErr(false) }}
-          onKeyDown={e => e.key === 'Enter' && tryLogin()}
-          style={{ width: '100%', padding: '12px', borderRadius: 12, border: `1px solid ${pinErr ? '#f87171' : 'rgba(199,154,69,0.25)'}`, background: 'rgba(10,8,4,0.8)', color: '#f0e6d0', fontSize: '1.2rem', textAlign: 'center', letterSpacing: '0.3em', boxSizing: 'border-box', marginBottom: 12, outline: 'none' }}
-        />
-        {pinErr && <p style={{ color: '#f87171', fontSize: '0.75rem', marginBottom: 8 }}>PIN non valido</p>}
-        <button
-          onClick={tryLogin}
-          style={{ width: '100%', padding: '12px', borderRadius: 12, background: 'linear-gradient(135deg,#e8c87a,#c79a45)', color: '#1a1105', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '0.9rem' }}>
-          Entra
-        </button>
-        <a href="/#/admin" style={{ display: 'block', marginTop: 16, fontSize: '0.7rem', color: 'rgba(182,165,135,0.35)', textDecoration: 'none' }}>Admin &#8594;</a>
-      </div>
-    </div>
-  )
+  if (!barber) return <LoginScreen barbers={barbers} onBarberLogin={b => { setBarber(b); setPinErr(false) }} />
+
 
   return (
     <div style={{ minHeight: '100svh', background: '#0d0804', fontFamily: "'Work Sans', sans-serif", color: '#f0e6d0' }}>
