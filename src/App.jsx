@@ -1938,6 +1938,9 @@ export default function App() {
               </div>
 
               <div style={{ padding:"20px", textAlign:"center", borderTop:"1px solid rgba(199,154,69,0.08)" }}>
+                <a href="/#/barber" style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"8px 18px", borderRadius:10, border:"1px solid rgba(199,154,69,0.2)", background:"rgba(199,154,69,0.06)", color:"rgba(182,165,135,0.55)", fontSize:"0.7rem", letterSpacing:"0.1em", textDecoration:"none", marginBottom:14 }}>
+                  🔐 Accesso Staff
+                </a>
                 <p style={{ fontSize:"0.68rem", color:"rgba(182,165,135,0.35)", letterSpacing:"0.08em" }}>© {new Date().getFullYear()} {SHOP.name} — Verona</p>
                 <p style={{ fontSize:"0.62rem", color:"rgba(182,165,135,0.25)", letterSpacing:"0.05em", marginTop:4 }}>Sviluppato da Walid Marghata</p>
               </div>
@@ -2356,6 +2359,10 @@ export default function App() {
             © {new Date().getFullYear()} {SHOP.name} — Verona
             <br />
             <span style={{ opacity:0.45, fontSize:"0.65rem", letterSpacing:"0.05em" }}>Sviluppato da Walid Marghata</span>
+            <br />
+            <a href="/#/barber" style={{ display:"inline-flex", alignItems:"center", gap:5, marginTop:12, padding:"6px 14px", borderRadius:8, border:"1px solid rgba(199,154,69,0.18)", background:"rgba(199,154,69,0.05)", color:"rgba(182,165,135,0.45)", fontSize:"0.62rem", letterSpacing:"0.1em", textDecoration:"none" }}>
+              🔐 Accesso Staff
+            </a>
           </footer>
 
           {/* WHATSAPP CHAT WIDGET */}
