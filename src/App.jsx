@@ -1090,7 +1090,7 @@ function minToTime(m) {
   const mm = (m % 60).toString().padStart(2, "0");
   return `${h}:${mm}`;
 }
-function getSlots(dateStr, durationMin, bookedTimes) {
+function getSlots(dateStr, durationMin, bookingData) {
   if (!dateStr) return [];
   const dayNum = new Date(dateStr + "T00:00:00").getDay();
   const cfg = HOURS[dayNum];
@@ -1103,30 +1103,40 @@ function getSlots(dateStr, durationMin, bookedTimes) {
   const isToday = dateStr === todayStr();
   const now = new Date();
   const nowM = now.getHours() * 60 + now.getMinutes() + 15;
+  const { appointments = [], blocked = [] } = bookingData || {};
+  // Full-day block
+  if (blocked.some(b => !b.time)) return [];
   const slots = [];
   for (let t = openM; t + durationMin <= closeM; t += step) {
     if (lunchStartM != null && t < lunchEndM && t + durationMin > lunchStartM) continue;
     if (isToday && t <= nowM) continue;
-    // bookedTimes is an array of "HH:MM" strings already booked for this barber+date
-    if (bookedTimes.includes(minToTime(t))) continue;
+    const candEnd = t + durationMin;
+    // Check overlap with existing appointments including their duration
+    const hasConflict = appointments.some(a => {
+      const aStart = timeToMin(a.time);
+      const aEnd = aStart + (a.service_duration || 30);
+      return aStart < candEnd && aEnd > t;
+    });
+    if (hasConflict) continue;
+    // Check blocked specific times
+    if (blocked.some(b => b.time && timeToMin(b.time) === t)) continue;
     slots.push(t);
   }
   return slots.map(minToTime);
 }
 
-/* Fetch booked times for a barber on a given date from Supabase */
-async function fetchBookedTimes(barberId, dateStr) {
-  if (!barberId || !dateStr) return [];
+/* Fetch existing appointments (with durations) + blocked slots for a barber/date */
+async function fetchBookingData(barberId, dateStr) {
+  if (!barberId || !dateStr) return { appointments: [], blocked: [] };
   try {
-    const { data, error } = await supabase
-      .from('appointments')
-      .select('time')
-      .eq('barber_id', barberId)
-      .eq('date', dateStr)
-      .eq('status', 'confirmed');
-    if (error) { console.error('fetchBookedTimes error:', error); return []; }
-    return (data || []).map(r => r.time);
-  } catch (e) { return []; }
+    const [{ data: appts }, { data: blkd }] = await Promise.all([
+      supabase.from('appointments').select('time, service_duration')
+        .eq('barber_id', barberId).eq('date', dateStr).neq('status', 'cancelled'),
+      supabase.from('blocked_slots').select('time')
+        .eq('barber_id', barberId).eq('date', dateStr)
+    ]);
+    return { appointments: appts || [], blocked: blkd || [] };
+  } catch { return { appointments: [], blocked: [] }; }
 }
 
 /* Save appointment to Supabase */
@@ -1282,7 +1292,7 @@ export default function App() {
 
   const [booking, setBooking] = useState({ barberId: "", barberName: "", serviceId: null, date: "", time: "", name: "", phone: "", notes: "" });
   const [step, setStep] = useState(1);
-  const [bookedTimes, setBookedTimes] = useState([]);
+  const [bookingData, setBookingData] = useState({ appointments: [], blocked: [] });
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [reserving, setReserving] = useState(false);
   const [reservedDone, setReservedDone] = useState(false);
@@ -1334,17 +1344,17 @@ export default function App() {
   const service = SERVICES.find((s) => s.id === booking.serviceId) || null;
 
   useEffect(() => {
-    if (!booking.date || !booking.barberId) { setBookedTimes([]); return; }
+    if (!booking.date || !booking.barberId) { setBookingData({ appointments: [], blocked: [] }); return; }
     setLoadingSlots(true);
-    fetchBookedTimes(booking.barberId, booking.date).then((times) => {
-      setBookedTimes(times);
+    fetchBookingData(booking.barberId, booking.date).then((data) => {
+      setBookingData(data);
       setLoadingSlots(false);
     });
   }, [booking.date, booking.barberId]);
 
   const slots = useMemo(
-    () => (service && booking.date ? getSlots(booking.date, service.duration, bookedTimes) : []),
-    [service, booking.date, bookedTimes]
+    () => (service && booking.date ? getSlots(booking.date, service.duration, bookingData) : []),
+    [service, booking.date, bookingData]
   );
 
   const dayNum = booking.date ? new Date(booking.date + "T00:00:00").getDay() : null;
@@ -1717,7 +1727,7 @@ export default function App() {
                           const bid = member.name.toLowerCase().replace(' ', '-');
                           const sel = booking.barberId === bid;
                           return (
-                            <button key={member.name} onClick={() => setBooking(p => ({ ...p, barberId: bid, barberName: member.name }))}
+                            <button key={member.name} onClick={() => { setBooking(p => ({ ...p, barberId: bid, barberName: member.name })); setTimeout(() => setStep(2), 150); }}
                               style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, padding:"14px 10px", borderRadius:14, border:"1px solid", borderColor: sel ? "var(--brass)" : "rgba(199,154,69,0.15)", background: sel ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
                               <img src={member.photo} alt={member.name} style={{ width:60, height:60, borderRadius:"50%", objectFit:"cover", objectPosition:"top", border: sel ? "2px solid var(--brass)" : "2px solid rgba(199,154,69,0.2)" }} />
                               <span style={{ fontSize:"0.82rem", color:"var(--cream)", fontWeight: sel ? 600 : 400 }}>{member.name}</span>
@@ -1731,9 +1741,15 @@ export default function App() {
                   {step === 2 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
                       <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>02 — {t.booking.selectServicePlaceholder}</p>
+                      {booking.barberId && (
+                        <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px", borderRadius:10, background:"rgba(199,154,69,0.06)", border:"1px solid rgba(199,154,69,0.15)" }}>
+                          <span style={{ fontSize:"0.75rem", color:"var(--brass)" }}>✂</span>
+                          <span style={{ fontSize:"0.78rem", color:"var(--cream-dim)" }}>{booking.barberName}</span>
+                        </div>
+                      )}
                       <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                         {SERVICES.map(s => (
-                          <button key={s.id} onClick={() => setBooking(p => ({ ...p, serviceId: s.id, time:"" }))}
+                          <button key={s.id} onClick={() => { setBooking(p => ({ ...p, serviceId: s.id, time:"" })); setTimeout(() => setStep(3), 150); }}
                             style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"14px 16px", borderRadius:14, border:"1px solid", borderColor: booking.serviceId === s.id ? "var(--brass)" : "rgba(199,154,69,0.15)", background: booking.serviceId === s.id ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
                             <span style={{ fontSize:"0.88rem", color:"var(--cream)", fontWeight: booking.serviceId === s.id ? 600 : 400 }}>{s.name[lang]}</span>
                             <div style={{ textAlign:"right" }}>
@@ -1748,23 +1764,49 @@ export default function App() {
                   {step === 3 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
                       <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>03 — {t.booking.dateLabel}</p>
+                      {booking.barberId && service && (
+                        <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px", borderRadius:10, background:"rgba(199,154,69,0.06)", border:"1px solid rgba(199,154,69,0.15)" }}>
+                          <span style={{ fontSize:"0.75rem", color:"var(--brass)" }}>✂</span>
+                          <span style={{ fontSize:"0.78rem", color:"var(--cream-dim)" }}>{booking.barberName} · {service.name[lang]} · €{service.price}</span>
+                        </div>
+                      )}
                       <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
                         onChange={e => setBooking(p => ({ ...p, date: e.target.value, time:"" }))}
                         style={{ padding:"14px 16px", borderRadius:14, border:"1px solid rgba(199,154,69,0.2)", background:"rgba(18,13,6,0.8)", color:"var(--cream)", fontSize:"0.95rem", width:"100%" }} />
+                      {booking.date && !isClosedDay && (
+                        <p style={{ fontSize:"0.82rem", color:"var(--brass-light)", textAlign:"center", textTransform:"capitalize" }}>
+                          {new Date(booking.date + "T12:00:00").toLocaleDateString("it-IT", { weekday:"long", day:"numeric", month:"long" })}
+                        </p>
+                      )}
                       {isClosedDay && <p style={{ fontSize:"0.82rem", color:"var(--brass-light)", padding:"8px 12px", background:"rgba(199,154,69,0.06)", borderRadius:10, border:"1px solid rgba(199,154,69,0.15)" }}>{t.booking.closedNotice}</p>}
                     </div>
                   )}
                   {step === 4 && (
                     <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
                       <p className="f-display" style={{ fontSize:"0.7rem", letterSpacing:"0.15em", color:"var(--brass)", marginBottom:4 }}>04 — {t.booking.timeLabel}</p>
+                      {booking.date && (
+                        <p style={{ fontSize:"0.78rem", color:"var(--cream-dim)", textAlign:"center", textTransform:"capitalize" }}>
+                          {new Date(booking.date + "T12:00:00").toLocaleDateString("it-IT", { weekday:"long", day:"numeric", month:"long" })}
+                        </p>
+                      )}
                       {loadingSlots ? (
                         <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", textAlign:"center", padding:"24px 0" }}>{t.booking.loadingSlots}</p>
                       ) : slots.length === 0 ? (
-                        <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", textAlign:"center", padding:"24px 0" }}>{t.booking.noSlots}</p>
+                        <div style={{ textAlign:"center", padding:"20px 0" }}>
+                          <p style={{ fontSize:"0.85rem", color:"var(--cream-dim)", marginBottom:14 }}>{t.booking.noSlots}</p>
+                          <button onClick={() => {
+                            const next = new Date(booking.date + "T12:00:00");
+                            next.setDate(next.getDate() + 1);
+                            const nextStr = next.toISOString().slice(0,10);
+                            if (nextStr <= maxDateStr()) setBooking(p => ({ ...p, date: nextStr, time:"" }));
+                          }} style={{ padding:"10px 20px", borderRadius:12, border:"1px solid rgba(199,154,69,0.3)", background:"rgba(199,154,69,0.08)", color:"var(--brass-light)", fontSize:"0.82rem", cursor:"pointer" }}>
+                            Prossimo giorno →
+                          </button>
+                        </div>
                       ) : (
                         <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
                           {slots.map(tm => (
-                            <button key={tm} onClick={() => setBooking(p => ({ ...p, time: tm }))}
+                            <button key={tm} onClick={() => { setBooking(p => ({ ...p, time: tm })); setTimeout(() => setStep(5), 150); }}
                               className={`time-slot-btn${booking.time === tm ? " sel" : ""}`}>
                               {tm}
                             </button>
@@ -2215,7 +2257,7 @@ export default function App() {
                       const bid = member.name.toLowerCase().replace(' ', '-');
                       const sel = booking.barberId === bid;
                       return (
-                        <button key={member.name} onClick={() => setBooking(p => ({ ...p, barberId: bid, barberName: member.name }))}
+                        <button key={member.name} onClick={() => { setBooking(p => ({ ...p, barberId: bid, barberName: member.name })); setTimeout(() => setStep(2), 150); }}
                           style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:8, padding:"14px 10px", borderRadius:14, border:"1px solid", borderColor: sel ? "var(--brass)" : "rgba(199,154,69,0.15)", background: sel ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
                           <img src={member.photo} alt={member.name} style={{ width:60, height:60, borderRadius:"50%", objectFit:"cover", objectPosition:"top", border: sel ? "2px solid var(--brass)" : "2px solid rgba(199,154,69,0.2)" }} />
                           <span style={{ fontSize:"0.82rem", color:"var(--cream)", fontWeight: sel ? 600 : 400 }}>{member.name}</span>
@@ -2230,9 +2272,15 @@ export default function App() {
               {step === 2 && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm text-[var(--cream-dim)]">{t.booking.selectServicePlaceholder}</label>
+                  {booking.barberId && (
+                    <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px", borderRadius:10, background:"rgba(199,154,69,0.06)", border:"1px solid rgba(199,154,69,0.15)" }}>
+                      <span style={{ fontSize:"0.75rem", color:"var(--brass)" }}>✂</span>
+                      <span style={{ fontSize:"0.78rem", color:"var(--cream-dim)" }}>{booking.barberName}</span>
+                    </div>
+                  )}
                   <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
                     {SERVICES.map(s => (
-                      <button key={s.id} onClick={() => setBooking(p => ({ ...p, serviceId: s.id, time:"" }))}
+                      <button key={s.id} onClick={() => { setBooking(p => ({ ...p, serviceId: s.id, time:"" })); setTimeout(() => setStep(3), 150); }}
                         style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", borderRadius:12, border:"1px solid", borderColor: booking.serviceId === s.id ? "var(--brass)" : "rgba(199,154,69,0.15)", background: booking.serviceId === s.id ? "rgba(199,154,69,0.1)" : "rgba(18,13,6,0.8)", cursor:"pointer", transition:"all 0.18s" }}>
                         <span style={{ fontSize:"0.88rem", color:"var(--cream)", fontWeight: booking.serviceId === s.id ? 600 : 400 }}>{s.name[lang]}</span>
                         <div style={{ textAlign:"right" }}>
@@ -2248,9 +2296,20 @@ export default function App() {
               {step === 3 && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><CalendarIcon size={14} /> {t.booking.dateLabel}</label>
+                  {booking.barberId && service && (
+                    <div style={{ display:"flex", alignItems:"center", gap:8, padding:"8px 12px", borderRadius:10, background:"rgba(199,154,69,0.06)", border:"1px solid rgba(199,154,69,0.15)" }}>
+                      <span style={{ fontSize:"0.75rem", color:"var(--brass)" }}>✂</span>
+                      <span style={{ fontSize:"0.78rem", color:"var(--cream-dim)" }}>{booking.barberName} · {service.name[lang]} · €{service.price}</span>
+                    </div>
+                  )}
                   <input type="date" min={todayStr()} max={maxDateStr()} value={booking.date}
                     onChange={(e) => setBooking((p) => ({ ...p, date: e.target.value, time: "" }))}
                     className="px-3 py-2 text-sm" />
+                  {booking.date && !isClosedDay && (
+                    <p className="text-sm text-center" style={{ color:"var(--brass-light)", textTransform:"capitalize" }}>
+                      {new Date(booking.date + "T12:00:00").toLocaleDateString("it-IT", { weekday:"long", day:"numeric", month:"long" })}
+                    </p>
+                  )}
                   {isClosedDay && <p className="text-sm text-[var(--brass-light)]">{t.booking.closedNotice}</p>}
                 </div>
               )}
@@ -2258,14 +2317,29 @@ export default function App() {
               {step === 4 && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm text-[var(--cream-dim)] flex items-center gap-2"><Clock size={14} /> {t.booking.timeLabel}</label>
+                  {booking.date && (
+                    <p className="text-sm text-center" style={{ color:"var(--cream-dim)", textTransform:"capitalize" }}>
+                      {new Date(booking.date + "T12:00:00").toLocaleDateString("it-IT", { weekday:"long", day:"numeric", month:"long" })}
+                    </p>
+                  )}
                   {loadingSlots ? (
                     <p className="text-sm text-[var(--cream-dim)]">{t.booking.loadingSlots}</p>
                   ) : slots.length === 0 ? (
-                    <p className="text-sm text-[var(--cream-dim)]">{t.booking.noSlots}</p>
+                    <div className="flex flex-col items-center gap-3 py-4">
+                      <p className="text-sm text-[var(--cream-dim)]">{t.booking.noSlots}</p>
+                      <button onClick={() => {
+                        const next = new Date(booking.date + "T12:00:00");
+                        next.setDate(next.getDate() + 1);
+                        const nextStr = next.toISOString().slice(0,10);
+                        if (nextStr <= maxDateStr()) setBooking(p => ({ ...p, date: nextStr, time:"" }));
+                      }} style={{ padding:"9px 18px", borderRadius:10, border:"1px solid rgba(199,154,69,0.3)", background:"rgba(199,154,69,0.08)", color:"var(--brass-light)", fontSize:"0.82rem", cursor:"pointer" }}>
+                        Prossimo giorno →
+                      </button>
+                    </div>
                   ) : (
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                       {slots.map((tm) => (
-                        <button key={tm} onClick={() => setBooking((p) => ({ ...p, time: tm }))}
+                        <button key={tm} onClick={() => { setBooking((p) => ({ ...p, time: tm })); setTimeout(() => setStep(5), 150); }}
                           className="py-2 rounded text-sm border hairline"
                           style={booking.time === tm ? { background: "var(--brass)", color: "#241a0e", fontWeight: 600 } : { color: "var(--cream-dim)" }}>
                           {tm}
