@@ -1861,6 +1861,16 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Staff access card */}
+              <a href="/#/barber" style={{ display:"flex", alignItems:"center", gap:14, margin:"16px 16px 0", padding:"16px 18px", background:"linear-gradient(135deg,rgba(199,154,69,0.13),rgba(199,154,69,0.04))", border:"1px solid rgba(199,154,69,0.35)", borderRadius:18, textDecoration:"none", WebkitTapHighlightColor:"transparent" }}>
+                <div style={{ width:46, height:46, borderRadius:13, background:"linear-gradient(135deg,#e8c87a,#c79a45)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.3rem", flexShrink:0, boxShadow:"0 4px 16px rgba(199,154,69,0.3)" }}>🔐</div>
+                <div style={{ flex:1 }}>
+                  <p style={{ fontSize:"0.88rem", fontWeight:700, color:"var(--brass-light)", letterSpacing:"0.05em", marginBottom:3 }}>Area Staff</p>
+                  <p style={{ fontSize:"0.7rem", color:"rgba(182,165,135,0.5)" }}>Barbieri · Amministratore</p>
+                </div>
+                <span style={{ fontSize:"1.1rem", color:"var(--brass)", opacity:0.7 }}>›</span>
+              </a>
+
               {/* About */}
               <div className="info-section">
                 <p className="f-display" style={{ fontSize:"0.62rem", letterSpacing:"0.25em", color:"var(--brass)", marginBottom:8 }}>{t.about.badge}</p>
@@ -1938,9 +1948,6 @@ export default function App() {
               </div>
 
               <div style={{ padding:"20px", textAlign:"center", borderTop:"1px solid rgba(199,154,69,0.08)" }}>
-                <a href="/#/barber" style={{ display:"inline-flex", alignItems:"center", gap:6, padding:"8px 18px", borderRadius:10, border:"1px solid rgba(199,154,69,0.2)", background:"rgba(199,154,69,0.06)", color:"rgba(182,165,135,0.55)", fontSize:"0.7rem", letterSpacing:"0.1em", textDecoration:"none", marginBottom:14 }}>
-                  🔐 Accesso Staff
-                </a>
                 <p style={{ fontSize:"0.68rem", color:"rgba(182,165,135,0.35)", letterSpacing:"0.08em" }}>© {new Date().getFullYear()} {SHOP.name} — Verona</p>
                 <p style={{ fontSize:"0.62rem", color:"rgba(182,165,135,0.25)", letterSpacing:"0.05em", marginTop:4 }}>Sviluppato da Walid Marghata</p>
               </div>
@@ -1992,12 +1999,17 @@ export default function App() {
                   <a key={l.id} href={`#${l.id}`} className="text-[var(--cream-dim)] hover:text-[var(--brass-light)] transition-colors">{l.label}</a>
                 ))}
               </nav>
-              <div className="flex items-center gap-3 text-xs font-semibold shrink-0">
-                {LANGS.map((code) => (
-                  <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)} aria-label={T[code].label}>
-                    {T[code].code}
-                  </button>
-                ))}
+              <div className="flex items-center gap-3 shrink-0">
+                <a href="/#/barber" style={{ display:"flex", alignItems:"center", gap:6, padding:"7px 14px", borderRadius:10, border:"1px solid rgba(199,154,69,0.4)", background:"linear-gradient(135deg,rgba(199,154,69,0.12),rgba(199,154,69,0.04))", color:"var(--brass-light)", fontSize:"0.72rem", fontWeight:700, letterSpacing:"0.08em", textDecoration:"none", whiteSpace:"nowrap" }}>
+                  🔐 <span className="hidden sm:inline">Area Staff</span>
+                </a>
+                <div className="flex items-center gap-3 text-xs font-semibold">
+                  {LANGS.map((code) => (
+                    <button key={code} className="lang-btn pb-0.5 px-0.5" data-active={lang === code} onClick={() => setLang(code)} aria-label={T[code].label}>
+                      {T[code].code}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             {menuOpen && (
@@ -2359,10 +2371,6 @@ export default function App() {
             © {new Date().getFullYear()} {SHOP.name} — Verona
             <br />
             <span style={{ opacity:0.45, fontSize:"0.65rem", letterSpacing:"0.05em" }}>Sviluppato da Walid Marghata</span>
-            <br />
-            <a href="/#/barber" style={{ display:"inline-flex", alignItems:"center", gap:5, marginTop:12, padding:"6px 14px", borderRadius:8, border:"1px solid rgba(199,154,69,0.18)", background:"rgba(199,154,69,0.05)", color:"rgba(182,165,135,0.45)", fontSize:"0.62rem", letterSpacing:"0.1em", textDecoration:"none" }}>
-              🔐 Accesso Staff
-            </a>
           </footer>
 
           {/* WHATSAPP CHAT WIDGET */}
