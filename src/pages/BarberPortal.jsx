@@ -16,7 +16,8 @@ const PROFILE_TYPES = [
 ]
 
 function LoginScreen({ barbers, onBarberLogin }) {
-  const [profile, setProfile] = useState(null) // 'barber' | 'admin'
+  const [profile, setProfile] = useState(null)       // null | 'barber' | 'admin'
+  const [selectedBarber, setSelectedBarber] = useState(null)
   const [credential, setCredential] = useState('')
   const [err, setErr] = useState(false)
 
@@ -25,11 +26,17 @@ function LoginScreen({ barbers, onBarberLogin }) {
       if (credential === ADMIN_PASSWORD) { window.location.hash = '/admin' }
       else setErr(true)
     } else {
-      const found = barbers.find(b => b.pin === credential)
-      if (found) onBarberLogin(found)
+      if (credential === selectedBarber.pin) onBarberLogin(selectedBarber)
       else setErr(true)
     }
   }
+
+  function goBack() {
+    if (selectedBarber) { setSelectedBarber(null); setCredential(''); setErr(false) }
+    else { setProfile(null); setCredential(''); setErr(false) }
+  }
+
+  const pt = PROFILE_TYPES.find(p => p.id === profile)
 
   return (
     <div style={{ minHeight: '100svh', background: '#0d0804', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Work Sans', sans-serif", padding: 16 }}>
@@ -40,40 +47,65 @@ function LoginScreen({ barbers, onBarberLogin }) {
         <h1 style={{ fontFamily: 'serif', color: '#e8c87a', fontSize: '1rem', letterSpacing: '0.2em', marginBottom: 4 }}>AREA RISERVATA</h1>
         <p style={{ color: 'rgba(182,165,135,0.4)', fontSize: '0.72rem', marginBottom: 28 }}>Hassan Barber — Verona</p>
 
-        {/* Profile type selector */}
-        {!profile ? (
+        {/* STEP 1 — tipo perfil */}
+        {!profile && (
           <>
             <p style={{ fontSize: '0.7rem', color: 'rgba(182,165,135,0.45)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 14 }}>Seleziona il profilo</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {PROFILE_TYPES.map(pt => (
-                <button key={pt.id} onClick={() => { setProfile(pt.id); setCredential(''); setErr(false) }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', borderRadius: 14, border: `1px solid ${pt.color}40`, background: `${pt.color}0a`, cursor: 'pointer', textAlign: 'left', transition: 'border-color 0.2s,background 0.2s', WebkitTapHighlightColor: 'transparent' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = `${pt.color}80`; e.currentTarget.style.background = `${pt.color}15` }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = `${pt.color}40`; e.currentTarget.style.background = `${pt.color}0a` }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg,${pt.color},${pt.color}88)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>{pt.icon}</div>
+              {PROFILE_TYPES.map(p => (
+                <button key={p.id} onClick={() => { setProfile(p.id); setCredential(''); setErr(false) }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', borderRadius: 14, border: `1px solid ${p.color}40`, background: `${p.color}0a`, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `linear-gradient(135deg,${p.color},${p.color}88)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', flexShrink: 0 }}>{p.icon}</div>
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f0e6d0', marginBottom: 3 }}>{pt.label}</p>
-                    <p style={{ fontSize: '0.68rem', color: 'rgba(182,165,135,0.45)' }}>{pt.desc}</p>
+                    <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f0e6d0', marginBottom: 3 }}>{p.label}</p>
+                    <p style={{ fontSize: '0.68rem', color: 'rgba(182,165,135,0.45)' }}>{p.desc}</p>
                   </div>
-                  <span style={{ color: pt.color, fontSize: '1.1rem', opacity: 0.6 }}>›</span>
+                  <span style={{ color: p.color, fontSize: '1.1rem', opacity: 0.6 }}>›</span>
                 </button>
               ))}
             </div>
           </>
-        ) : (
+        )}
+
+        {/* STEP 2 — seleciona barbeiro (só se perfil = barber) */}
+        {profile === 'barber' && !selectedBarber && (
           <>
-            {/* Back + selected profile badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+              <button onClick={goBack} style={{ padding: '6px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(199,154,69,0.15)', color: 'rgba(182,165,135,0.5)', fontSize: '0.75rem', cursor: 'pointer' }}>← Indietro</button>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 10, background: `${pt.color}0d`, border: `1px solid ${pt.color}30` }}>
+                <span>{pt.icon}</span>
+                <span style={{ fontSize: '0.78rem', color: '#f0e6d0', fontWeight: 600 }}>{pt.label}</span>
+              </div>
+            </div>
+            <p style={{ fontSize: '0.7rem', color: 'rgba(182,165,135,0.45)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>Chi sei?</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {barbers.map(b => (
+                <button key={b.id} onClick={() => { setSelectedBarber(b); setCredential(''); setErr(false) }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', borderRadius: 12, border: `1px solid ${b.color || '#C79A45'}35`, background: `${b.color || '#C79A45'}08`, cursor: 'pointer', textAlign: 'left', WebkitTapHighlightColor: 'transparent' }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: `linear-gradient(135deg,${b.color || '#C79A45'},${b.color || '#C79A45'}88)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>✂</div>
+                  <span style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f0e6d0' }}>{b.name}</span>
+                  <span style={{ marginLeft: 'auto', color: b.color || '#C79A45', fontSize: '1rem', opacity: 0.5 }}>›</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* STEP 3 — inserir PIN ou password */}
+        {(profile === 'admin' || (profile === 'barber' && selectedBarber)) && (
+          <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 22 }}>
-              <button onClick={() => { setProfile(null); setCredential(''); setErr(false) }}
-                style={{ padding: '6px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(199,154,69,0.15)', color: 'rgba(182,165,135,0.5)', fontSize: '0.75rem', cursor: 'pointer' }}>← Indietro</button>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 10, background: `${PROFILE_TYPES.find(p=>p.id===profile)?.color}0d`, border: `1px solid ${PROFILE_TYPES.find(p=>p.id===profile)?.color}30` }}>
-                <span style={{ fontSize: '0.9rem' }}>{PROFILE_TYPES.find(p=>p.id===profile)?.icon}</span>
-                <span style={{ fontSize: '0.78rem', color: '#f0e6d0', fontWeight: 600 }}>{PROFILE_TYPES.find(p=>p.id===profile)?.label}</span>
+              <button onClick={goBack} style={{ padding: '6px 12px', borderRadius: 9, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(199,154,69,0.15)', color: 'rgba(182,165,135,0.5)', fontSize: '0.75rem', cursor: 'pointer' }}>← Indietro</button>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 12px', borderRadius: 10, background: `${pt.color}0d`, border: `1px solid ${pt.color}30` }}>
+                <span>{pt.icon}</span>
+                <span style={{ fontSize: '0.78rem', color: '#f0e6d0', fontWeight: 600 }}>
+                  {profile === 'admin' ? pt.label : selectedBarber.name}
+                </span>
               </div>
             </div>
 
             <p style={{ fontSize: '0.72rem', color: 'rgba(182,165,135,0.45)', marginBottom: 12 }}>
-              {profile === 'admin' ? 'Inserisci la password' : 'Inserisci il tuo PIN (4 cifre)'}
+              {profile === 'admin' ? 'Inserisci la password' : `PIN di ${selectedBarber.name}`}
             </p>
 
             <input
@@ -90,7 +122,7 @@ function LoginScreen({ barbers, onBarberLogin }) {
             {err && <p style={{ color: '#f87171', fontSize: '0.75rem', marginBottom: 10 }}>{profile === 'admin' ? 'Password errata' : 'PIN non valido'}</p>}
 
             <button onClick={handleLogin}
-              style={{ width: '100%', padding: '13px', borderRadius: 12, background: `linear-gradient(135deg,#e8c87a,#c79a45)`, color: '#1a1105', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '0.92rem', letterSpacing: '0.05em' }}>
+              style={{ width: '100%', padding: '13px', borderRadius: 12, background: 'linear-gradient(135deg,#e8c87a,#c79a45)', color: '#1a1105', fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '0.92rem', letterSpacing: '0.05em' }}>
               Accedi
             </button>
           </>
